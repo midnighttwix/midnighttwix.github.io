@@ -88,6 +88,28 @@ async function fetchBulbapediaImage(name) {
   }
 }
 
+async function fetchFallbackSprite(name) {
+  try {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`);
+    if (!response.ok) return "";
+    const data = await response.json();
+    return data.sprites?.other?.["official-artwork"]?.front_default || data.sprites?.front_default || "";
+  } catch (error) {
+    return "";
+  }
+}
+
+function setImageWithFallback(imgEl, primaryUrl, fallbackUrl, altText) {
+  imgEl.alt = altText;
+  imgEl.dataset.fallback = fallbackUrl || "";
+  imgEl.onerror = () => {
+    if (imgEl.dataset.fallback && imgEl.src !== imgEl.dataset.fallback) {
+      imgEl.src = imgEl.dataset.fallback;
+    }
+  };
+  imgEl.src = primaryUrl || fallbackUrl || "";
+}
+
 function setSelected(side) {
   selectedSide = side;
   cardA.classList.toggle("selected", side === "a");
@@ -128,9 +150,11 @@ async function loadRound() {
     const [entryA, entryB] = pair;
 
     try {
-      const [spriteA, spriteB] = await Promise.all([
+      const [spriteA, spriteB, fallbackA, fallbackB] = await Promise.all([
         fetchBulbapediaImage(entryA.name),
         fetchBulbapediaImage(entryB.name),
+        fetchFallbackSprite(entryA.name),
+        fetchFallbackSprite(entryB.name),
       ]);
 
       currentPair = {
@@ -138,13 +162,11 @@ async function loadRound() {
         b: { name: entryB.name, views: entryB.views },
       };
 
-      pokeAImg.src = spriteA;
-      pokeAImg.alt = entryA.name;
+      setImageWithFallback(pokeAImg, spriteA, fallbackA, entryA.name);
       pokeAName.textContent = entryA.name;
       pokeAStat.textContent = "";
 
-      pokeBImg.src = spriteB;
-      pokeBImg.alt = entryB.name;
+      setImageWithFallback(pokeBImg, spriteB, fallbackB, entryB.name);
       pokeBName.textContent = entryB.name;
       pokeBStat.textContent = "";
 
