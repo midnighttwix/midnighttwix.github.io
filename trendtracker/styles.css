@@ -170,6 +170,14 @@ h1 {
   text-align: center;
 }
 
+.score-message {
+  margin: 0 0 0.6rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--wiki-blue);
+}
+
 .hidden {
   display: none;
 }

@@ -1,5 +1,6 @@
 const newRoundBtn = document.getElementById("new-round-btn");
 const statusMessage = document.getElementById("status-message");
+const scoreMessage = document.getElementById("score-message");
 const matchupEl = document.getElementById("matchup");
 const promptMessage = document.getElementById("prompt-message");
 const revealBtn = document.getElementById("reveal-btn");
@@ -13,6 +14,9 @@ const pokeAName = document.getElementById("poke-a-name");
 const pokeBName = document.getElementById("poke-b-name");
 const pokeAStat = document.getElementById("poke-a-stat");
 const pokeBStat = document.getElementById("poke-b-stat");
+
+const GUESS_GOAL = 10;
+let correctCount = 0;
 
 const MAX_RANK_GAP = 40; // keeps matchups close instead of blowouts
 
@@ -54,9 +58,21 @@ async function fetchBulbapediaImage(name) {
   }
 }
 
+function toPokeApiSlug(name) {
+  return name
+    .toLowerCase()
+    .replace(/♂/g, "-m")
+    .replace(/♀/g, "-f")
+    .replace(/é/g, "e")
+    .replace(/[.:']/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 async function fetchFallbackSprite(name) {
   try {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}`);
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${toPokeApiSlug(name)}`);
     if (!response.ok) return "";
     const data = await response.json();
     return data.sprites?.other?.["official-artwork"]?.front_default || data.sprites?.front_default || "";
@@ -68,12 +84,19 @@ async function fetchFallbackSprite(name) {
 function setImageWithFallback(imgEl, primaryUrl, fallbackUrl, altText) {
   imgEl.alt = altText;
   imgEl.dataset.fallback = fallbackUrl || "";
+  imgEl.classList.remove("hidden");
   imgEl.onerror = () => {
     if (imgEl.dataset.fallback && imgEl.src !== imgEl.dataset.fallback) {
       imgEl.src = imgEl.dataset.fallback;
+    } else {
+      imgEl.onerror = null;
+      imgEl.classList.add("hidden");
     }
   };
   imgEl.src = primaryUrl || fallbackUrl || "";
+  if (!primaryUrl && !fallbackUrl) {
+    imgEl.classList.add("hidden");
+  }
 }
 
 function setSelected(side) {
@@ -140,7 +163,13 @@ function revealResult() {
   cardB.classList.add(winnerSide === "b" ? "winner" : "loser");
 
   if (isCorrect) {
-    resultMessage.textContent = `Congrats! ${currentPair[winnerSide].name} was visited more in 2025.`;
+    correctCount += 1;
+
+    if (correctCount % GUESS_GOAL === 0) {
+      resultMessage.textContent = `Congrats! You've reached ${correctCount} correct guesses!`;
+    } else {
+      resultMessage.textContent = `Congrats! ${currentPair[winnerSide].name} was visited more in 2025.`;
+    }
     resultMessage.classList.add("correct");
     resultMessage.classList.remove("incorrect");
   } else {
@@ -148,6 +177,14 @@ function revealResult() {
     resultMessage.classList.add("incorrect");
     resultMessage.classList.remove("correct");
   }
+
+  updateScoreMessage();
+}
+
+function updateScoreMessage() {
+  const progressInGoal = correctCount % GUESS_GOAL;
+  const displayCount = correctCount > 0 && progressInGoal === 0 ? GUESS_GOAL : progressInGoal;
+  scoreMessage.textContent = `Correct guesses: ${displayCount} / ${GUESS_GOAL}`;
 }
 
 cardA.addEventListener("click", () => {
