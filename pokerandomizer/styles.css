@@ -213,6 +213,23 @@ h1 {
   border-color: var(--accent);
 }
 
+.generate-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.generate-spacer {
+  font-size: 0.8rem;
+  line-height: 1;
+  visibility: hidden;
+}
+
+.generate-wrap .primary-btn {
+  padding: 0.5rem 1.1rem;
+  font-size: 0.9rem;
+}
+
 .filter-group {
   border: 2px solid rgba(122, 88, 180, 0.14);
   border-radius: 16px;
