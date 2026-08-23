@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Colorful Palette</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Cormorant+Garamond:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=2" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">Gallery of Unnamed Works</p>
+            <h1 class="bold-title">The Colorful Palette</h1>
+          </div>
+          <button id="new-palette-btn" class="primary-btn" type="button">Next Exhibit</button>
+        </div>
+
+        <p id="status-message" class="status-message">Loading a palette...</p>
+
+        <div id="palette-view" class="palette-view hidden">
+          <p class="phase-label">A color study hangs before you. Name the subject.</p>
+
+          <div class="frame">
+            <div class="mat">
+              <div id="palette-swatches" class="palette-swatches"></div>
+            </div>
+          </div>
+          <p class="placard">Untitled Study — Artist Unknown</p>
+
+          <div class="reveal-card hidden" id="reveal-card">
+            <img id="reveal-img" class="reveal-img" src="" alt="" />
+            <p id="reveal-name" class="reveal-name"></p>
+          </div>
+
+          <div class="guess-row">
+            <div class="guess-input-wrap">
+              <input id="guess-input" type="text" placeholder="Attribute this work to..." autocomplete="off" />
+              <div id="suggestions" class="suggestions hidden"></div>
+            </div>
+            <button id="submit-guess-btn" class="ghost-btn" type="button">Attribute</button>
+          </div>
+
+          <p id="result-message" class="result-message"></p>
+
+          <div id="guess-history" class="guess-history"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js?v=1"></script>
+  </body>
+</html>

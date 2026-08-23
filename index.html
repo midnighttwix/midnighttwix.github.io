@@ -13,34 +13,182 @@
         font-family: "Trebuchet MS", "Segoe UI", sans-serif;
         background: linear-gradient(135deg, #fff4c7 0%, #ffd5ec 35%, #d9f5ff 100%);
         color: #2a2156;
+        padding: 2.5rem 1.5rem;
+        box-sizing: border-box;
       }
       main {
         text-align: center;
+        max-width: 1100px;
       }
-      a {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.85rem 1.4rem;
-        border-radius: 14px;
-        background: linear-gradient(135deg, #7ab8ff, #ff6eb6);
+      h1 {
+        font-size: 2.4rem;
+        margin-bottom: 2rem;
+      }
+      .card-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1.25rem;
+      }
+      .card {
+        position: relative;
+        display: flex;
+        flex: 1 1 190px;
+        max-width: 210px;
+        flex-direction: column;
+        justify-content: flex-end;
+        min-height: 220px;
+        border-radius: 20px;
+        padding: 1.2rem 1rem;
         color: white;
-        font-weight: 800;
         text-decoration: none;
+        text-align: left;
+        overflow: hidden;
+        box-shadow: 0 10px 24px rgba(42, 33, 86, 0.18);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        background-size: cover;
+        background-position: center;
+      }
+      .card:hover,
+      .card:focus-visible {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 16px 30px rgba(42, 33, 86, 0.26);
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 55%);
+        z-index: 0;
+      }
+      .card-title,
+      .card-desc {
+        position: relative;
+        z-index: 1;
+      }
+      .card-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin: 0 0 0.2rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+      }
+      .card-desc {
+        font-size: 0.8rem;
+        margin: 0;
+        opacity: 0.95;
+        font-weight: 600;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+      }
+
+      /* Personality Test: quiz cards scattered on a pastel board */
+      .card-personality {
+        background-color: #a78bfa;
+        background-image:
+          radial-gradient(circle at 20% 25%, rgba(255, 255, 255, 0.55) 0 18px, transparent 19px),
+          radial-gradient(circle at 75% 20%, rgba(255, 179, 71, 0.85) 0 14px, transparent 15px),
+          radial-gradient(circle at 65% 55%, rgba(255, 255, 255, 0.4) 0 22px, transparent 23px),
+          radial-gradient(circle at 25% 70%, rgba(106, 231, 200, 0.8) 0 16px, transparent 17px),
+          linear-gradient(160deg, #8b7cf6, #6d5bd0);
+      }
+
+      /* Timer: Pokémon day-care grass yard with a wooden frame */
+      .card-timer {
+        background-color: #5aa251;
+        background-image:
+          repeating-conic-gradient(rgba(255, 255, 255, 0.08) 0% 25%, transparent 0% 50%);
+        background-size: 28px 28px;
+        border: 6px solid #8a5a34;
+        outline: 3px solid #c98b52;
+        outline-offset: -6px;
+      }
+      /* World Roulette: globe/map with sky, land masses and a pin */
+      .card-worldroulette {
+        background-color: #2563eb;
+        background-image:
+          radial-gradient(circle at 30% 70%, rgba(56, 189, 248, 0.9) 0 40px, transparent 41px),
+          radial-gradient(circle at 75% 30%, #4ade80 0 26px, transparent 27px),
+          radial-gradient(circle at 25% 25%, #4ade80 0 18px, transparent 19px),
+          radial-gradient(circle at 70% 75%, #4ade80 0 20px, transparent 21px),
+          linear-gradient(180deg, #38bdf8, #1d4ed8);
+      }
+
+      /* Trend Tracker: fake encyclopedia article look */
+      .card-trendtracker {
+        background-color: #ffffff;
+        background-image:
+          linear-gradient(#f2f2f2 0 3px, transparent 3px 100%),
+          repeating-linear-gradient(
+            transparent 0,
+            transparent 34px,
+            rgba(6, 69, 173, 0.35) 34px 36px,
+            transparent 36px 60px
+          );
+        border: 1px solid #a2a9b1;
+      }
+      .card-trendtracker .card-title,
+      .card-trendtracker .card-desc {
+        color: #202122;
+        text-shadow: none;
+      }
+      .card-trendtracker .card-title {
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .card-trendtracker::before {
+        background: linear-gradient(to top, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.15) 60%);
+      }
+
+      /* Pitter Pattern: dark memory grid of glowing sequence dots */
+      .card-pitterpattern {
+        background-color: #1f1147;
+        background-image:
+          radial-gradient(circle, #f472b6 3px, transparent 4px),
+          radial-gradient(circle, #7ab8ff 3px, transparent 4px),
+          radial-gradient(circle, #ffd166 3px, transparent 4px);
+        background-size: 34px 34px;
+        background-position: 0 0, 17px 17px, 8px 26px;
+      }
+
+      /* Colorful Palette: paint swatches */
+      .card-colorfulpalette {
+        background-color: #f472b6;
+        background-image:
+          linear-gradient(90deg, #f97316 0 20%, transparent 20%),
+          linear-gradient(90deg, #facc15 0 40%, transparent 40%),
+          linear-gradient(90deg, #4ade80 0 60%, transparent 60%),
+          linear-gradient(90deg, #38bdf8 0 80%, transparent 80%),
+          linear-gradient(90deg, #a78bfa 0 100%, transparent 100%);
       }
     </style>
   </head>
   <body>
     <main>
       <h1>Zane Games</h1>
-      <a href="/personalitytest/">Personality test</a>
-      <br />
-      <a href="/timer/">Timer</a>
-      <br />
-      <a href="/worldroulette/">World Roulette</a>
-      <br />
-      <a href="/trendtracker/">Trend Tracker</a>
-      <br />
-      <a href="/pitterpattern/">Pitter Pattern</a>
+      <div class="card-grid">
+        <a class="card card-personality" href="/personalitytest/">
+          <p class="card-title">Personality Test</p>
+          <p class="card-desc">Find out your type</p>
+        </a>
+        <a class="card card-timer" href="/timer/">
+          <p class="card-title">Timer</p>
+          <p class="card-desc">Countdown &amp; stopwatch</p>
+        </a>
+        <a class="card card-worldroulette" href="/worldroulette/">
+          <p class="card-title">World Roulette</p>
+          <p class="card-desc">Spin the globe</p>
+        </a>
+        <a class="card card-trendtracker" href="/trendtracker/">
+          <p class="card-title">Trend Tracker</p>
+          <p class="card-desc">Guess the trendier Pokémon</p>
+        </a>
+        <a class="card card-pitterpattern" href="/pitterpattern/">
+          <p class="card-title">Pitter Pattern</p>
+          <p class="card-desc">Memorize the sequence</p>
+        </a>
+        <a class="card card-colorfulpalette" href="/colorfulpalette/">
+          <p class="card-title">Colorful Palette</p>
+          <p class="card-desc">Guess from 3 colors</p>
+        </a>
+      </div>
     </main>
   </body>
 </html>
