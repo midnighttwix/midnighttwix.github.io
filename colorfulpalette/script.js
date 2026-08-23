@@ -366,9 +366,9 @@ async function submitGuess(rawName) {
   const hints = [];
   const sharedTypes = guessDetails.types.filter((type) => targetPokemon.types.includes(type));
   if (sharedTypes.length === 2) {
-    hints.push("Both typings match! 🎯");
+    hints.push(`Both typings match! 🎯 (${sharedTypes.map(capitalize).join(" / ")})`);
   } else if (sharedTypes.length === 1) {
-    hints.push("One typing matches! 🔥");
+    hints.push(`One typing matches! 🔥 (${capitalize(sharedTypes[0])})`);
   }
 
   try {
