@@ -35,13 +35,19 @@ html, body {
   transition: background 0.3s ease;
 }
 
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1rem 3rem;
+}
+
 .app {
   width: min(96vw, 980px);
 }
 
 .panel {
   background: linear-gradient(160deg, var(--accent) 0%, var(--accent-dark) 100%);
-  border: 7px solid var(--ink);
   border-radius: 34px 34px 34px 12px;
   box-shadow:
     0 18px 34px var(--shadow),
