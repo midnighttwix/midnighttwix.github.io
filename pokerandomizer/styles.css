@@ -51,23 +51,10 @@ html, body {
   overflow: hidden;
 }
 
-.panel::before {
-  content: "";
-  position: absolute;
-  top: 10px;
-  right: 16px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.25);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
-  pointer-events: none;
-}
-
 .dex-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.7rem;
   margin: 0 0 0.9rem;
   padding: 0.15rem 0.3rem 0.9rem;
 }
@@ -79,24 +66,32 @@ html, body {
   background: radial-gradient(circle at 35% 30%, #eaffff, #7ad0ff 45%, #2f7fd1 100%);
   border: 3px solid rgba(255, 255, 255, 0.75);
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 6px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.dex-lights-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .dex-light-small {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  margin-left: auto;
   border: 2px solid rgba(255, 255, 255, 0.6);
+}
+
+.dex-light-red {
+  background: #ff5c5c;
 }
 
 .dex-light-yellow {
   background: #ffd23f;
-  margin-left: auto;
 }
 
 .dex-light-green {
   background: #4ade80;
-  margin-left: 0.4rem;
 }
 
 .dex-screen {
