@@ -175,6 +175,14 @@ h1 {
   align-items: flex-end;
 }
 
+.persistent-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 0.9rem;
+}
+
 .count-label,
 .theme-label {
   display: flex;
@@ -417,7 +425,8 @@ h1 {
 }
 
 @media (max-width: 480px) {
-  .control-row {
+  .control-row,
+  .persistent-row {
     flex-direction: column;
     align-items: stretch;
   }

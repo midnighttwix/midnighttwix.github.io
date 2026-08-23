@@ -31,54 +31,56 @@
             </div>
           </div>
 
-          <details id="controls-details" class="controls-details" open>
-            <summary>Filters &amp; Display Options</summary>
-
-            <form id="controls-form" class="controls-form">
-            <div class="control-row">
+          <form id="controls-form" class="controls-form">
+            <div class="persistent-row">
               <label class="count-label" for="count-input">
                 How many Pokémon?
                 <input id="count-input" type="number" min="1" max="1025" value="6" />
               </label>
 
-              <label class="theme-label" for="theme-select">
-                Color theme
-                <select id="theme-select"></select>
-              </label>
+              <button id="generate-btn" class="primary-btn" type="submit">Generate</button>
             </div>
 
-            <fieldset class="filter-group">
-              <legend>Generations</legend>
-              <div id="gen-filters" class="chip-row"></div>
-            </fieldset>
+            <details id="controls-details" class="controls-details" open>
+              <summary>Filters &amp; Display Options</summary>
 
-            <fieldset class="filter-group">
-              <legend>Types</legend>
-              <div id="type-filters" class="chip-row"></div>
-            </fieldset>
-
-            <fieldset class="filter-group">
-              <legend>Evolution stage</legend>
-              <div id="stage-filters" class="chip-row">
-                <label class="chip"><input type="checkbox" value="unevolved" /> Not fully evolved</label>
-                <label class="chip"><input type="checkbox" value="evolved" /> Fully evolved</label>
+              <div class="control-row">
+                <label class="theme-label" for="theme-select">
+                  Color theme
+                  <select id="theme-select"></select>
+                </label>
               </div>
-            </fieldset>
 
-            <fieldset class="filter-group">
-              <legend>Show on cards</legend>
-              <div class="chip-row">
-                <label class="chip"><input type="checkbox" id="toggle-image" checked /> Image</label>
-                <label class="chip"><input type="checkbox" id="toggle-name" checked /> Name</label>
-                <label class="chip"><input type="checkbox" id="toggle-types" checked /> Typings</label>
-                <label class="chip"><input type="checkbox" id="toggle-dex" checked /> Dex #</label>
-                <label class="chip"><input type="checkbox" id="toggle-stats" checked /> Height / Weight</label>
-              </div>
-            </fieldset>
+              <fieldset class="filter-group">
+                <legend>Generations</legend>
+                <div id="gen-filters" class="chip-row"></div>
+              </fieldset>
 
-              <button id="generate-btn" class="primary-btn" type="submit">Generate</button>
-            </form>
-          </details>
+              <fieldset class="filter-group">
+                <legend>Types</legend>
+                <div id="type-filters" class="chip-row"></div>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend>Evolution stage</legend>
+                <div id="stage-filters" class="chip-row">
+                  <label class="chip"><input type="checkbox" value="unevolved" /> Not fully evolved</label>
+                  <label class="chip"><input type="checkbox" value="evolved" /> Fully evolved</label>
+                </div>
+              </fieldset>
+
+              <fieldset class="filter-group">
+                <legend>Show on cards</legend>
+                <div class="chip-row">
+                  <label class="chip"><input type="checkbox" id="toggle-image" checked /> Image</label>
+                  <label class="chip"><input type="checkbox" id="toggle-name" checked /> Name</label>
+                  <label class="chip"><input type="checkbox" id="toggle-types" checked /> Typings</label>
+                  <label class="chip"><input type="checkbox" id="toggle-dex" checked /> Dex #</label>
+                  <label class="chip"><input type="checkbox" id="toggle-stats" checked /> Height / Weight</label>
+                </div>
+              </fieldset>
+            </details>
+          </form>
 
           <p id="status-message" class="status-message"></p>
 
