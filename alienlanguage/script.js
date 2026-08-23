@@ -147,6 +147,7 @@ async function loadNewPokemon() {
     creatureImg.src = targetPokemon.sprite;
     creatureImg.alt = targetPokemon.displayName;
     creatureName.textContent = targetPokemon.displayName;
+    renderLetterTiles(pickRandomLetters());
     statusMessage.classList.add("hidden");
     gameView.classList.remove("hidden");
     showRevealPhase();
@@ -159,8 +160,6 @@ async function loadNewPokemon() {
 }
 
 function startDescribing() {
-  const letters = pickRandomLetters();
-  renderLetterTiles(letters);
   revealPhase.classList.add("hidden");
   describePhase.classList.remove("hidden");
   resultMessage.textContent = "";
