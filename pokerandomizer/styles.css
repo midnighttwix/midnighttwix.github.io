@@ -1,0 +1,318 @@
+:root {
+  --bg-1: #fff4c7;
+  --bg-2: #ffd5ec;
+  --bg-3: #d9f5ff;
+  --panel-strong: rgba(255, 255, 255, 0.92);
+  --ink: #2a2156;
+  --muted: #5c4d82;
+  --accent: #ff6eb6;
+  --accent-dark: #d1487f;
+  --danger: #e5533d;
+  --good: #2e8b57;
+  --shadow: rgba(80, 46, 119, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+  color: var(--ink);
+  font-family: "Satoshi", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-weight: 700;
+  transition: background 0.3s ease;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.app {
+  width: min(96vw, 980px);
+}
+
+.panel {
+  background: var(--panel-strong);
+  border: 3px solid rgba(126, 93, 160, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 14px 30px var(--shadow);
+  padding: 1.4rem 1.3rem 1.5rem;
+}
+
+.topbar {
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  line-height: 1.1;
+  font-weight: 800;
+  color: var(--accent-dark);
+}
+
+.controls-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.count-label,
+.theme-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.count-label input,
+.theme-label select {
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  border: 2px solid rgba(122, 88, 180, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.count-label input {
+  width: 110px;
+}
+
+.count-label input:focus,
+.theme-label select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.filter-group {
+  border: 2px solid rgba(122, 88, 180, 0.14);
+  border-radius: 16px;
+  padding: 0.6rem 0.8rem 0.75rem;
+  margin: 0;
+}
+
+.filter-group legend {
+  padding: 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(122, 88, 180, 0.08);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  color: var(--ink);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.chip input {
+  accent-color: var(--accent);
+}
+
+.chip:has(input:checked) {
+  background: var(--accent);
+  color: white;
+}
+
+.primary-btn {
+  align-self: center;
+  border: none;
+  background: var(--accent);
+  color: white;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 8px 16px var(--shadow);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.status-message {
+  margin: 0 0 0.8rem;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.9rem;
+  perspective: 1200px;
+}
+
+.poke-card {
+  cursor: pointer;
+  height: 230px;
+}
+
+.poke-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s;
+  transform-style: preserve-3d;
+}
+
+.poke-card.is-flipped .poke-card-inner {
+  transform: rotateY(180deg);
+}
+
+.poke-card-front,
+.poke-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 16px;
+  border: 2px solid rgba(122, 88, 180, 0.18);
+  box-shadow: 0 6px 14px rgba(80, 46, 119, 0.16);
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6rem 0.5rem;
+  overflow: hidden;
+}
+
+.poke-card-back {
+  transform: rotateY(180deg);
+  justify-content: center;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      var(--accent) 0,
+      var(--accent) 10px,
+      var(--accent-dark) 10px,
+      var(--accent-dark) 20px
+    );
+}
+
+.poke-card-back-emblem {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: white;
+  border: 5px solid var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+}
+
+.card-dex {
+  align-self: flex-end;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.card-img {
+  width: 100%;
+  max-width: 96px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  flex: 1;
+}
+
+.card-name {
+  margin: 0.2rem 0 0.15rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.card-types {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 0.2rem;
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: white;
+  text-transform: capitalize;
+  line-height: 1.4;
+}
+
+.card-stats {
+  font-size: 0.66rem;
+  color: var(--muted);
+  text-align: center;
+  font-weight: 700;
+}
+
+.field-hidden {
+  display: none !important;
+}
+
+@media (max-width: 480px) {
+  .control-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .count-label input,
+  .theme-label select {
+    width: 100%;
+  }
+}
