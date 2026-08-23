@@ -206,7 +206,7 @@ function renderCard(pokemon) {
 
   const back = document.createElement("div");
   back.className = "poke-card-back";
-  back.innerHTML = `<div class="pokeball-icon"><span class="pokeball-icon-band"></span></div>`;
+  back.innerHTML = `<div class="pokeball-outline"><span class="pokeball-outline-bar"></span><span class="pokeball-outline-center"></span></div>`;
 
   inner.appendChild(front);
   inner.appendChild(back);
