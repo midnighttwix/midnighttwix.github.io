@@ -1,0 +1,280 @@
+:root {
+  --bg-1: #fff4c7;
+  --bg-2: #ffd5ec;
+  --bg-3: #d9f5ff;
+  --panel-strong: rgba(255, 255, 255, 0.9);
+  --ink: #2a2156;
+  --muted: #5c4d82;
+  --accent: #ff6eb6;
+  --accent-2: #ffb347;
+  --accent-3: #6ae7c8;
+  --accent-4: #7ab8ff;
+  --danger: #e5533d;
+  --good: #2e8b57;
+  --shadow: rgba(80, 46, 119, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 35%, var(--bg-3) 100%);
+  color: var(--ink);
+  font-family: "Satoshi", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-weight: 700;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem 0;
+}
+
+.app {
+  width: min(94vw, 760px);
+}
+
+.panel {
+  background: var(--panel-strong);
+  border: 3px solid rgba(126, 93, 160, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 14px 30px var(--shadow);
+  padding: 1.3rem 1.15rem 1.15rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.primary-btn {
+  border: none;
+  background: var(--accent-2);
+  color: var(--ink);
+  padding: 0.7rem 1.3rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 8px 16px rgba(255, 179, 71, 0.35);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.primary-btn:disabled,
+.ghost-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ghost-btn {
+  border: none;
+  background: var(--accent-4);
+  color: white;
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  box-shadow: 0 8px 16px rgba(122, 184, 255, 0.35);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.ghost-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+.status-message {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.hidden {
+  display: none;
+}
+
+.phase-label {
+  margin: 0 0 0.8rem;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.memorize-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.memorize-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid rgba(122, 88, 180, 0.14);
+  border-radius: 14px;
+  padding: 0.5rem 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.memorize-index {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.memorize-img {
+  width: 100%;
+  max-width: 64px;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+.memorize-name {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.15;
+}
+
+#start-guessing-btn {
+  display: block;
+  margin: 0 auto;
+}
+
+.guess-progress {
+  margin: 0 0 0.6rem;
+  text-align: center;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.guess-history {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 260px;
+  overflow-y: auto;
+  margin-bottom: 0.8rem;
+}
+
+.history-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+
+.history-row.correct {
+  background: rgba(46, 139, 87, 0.12);
+  color: var(--good);
+}
+
+.history-row.incorrect {
+  background: rgba(229, 83, 61, 0.12);
+  color: var(--danger);
+}
+
+.history-pos {
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.guess-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.guess-row input {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  border: 2px solid rgba(122, 88, 180, 0.2);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.guess-row input:focus {
+  outline: none;
+  border-color: var(--accent-4);
+}
+
+.end-view {
+  text-align: center;
+}
+
+.end-message {
+  margin: 0 0 1rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.end-message.success {
+  color: var(--good);
+}
+
+.end-message.failure {
+  color: var(--danger);
+}
+
+@media (max-width: 420px) {
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary-btn {
+    width: 100%;
+  }
+
+  .guess-row {
+    flex-direction: column;
+  }
+}
