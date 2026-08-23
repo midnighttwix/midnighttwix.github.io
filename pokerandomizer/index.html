@@ -6,7 +6,10 @@
     <title>Pokerandomizer</title>
     <link rel="preconnect" href="https://api.fontshare.com" />
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=2" />
   </head>
   <body>
     <main class="app">
@@ -17,17 +20,18 @@
           <span class="dex-light-small dex-light-green"></span>
         </div>
 
-        <div class="topbar">
-          <div>
-            <p class="eyebrow">One-Stop Randomizer Shop</p>
-            <h1 class="bold-title">🎲 Pokerandomizer</h1>
+        <div class="dex-screen">
+          <div class="topbar">
+            <div>
+              <p class="eyebrow">One-Stop Randomizer Shop</p>
+              <h1 class="bold-title">Pokerandomizer</h1>
+            </div>
           </div>
-        </div>
 
-        <details id="controls-details" class="controls-details" open>
-          <summary>Filters &amp; Display Options</summary>
+          <details id="controls-details" class="controls-details" open>
+            <summary>Filters &amp; Display Options</summary>
 
-          <form id="controls-form" class="controls-form">
+            <form id="controls-form" class="controls-form">
             <div class="control-row">
               <label class="count-label" for="count-input">
                 How many Pokémon?
@@ -69,13 +73,14 @@
               </div>
             </fieldset>
 
-            <button id="generate-btn" class="primary-btn" type="submit">Generate</button>
-          </form>
-        </details>
+              <button id="generate-btn" class="primary-btn" type="submit">Generate</button>
+            </form>
+          </details>
 
-        <p id="status-message" class="status-message"></p>
+          <p id="status-message" class="status-message"></p>
 
-        <div id="results-grid" class="results-grid"></div>
+          <div id="results-grid" class="results-grid"></div>
+        </div>
       </section>
     </main>
 
