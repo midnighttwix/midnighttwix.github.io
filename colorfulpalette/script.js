@@ -307,10 +307,23 @@ function addHistoryRow({ displayName, sprite, correct, hints }) {
   body.appendChild(name);
 
   if (hints.length > 0) {
-    const hintEl = document.createElement("span");
-    hintEl.className = "history-hints";
-    hintEl.textContent = hints.join(" · ");
-    body.appendChild(hintEl);
+    hints.forEach((hint) => {
+      const hintRow = document.createElement("div");
+      hintRow.className = "history-hints";
+
+      const label = document.createElement("span");
+      label.textContent = hint.label;
+      hintRow.appendChild(label);
+
+      if (hint.types && hint.types.length > 0) {
+        const badgesEl = document.createElement("div");
+        badgesEl.className = "suggestion-types";
+        renderTypeBadges(badgesEl, hint.types);
+        hintRow.appendChild(badgesEl);
+      }
+
+      body.appendChild(hintRow);
+    });
   }
 
   row.appendChild(icon);
@@ -366,9 +379,9 @@ async function submitGuess(rawName) {
   const hints = [];
   const sharedTypes = guessDetails.types.filter((type) => targetPokemon.types.includes(type));
   if (sharedTypes.length === 2) {
-    hints.push(`Both typings match! 🎯 (${sharedTypes.map(capitalize).join(" / ")})`);
+    hints.push({ label: "Both typings match! 🎯", types: sharedTypes });
   } else if (sharedTypes.length === 1) {
-    hints.push(`One typing matches! 🔥 (${capitalize(sharedTypes[0])})`);
+    hints.push({ label: "One typing matches!", types: sharedTypes });
   }
 
   try {
@@ -377,7 +390,7 @@ async function submitGuess(rawName) {
       fetchEvoChainId(targetPokemon),
     ]);
     if (guessEvoId !== null && guessEvoId === targetEvoId) {
-      hints.push("Same evolutionary line! 🧬");
+      hints.push({ label: "Same evolutionary line! 🧬" });
     }
   } catch (error) {
     // evolution hint is best-effort; skip silently if it fails

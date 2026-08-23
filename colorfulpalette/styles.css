@@ -381,6 +381,10 @@ h1 {
 }
 
 .history-hints {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
   color: var(--muted);
   font-style: italic;
   font-size: 0.8rem;
