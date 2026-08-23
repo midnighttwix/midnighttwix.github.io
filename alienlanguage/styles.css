@@ -376,6 +376,11 @@ h1 {
   color: var(--danger);
 }
 
+#new-game-btn {
+  display: block;
+  margin: 1rem auto 0;
+}
+
 @media (max-width: 420px) {
   .phase-actions {
     flex-direction: column;

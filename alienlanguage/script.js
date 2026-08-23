@@ -39,6 +39,7 @@ const revealCard = document.getElementById("reveal-card");
 const revealImg = document.getElementById("reveal-img");
 const revealName = document.getElementById("reveal-name");
 const resultMessage = document.getElementById("result-message");
+const newGameBtn = document.getElementById("new-game-btn");
 
 let allPokemonList = []; // [{ name, id }]
 const detailsCache = new Map(); // name -> { id, name, displayName, sprite, types }
@@ -130,6 +131,7 @@ function showRevealPhase() {
   revealCard.classList.add("hidden");
   resultMessage.textContent = "";
   resultMessage.className = "result-message";
+  newGameBtn.classList.add("hidden");
   guessInput.value = "";
   hideSuggestions();
 }
@@ -275,23 +277,28 @@ async function submitGuess(rawName) {
   submitGuessBtn.disabled = true;
 
   if (guessDetails.id === targetPokemon.id) {
-    resultMessage.textContent = `Transmission received! It was ${targetPokemon.displayName}!`;
+    resultMessage.textContent = `Congrats! It was ${targetPokemon.displayName}!`;
     resultMessage.className = "result-message correct";
     revealImg.src = targetPokemon.sprite;
     revealImg.alt = targetPokemon.displayName;
     revealName.textContent = targetPokemon.displayName;
     revealCard.classList.remove("hidden");
+    newGameBtn.classList.remove("hidden");
     return;
   }
 
-  resultMessage.textContent = `Signal lost — that wasn't ${targetPokemon.displayName}. New life form incoming...`;
+  resultMessage.textContent = `Wrong! The correct answer was ${targetPokemon.displayName}.`;
   resultMessage.className = "result-message incorrect";
-  guessInput.value = "";
-  await loadNewPokemon();
+  revealImg.src = targetPokemon.sprite;
+  revealImg.alt = targetPokemon.displayName;
+  revealName.textContent = targetPokemon.displayName;
+  revealCard.classList.remove("hidden");
+  newGameBtn.classList.remove("hidden");
 }
 
 rerollBtn.addEventListener("click", loadNewPokemon);
 readyBtn.addEventListener("click", startDescribing);
+newGameBtn.addEventListener("click", loadNewPokemon);
 submitGuessBtn.addEventListener("click", () => submitGuess());
 
 guessInput.addEventListener("input", () => {
