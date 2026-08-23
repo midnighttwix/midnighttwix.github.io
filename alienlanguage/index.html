@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alien Language</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <main class="app">
+      <section class="panel">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">Transmission Exercise</p>
+            <h1 class="bold-title">👽 Alien Language</h1>
+          </div>
+        </div>
+
+        <p id="status-message" class="status-message">Contacting the mothership...</p>
+
+        <div id="game-view" class="hidden">
+          <div id="reveal-phase">
+            <p class="phase-label">Study your subject, then prepare your transmission.</p>
+
+            <div class="creature-display">
+              <img id="creature-img" class="creature-img" src="" alt="" />
+              <p id="creature-name" class="creature-name"></p>
+            </div>
+
+            <div class="phase-actions">
+              <button id="reroll-btn" class="ghost-btn" type="button">New Pokémon</button>
+              <button id="ready-btn" class="primary-btn" type="button">Ready to Describe</button>
+            </div>
+          </div>
+
+          <div id="describe-phase" class="hidden">
+            <p class="phase-label">
+              Transmit a 5-word description to your teammate — one word per initial, in order.
+            </p>
+
+            <div id="letter-tiles" class="letter-tiles"></div>
+
+            <div class="mystery-box">
+              <span class="mystery-icon">📡</span>
+              <p>Subject signal scrambled</p>
+            </div>
+
+            <div class="guess-row">
+              <div class="guess-input-wrap">
+                <input id="guess-input" type="text" placeholder="Decode the transmission..." autocomplete="off" />
+                <div id="suggestions" class="suggestions hidden"></div>
+              </div>
+              <button id="submit-guess-btn" class="ghost-btn" type="button">Decode</button>
+            </div>
+          </div>
+
+          <div id="reveal-card" class="reveal-card hidden">
+            <img id="reveal-img" class="reveal-img" src="" alt="" />
+            <p id="reveal-name" class="reveal-name"></p>
+          </div>
+
+          <p id="result-message" class="result-message"></p>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
