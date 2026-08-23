@@ -25,7 +25,10 @@ select {
 html, body {
   margin: 0;
   min-height: 100%;
-  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(255, 255, 255, 0.35) 0 60px, transparent 62px),
+    radial-gradient(circle at 92% 85%, rgba(255, 255, 255, 0.3) 0 90px, transparent 92px),
+    linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
   color: var(--ink);
   font-family: "Satoshi", "Trebuchet MS", "Segoe UI", sans-serif;
   font-weight: 700;
@@ -49,6 +52,57 @@ body {
   border-radius: 28px;
   box-shadow: 0 14px 30px var(--shadow);
   padding: 1.4rem 1.3rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 22px solid var(--accent);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.dex-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: -1.4rem -1.3rem 1rem;
+  padding: 0.6rem 1rem;
+  background: var(--accent-dark);
+  border-radius: 26px 26px 0 0;
+}
+
+.dex-light {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #eaffff, #7ad0ff 45%, #2f7fd1 100%);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.dex-light-small {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: auto;
+}
+
+.dex-light-yellow {
+  background: #ffd23f;
+  margin-left: auto;
+}
+
+.dex-light-green {
+  background: #4ade80;
+  margin-left: 0.35rem;
 }
 
 .topbar {
@@ -72,11 +126,42 @@ h1 {
   color: var(--accent-dark);
 }
 
+.controls-details {
+  margin-bottom: 1rem;
+  border: 2px solid rgba(122, 88, 180, 0.14);
+  border-radius: 18px;
+  padding: 0.2rem 0.9rem;
+}
+
+.controls-details summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.7rem 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+}
+
+.controls-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.controls-details summary::before {
+  content: "▸ ";
+}
+
+.controls-details[open] summary::before {
+  content: "▾ ";
+}
+
 .controls-form {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
-  margin-bottom: 1rem;
+  margin: 0 0 1rem;
+  padding-top: 0.2rem;
 }
 
 .control-row {
@@ -231,25 +316,47 @@ h1 {
 .poke-card-back {
   transform: rotateY(180deg);
   justify-content: center;
-  background:
-    repeating-linear-gradient(
-      45deg,
-      var(--accent) 0,
-      var(--accent) 10px,
-      var(--accent-dark) 10px,
-      var(--accent-dark) 20px
-    );
+  background: var(--accent);
 }
 
-.poke-card-back-emblem {
-  width: 64px;
-  height: 64px;
+.pokeball-icon {
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   background: white;
-  border: 5px solid var(--ink);
-  display: grid;
-  place-items: center;
-  font-size: 1.6rem;
+  border: 4px solid var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+
+.pokeball-icon::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 50%;
+  background: var(--accent-dark);
+}
+
+.pokeball-icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  background: white;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+}
+
+.pokeball-icon-band {
+  position: absolute;
+  top: calc(50% - 3px);
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--ink);
+  z-index: 1;
 }
 
 .card-dex {
