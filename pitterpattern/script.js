@@ -153,6 +153,10 @@ function addHistoryRow(position, guessedText, correctName, isCorrect) {
   const row = document.createElement("div");
   row.className = `history-row ${isCorrect ? "correct" : "incorrect"}`;
 
+  const iconSpan = document.createElement("span");
+  iconSpan.className = "history-icon";
+  iconSpan.textContent = isCorrect ? "✅" : "❌";
+
   const posSpan = document.createElement("span");
   posSpan.className = "history-pos";
   posSpan.textContent = `#${position}`;
@@ -163,6 +167,7 @@ function addHistoryRow(position, guessedText, correctName, isCorrect) {
     ? correctName
     : `You typed "${guessedText}" — it was ${correctName}`;
 
+  row.appendChild(iconSpan);
   row.appendChild(posSpan);
   row.appendChild(textSpan);
   guessHistory.prepend(row);
@@ -220,3 +225,8 @@ guessInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") submitGuess();
 });
 restartBtn.addEventListener("click", startNewGame);
+
+const startOverMemorizeBtn = document.getElementById("start-over-btn-memorize");
+const startOverGuessBtn = document.getElementById("start-over-btn-guess");
+startOverMemorizeBtn.addEventListener("click", startNewGame);
+startOverGuessBtn.addEventListener("click", startNewGame);

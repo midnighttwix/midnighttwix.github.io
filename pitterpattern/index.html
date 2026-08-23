@@ -6,7 +6,7 @@
     <title>Pitter Pattern</title>
     <link rel="preconnect" href="https://api.fontshare.com" />
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=1" />
+    <link rel="stylesheet" href="styles.css?v=2" />
   </head>
   <body>
     <main class="app">
@@ -14,7 +14,7 @@
         <div class="topbar">
           <div>
             <p class="eyebrow">Memory Game</p>
-            <h1 class="bold-title">Pitter Pattern</h1>
+            <h1 class="bold-title">🧠 Pitter Pattern</h1>
           </div>
           <button id="start-btn" class="primary-btn" type="button">Start</button>
         </div>
@@ -26,7 +26,10 @@
         <div id="memorize-view" class="memorize-view hidden">
           <p class="phase-label">Memorize this order, then hit "Start Guessing" when ready.</p>
           <div id="memorize-grid" class="memorize-grid"></div>
-          <button id="start-guessing-btn" class="primary-btn" type="button">Start Guessing</button>
+          <div class="phase-actions">
+            <button id="start-guessing-btn" class="primary-btn" type="button">Start Guessing</button>
+            <button id="start-over-btn-memorize" class="link-btn" type="button">Start Over</button>
+          </div>
         </div>
 
         <div id="guess-view" class="guess-view hidden">
@@ -36,6 +39,7 @@
             <input id="guess-input" type="text" placeholder="Type the next Pokémon's name" autocomplete="off" />
             <button id="submit-guess-btn" class="ghost-btn" type="button">Submit</button>
           </div>
+          <button id="start-over-btn-guess" class="link-btn" type="button">Start Over</button>
         </div>
 
         <div id="end-view" class="end-view hidden">
@@ -45,6 +49,6 @@
       </section>
     </main>
 
-    <script src="script.js?v=1"></script>
+    <script src="script.js?v=2"></script>
   </body>
 </html>
