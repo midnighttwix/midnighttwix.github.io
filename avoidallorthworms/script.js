@@ -12,8 +12,12 @@ const MAX_LEVEL = 10;
 
 const BASE_FOOD_COUNT = 1;
 const MAX_FOOD_COUNT = 4;
+const WORM_COUNT_THRESHOLDS = [
+  { atOrBelow: 5 * 60, count: 4 },
+  { atOrBelow: 10 * 60, count: 3 },
+  { atOrBelow: 15 * 60, count: 2 },
+];
 const BASE_WORM_COUNT = 1;
-const MAX_WORM_COUNT = 5;
 const BASE_WORM_TICK_MS = 300;
 const MIN_WORM_TICK_MS = 120;
 const BASE_JOLT_CHANCE = 0.05; // odds a worm bursts/redirects abruptly on a given tick
@@ -151,11 +155,19 @@ function ensureFood() {
   }
 }
 
+function targetWormCount() {
+  const match = WORM_COUNT_THRESHOLDS.find((t) => timeRemaining <= t.atOrBelow);
+  return match ? match.count : BASE_WORM_COUNT;
+}
+
 function ensureWorms() {
-  const target = Math.round(lerp(BASE_WORM_COUNT, MAX_WORM_COUNT, level()));
+  const target = targetWormCount();
   while (worms.length < target) {
     const { x, y } = randomEmptyCell();
     worms.push({ x, y, dir: randomGridDir() });
+  }
+  while (worms.length > target) {
+    worms.pop();
   }
 }
 
@@ -266,6 +278,7 @@ function loop(timestamp) {
   timeRemaining -= dt / 1000;
   timerDisplay.textContent = formatTime(timeRemaining);
   scoreDisplay.textContent = String(eatenCount).padStart(3, "0");
+  ensureWorms();
 
   if (timeRemaining <= 0) {
     winGame();
