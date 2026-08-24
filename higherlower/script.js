@@ -16,6 +16,7 @@ const statusMessage = document.getElementById("status-message");
 const gameView = document.getElementById("game-view");
 const pokemonImg = document.getElementById("pokemon-img");
 const pokemonName = document.getElementById("pokemon-name");
+const promptNameEl = document.getElementById("prompt-name");
 const statLabelEl = document.getElementById("stat-label");
 const guessRow = document.getElementById("guess-row");
 const guessInput = document.getElementById("guess-input");
@@ -86,6 +87,7 @@ async function startRound() {
     pokemonImg.src = targetPokemon.sprite;
     pokemonImg.alt = targetPokemon.displayName;
     pokemonName.textContent = targetPokemon.displayName;
+    promptNameEl.textContent = targetPokemon.displayName;
     statLabelEl.textContent = STAT_LABELS[statKey];
 
     resetGuessUI();

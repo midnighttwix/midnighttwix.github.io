@@ -1,16 +1,16 @@
 :root {
-  --bg-1: #0b1220;
-  --bg-2: #111b2e;
-  --panel: #f4f6fb;
-  --ink: #101828;
-  --muted: #5b6b85;
-  --accent: #2563eb;
-  --accent-dark: #1d4ed8;
-  --up: #16a34a;
-  --down: #dc2626;
-  --up-bg: #e6f6ec;
-  --down-bg: #fbe8e8;
-  --shadow: rgba(11, 18, 32, 0.35);
+  --gold: #ffcb05;
+  --gold-dark: #e0a800;
+  --red: #d1001f;
+  --red-dark: #9c0016;
+  --cream: #fffaf0;
+  --ink: #2b1400;
+  --muted: #7a5a3a;
+  --up: #1a8a3d;
+  --down: #d1001f;
+  --up-bg: #e3f6e9;
+  --down-bg: #fbe6e9;
+  --shadow: rgba(43, 20, 0, 0.35);
 }
 
 * {
@@ -25,9 +25,14 @@ input {
 html, body {
   margin: 0;
   min-height: 100%;
-  background: radial-gradient(circle at 20% 0%, var(--bg-2), var(--bg-1) 60%);
+  background:
+    repeating-conic-gradient(
+      from 0deg,
+      #ffd93d 0deg 10deg,
+      #ffc400 10deg 20deg
+    );
   color: var(--ink);
-  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-family: "Poppins", "Trebuchet MS", sans-serif;
   font-weight: 600;
 }
 
@@ -43,9 +48,10 @@ body {
 }
 
 .panel {
-  background: var(--panel);
+  background: var(--cream);
   border-radius: 22px;
-  box-shadow: 0 20px 44px var(--shadow);
+  border: 8px solid var(--red);
+  box-shadow: 0 20px 44px var(--shadow), inset 0 0 0 4px var(--gold);
   padding: 1.4rem 1.3rem 1.5rem;
 }
 
@@ -55,28 +61,35 @@ body {
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.9rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 3px dashed var(--gold-dark);
 }
 
 .eyebrow {
-  margin: 0 0 0.15rem;
-  font-size: 0.7rem;
+  margin: 0 0 0.1rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--red);
 }
 
 h1 {
   margin: 0;
-  font-size: clamp(1.4rem, 4vw, 1.9rem);
-  line-height: 1.1;
-  font-weight: 700;
+  font-family: "Anton", "Poppins", sans-serif;
+  font-size: clamp(1.7rem, 6vw, 2.4rem);
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--red);
+  text-shadow: 2px 2px 0 var(--gold);
+  -webkit-text-stroke: 1px var(--red-dark);
 }
 
 .ghost-btn {
-  border: 2px solid var(--down);
-  background: transparent;
-  color: var(--down);
+  border: 3px solid var(--red);
+  background: var(--cream);
+  color: var(--red);
   padding: 0.5rem 1rem;
   border-radius: 999px;
   cursor: pointer;
@@ -86,27 +99,29 @@ h1 {
 }
 
 .ghost-btn:hover {
-  background: var(--down);
+  background: var(--red);
   color: white;
   transform: translateY(-1px);
 }
 
 .primary-btn {
-  border: none;
-  background: var(--accent);
-  color: white;
-  padding: 0.7rem 1.3rem;
+  border: 3px solid var(--red-dark);
+  background: linear-gradient(160deg, var(--red), var(--red-dark));
+  color: var(--gold);
+  padding: 0.75rem 1.6rem;
   border-radius: 999px;
   cursor: pointer;
-  font-weight: 700;
-  font-size: 0.95rem;
-  box-shadow: 0 8px 16px rgba(37, 99, 235, 0.35);
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  font-size: 1.05rem;
+  box-shadow: 0 8px 16px rgba(209, 0, 31, 0.4);
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 
 .primary-btn:hover {
   transform: translateY(-1px);
-  filter: brightness(1.05);
+  filter: brightness(1.1);
 }
 
 .status-message {
@@ -129,7 +144,8 @@ h1 {
   margin-bottom: 0.8rem;
   background: white;
   border-radius: 16px;
-  box-shadow: inset 0 0 0 1px #e4e8f1;
+  border: 3px solid var(--gold);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 
 .pokemon-img {
@@ -153,10 +169,15 @@ h1 {
 }
 
 .stat-label {
-  color: var(--ink);
+  color: var(--red);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+}
+
+.prompt-name {
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .guess-row {
@@ -169,7 +190,7 @@ h1 {
   flex: 1;
   padding: 0.7rem 0.9rem;
   border-radius: 12px;
-  border: 2px solid #dde2ee;
+  border: 3px solid var(--gold-dark);
   background: white;
   color: var(--ink);
   font-family: "JetBrains Mono", monospace;
@@ -179,7 +200,7 @@ h1 {
 
 .guess-row input:focus {
   outline: none;
-  border-color: var(--accent);
+  border-color: var(--red);
 }
 
 .feedback-message {
@@ -199,25 +220,41 @@ h1 {
 }
 
 .feedback-message.correct {
-  color: var(--accent-dark);
+  color: var(--red);
 }
 
 .guess-history {
   display: flex;
   flex-direction: column-reverse;
-  gap: 0.4rem;
+  gap: 0.5rem;
   max-height: 260px;
   overflow-y: auto;
+  padding: 0.2rem;
 }
 
 .history-row {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.8rem;
-  border-radius: 10px;
+  padding: 0.5rem 0.8rem 0.5rem 1.3rem;
+  border-radius: 6px 14px 14px 6px;
   font-family: "JetBrains Mono", monospace;
   font-weight: 700;
+  box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.history-row::before {
+  content: "";
+  position: absolute;
+  left: 0.4rem;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cream);
+  transform: translateY(-50%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
 }
 
 .history-row.higher {
@@ -240,7 +277,7 @@ h1 {
   padding: 1rem;
   background: white;
   border-radius: 16px;
-  box-shadow: inset 0 0 0 1px #e4e8f1;
+  border: 3px solid var(--gold);
 }
 
 .reveal-message {
