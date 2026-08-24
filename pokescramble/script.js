@@ -1,4 +1,4 @@
-const GAME_DURATION_SECONDS = 90;
+const GAME_DURATION_SECONDS = 120;
 const PUZZLE_COUNT = 10;
 
 const startView = document.getElementById("start-view");
@@ -8,7 +8,8 @@ const startBtn = document.getElementById("start-btn");
 const restartBtn = document.getElementById("restart-btn");
 const timerDisplay = document.getElementById("timer-display");
 const solvedCountEl = document.getElementById("solved-count");
-const puzzleGrid = document.getElementById("puzzle-grid");
+const answerBoard = document.getElementById("answer-board");
+const clueList = document.getElementById("clue-list");
 const endMessage = document.getElementById("end-message");
 const endReveal = document.getElementById("end-reveal");
 const mastheadDate = document.getElementById("masthead-date");
@@ -17,16 +18,10 @@ let puzzles = [];
 let solvedCount = 0;
 let secondsLeft = GAME_DURATION_SECONDS;
 let timerId = null;
+let activeIndex = 0;
 
 function capitalize(text) {
-  return text
-    .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function normalizeLetters(text) {
-  return text.toLowerCase().replace(/[^a-z]/g, "");
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function shuffleWord(word) {
@@ -47,7 +42,9 @@ function shuffleWord(word) {
 }
 
 function pickRandomPuzzles(count) {
-  const pool = [...POKEDEX];
+  // plain single-word names only — no spaces, hyphens, or punctuation
+  const plainPool = POKEDEX.filter((entry) => /^[a-z]+$/.test(entry.name));
+  const pool = [...plainPool];
   const chosen = [];
   for (let i = 0; i < count && pool.length > 0; i += 1) {
     const index = Math.floor(Math.random() * pool.length);
@@ -56,13 +53,10 @@ function pickRandomPuzzles(count) {
 
   return chosen.map((entry) => {
     const displayName = capitalize(entry.name);
-    const words = displayName.split(" ");
-    const scrambledWords = words.map(shuffleWord);
     return {
       id: entry.id,
       displayName,
-      words,
-      scrambledWords,
+      scrambled: shuffleWord(displayName.toLowerCase()).toUpperCase(),
       solved: false,
     };
   });
@@ -74,108 +68,131 @@ function formatTime(totalSeconds) {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
-function renderScrambleRow(container, scrambledWords) {
-  scrambledWords.forEach((word, wordIndex) => {
-    if (wordIndex > 0) {
-      const gap = document.createElement("span");
-      gap.className = "answer-word-gap";
-      container.appendChild(gap);
-    }
-    word.split("").forEach((letter) => {
-      const tile = document.createElement("span");
-      tile.className = "scramble-tile";
-      tile.textContent = letter;
-      container.appendChild(tile);
-    });
-  });
+function focusFirstBoxOf(index) {
+  const firstBox = answerBoard.querySelector(`[data-puzzle-index="${index}"] .answer-box`);
+  if (firstBox) firstBox.focus();
 }
 
-function renderAnswerRow(container, words) {
-  const boxes = [];
-  words.forEach((word, wordIndex) => {
-    if (wordIndex > 0) {
-      const gap = document.createElement("span");
-      gap.className = "answer-word-gap";
-      container.appendChild(gap);
-    }
-    for (let i = 0; i < word.length; i += 1) {
-      const box = document.createElement("input");
-      box.type = "text";
-      box.maxLength = 1;
-      box.className = "answer-box";
-      box.autocomplete = "off";
-      container.appendChild(box);
-      boxes.push(box);
-    }
-  });
-  return boxes;
+function setActiveIndex(index) {
+  if (puzzles[index]?.solved) return;
+  activeIndex = index;
+  renderBoard();
+  focusFirstBoxOf(index);
 }
 
-function checkPuzzleSolved(puzzle, boxes) {
+function advanceToNextUnsolved() {
+  const next = puzzles.findIndex((puzzle, i) => i !== activeIndex && !puzzle.solved);
+  if (next !== -1) setActiveIndex(next);
+}
+
+function checkGuess(puzzle, boxes) {
   const typed = boxes.map((box) => box.value).join("");
-  const answer = puzzle.words.join("");
-  return normalizeLetters(typed) === normalizeLetters(answer) && typed.length === answer.length;
+  return typed.toLowerCase() === puzzle.displayName.toLowerCase() && typed.length === puzzle.displayName.length;
 }
 
-function markSolved(puzzle, card, boxes) {
+function markSolved(puzzle) {
   puzzle.solved = true;
   solvedCount += 1;
-  card.classList.add("solved");
-  boxes.forEach((box) => {
-    box.disabled = true;
-  });
   solvedCountEl.textContent = `${solvedCount} / ${PUZZLE_COUNT} solved`;
 
   if (solvedCount === PUZZLE_COUNT) {
     endGame(true);
+    return;
   }
+
+  advanceToNextUnsolved();
 }
 
-function renderPuzzleGrid() {
-  puzzleGrid.innerHTML = "";
+function renderBoard() {
+  answerBoard.innerHTML = "";
+  clueList.innerHTML = "";
 
   puzzles.forEach((puzzle, index) => {
-    const card = document.createElement("div");
-    card.className = "puzzle-card";
+    const isActive = index === activeIndex && !puzzle.solved;
 
-    const number = document.createElement("p");
-    number.className = "puzzle-number";
-    number.textContent = `#${index + 1}`;
-    card.appendChild(number);
+    // board row
+    const row = document.createElement("div");
+    row.className = `board-row${puzzle.solved ? " solved" : ""}${isActive ? " active" : ""}`;
+    row.dataset.puzzleIndex = index;
 
-    const scrambleRow = document.createElement("div");
-    scrambleRow.className = "scramble-row";
-    renderScrambleRow(scrambleRow, puzzle.scrambledWords);
-    card.appendChild(scrambleRow);
+    const rowNumber = document.createElement("span");
+    rowNumber.className = "board-row-number";
+    rowNumber.textContent = index + 1;
+    row.appendChild(rowNumber);
 
-    const answerRow = document.createElement("div");
-    answerRow.className = "answer-row";
-    const boxes = renderAnswerRow(answerRow, puzzle.words);
-    card.appendChild(answerRow);
+    const cells = document.createElement("div");
+    cells.className = "board-row-cells";
 
-    boxes.forEach((box, boxIndex) => {
-      box.addEventListener("input", () => {
-        box.value = box.value.replace(/[^a-zA-Z]/g, "").slice(0, 1);
-        if (box.value && boxIndex < boxes.length - 1) {
-          boxes[boxIndex + 1].focus();
-        }
-        if (checkPuzzleSolved(puzzle, boxes) && !puzzle.solved) {
-          markSolved(puzzle, card, boxes);
-        }
-      });
+    const letters = puzzle.solved ? puzzle.displayName.split("") : new Array(puzzle.displayName.length).fill("");
+    const boxes = [];
 
-      box.addEventListener("keydown", (event) => {
-        if (event.key === "Backspace" && !box.value && boxIndex > 0) {
-          boxes[boxIndex - 1].focus();
-        } else if (event.key === "ArrowLeft" && boxIndex > 0) {
-          boxes[boxIndex - 1].focus();
-        } else if (event.key === "ArrowRight" && boxIndex < boxes.length - 1) {
-          boxes[boxIndex + 1].focus();
-        }
-      });
+    letters.forEach((letter) => {
+      const cell = document.createElement("div");
+      cell.className = "board-cell";
+
+      if (puzzle.solved) {
+        cell.textContent = letter.toUpperCase();
+      } else if (isActive) {
+        const box = document.createElement("input");
+        box.type = "text";
+        box.maxLength = 1;
+        box.className = "answer-box";
+        box.autocomplete = "off";
+        cell.appendChild(box);
+        boxes.push(box);
+      }
+
+      cells.appendChild(cell);
     });
 
-    puzzleGrid.appendChild(card);
+    row.appendChild(cells);
+    answerBoard.appendChild(row);
+
+    if (isActive) {
+      boxes.forEach((box, boxIndex) => {
+        box.addEventListener("input", () => {
+          box.value = box.value.replace(/[^a-zA-Z]/g, "").slice(0, 1);
+          if (box.value && boxIndex < boxes.length - 1) {
+            boxes[boxIndex + 1].focus();
+          }
+          if (checkGuess(puzzle, boxes)) {
+            markSolved(puzzle);
+          }
+        });
+
+        box.addEventListener("keydown", (event) => {
+          if (event.key === "Backspace" && !box.value && boxIndex > 0) {
+            boxes[boxIndex - 1].focus();
+          } else if (event.key === "ArrowLeft" && boxIndex > 0) {
+            boxes[boxIndex - 1].focus();
+          } else if (event.key === "ArrowRight" && boxIndex < boxes.length - 1) {
+            boxes[boxIndex + 1].focus();
+          }
+        });
+      });
+    }
+
+    // sidebar clue item
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = `clue-item${puzzle.solved ? " solved" : ""}${isActive ? " active" : ""}`;
+
+    const number = document.createElement("span");
+    number.className = "clue-number";
+    number.textContent = index + 1;
+
+    const scramble = document.createElement("span");
+    scramble.className = "clue-scramble";
+    scramble.textContent = puzzle.scrambled;
+
+    item.appendChild(number);
+    item.appendChild(scramble);
+
+    if (!puzzle.solved) {
+      item.addEventListener("click", () => setActiveIndex(index));
+    }
+
+    clueList.appendChild(item);
   });
 }
 
@@ -193,6 +210,7 @@ function startGame() {
   puzzles = pickRandomPuzzles(PUZZLE_COUNT);
   solvedCount = 0;
   secondsLeft = GAME_DURATION_SECONDS;
+  activeIndex = 0;
 
   startView.classList.add("hidden");
   endView.classList.add("hidden");
@@ -202,7 +220,8 @@ function startGame() {
   timerDisplay.classList.remove("low-time");
   solvedCountEl.textContent = `0 / ${PUZZLE_COUNT} solved`;
 
-  renderPuzzleGrid();
+  renderBoard();
+  focusFirstBoxOf(activeIndex);
 
   clearInterval(timerId);
   timerId = setInterval(tick, 1000);
