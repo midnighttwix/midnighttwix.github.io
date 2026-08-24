@@ -1,0 +1,281 @@
+:root {
+  --paper: #fbf9f4;
+  --ink: #121212;
+  --muted: #55534d;
+  --line: #121212;
+  --accent: #ca2027;
+  --good: #1f7a3d;
+  --good-bg: #e5f3e8;
+  --shadow: rgba(18, 18, 18, 0.15);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.app {
+  width: min(94vw, 720px);
+}
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.masthead-date {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.masthead-title {
+  margin: 0.2rem 0 0.15rem;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 7vw, 3.2rem);
+  letter-spacing: 0.02em;
+}
+
+.masthead-sub {
+  margin: 0;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.masthead-rule {
+  height: 3px;
+  background: var(--ink);
+  margin-top: 0.9rem;
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.panel {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 1.6rem 1.4rem;
+}
+
+.start-view {
+  text-align: center;
+}
+
+.start-copy {
+  max-width: 480px;
+  margin: 0 auto 1.3rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.primary-btn {
+  border: 2px solid var(--ink);
+  background: var(--accent);
+  color: var(--paper);
+  padding: 0.7rem 1.8rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: Georgia, serif;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.primary-btn:hover {
+  background: var(--ink);
+  transform: translateY(-1px);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.game-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 2px solid var(--ink);
+}
+
+.timer-label {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.timer-display {
+  margin: 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 900;
+  font-size: 2.2rem;
+}
+
+.timer-display.low-time {
+  color: var(--accent);
+}
+
+.solved-count {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.puzzle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.puzzle-card {
+  border: 2px solid var(--ink);
+  padding: 0.8rem 0.9rem 0.9rem;
+}
+
+.puzzle-card.solved {
+  background: var(--good-bg);
+  border-color: var(--good);
+}
+
+.puzzle-number {
+  margin: 0 0 0.5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scramble-row {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.7rem;
+}
+
+.scramble-tile {
+  width: 30px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 700;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.answer-row {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.answer-word-gap {
+  width: 0.6rem;
+}
+
+.answer-box {
+  width: 30px;
+  height: 34px;
+  text-align: center;
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  padding: 0;
+}
+
+.answer-box:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: #fff8e6;
+}
+
+.puzzle-card.solved .answer-box {
+  border-color: var(--good);
+  background: var(--good-bg);
+  color: var(--good);
+}
+
+.puzzle-check {
+  margin: 0.5rem 0 0;
+  font-weight: 700;
+  color: var(--good);
+  font-size: 0.85rem;
+}
+
+.end-view {
+  text-align: center;
+}
+
+.end-message {
+  margin: 0 0 1rem;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 900;
+  font-size: 1.8rem;
+}
+
+.end-message.success {
+  color: var(--good);
+}
+
+.end-message.failure {
+  color: var(--accent);
+}
+
+.end-reveal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.3rem;
+}
+
+.end-reveal-item {
+  border: 2px solid var(--ink);
+  padding: 0.4rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.end-reveal-item.missed {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .game-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+}

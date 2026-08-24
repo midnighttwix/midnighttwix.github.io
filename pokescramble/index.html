@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokescramble</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Georgia&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <main class="app">
+      <div class="masthead">
+        <p class="masthead-date" id="masthead-date"></p>
+        <h1 class="masthead-title">THE POKESCRAMBLE</h1>
+        <p class="masthead-sub">Unscramble 10 Pok&eacute;mon before time runs out</p>
+        <div class="masthead-rule"></div>
+      </div>
+
+      <section class="panel">
+        <div id="start-view" class="start-view">
+          <p class="start-copy">
+            You'll get 10 scrambled Pok&eacute;mon names and 90 seconds on the clock. Solve them in any
+            order &mdash; unscramble all 10 before time's up to win.
+          </p>
+          <button id="start-btn" class="primary-btn" type="button">Start</button>
+        </div>
+
+        <div id="game-view" class="game-view hidden">
+          <div class="game-topbar">
+            <p class="timer-label">Time Remaining</p>
+            <p id="timer-display" class="timer-display">01:30</p>
+            <p id="solved-count" class="solved-count">0 / 10 solved</p>
+          </div>
+
+          <div id="puzzle-grid" class="puzzle-grid"></div>
+        </div>
+
+        <div id="end-view" class="end-view hidden">
+          <p id="end-message" class="end-message"></p>
+          <div id="end-reveal" class="end-reveal"></div>
+          <button id="restart-btn" class="primary-btn" type="button">New Game</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="pokedata.js?v=1"></script>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>

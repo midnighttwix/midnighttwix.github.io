@@ -171,6 +171,39 @@
           radial-gradient(circle at 90% 15%, #b673ff 1px, transparent 2px),
           linear-gradient(160deg, #0d1330, #05070f);
       }
+
+      /* Pokerandomizer: dice on a spread of type-colored cards */
+      .card-pokerandomizer {
+        background-color: #2a2156;
+        background-image:
+          linear-gradient(135deg, #f08030 0 16.6%, transparent 16.6%),
+          linear-gradient(135deg, #6890f0 16.6% 33.3%, transparent 33.3%),
+          linear-gradient(135deg, #78c850 33.3% 50%, transparent 50%),
+          linear-gradient(135deg, #f8d030 50% 66.6%, transparent 66.6%),
+          linear-gradient(135deg, #a040a0 66.6% 83.3%, transparent 83.3%),
+          linear-gradient(135deg, #7038f8 83.3% 100%, transparent 100%);
+      }
+
+      /* Pokescramble: newspaper crossword grid */
+      .card-pokescramble {
+        background-color: #fbf9f4;
+        background-image:
+          linear-gradient(#121212 2px, transparent 2px),
+          linear-gradient(90deg, #121212 2px, transparent 2px);
+        background-size: 20px 20px;
+        border: 3px solid #121212;
+      }
+      .card-pokescramble .card-title,
+      .card-pokescramble .card-desc {
+        color: #121212;
+        text-shadow: none;
+      }
+      .card-pokescramble .card-title {
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .card-pokescramble::before {
+        background: linear-gradient(to top, rgba(251, 249, 244, 0.9) 0%, rgba(251, 249, 244, 0.1) 60%);
+      }
     </style>
   </head>
   <body>
@@ -208,6 +241,10 @@
         <a class="card card-pokerandomizer" href="/pokerandomizer/">
           <p class="card-title">Pokerandomizer</p>
           <p class="card-desc">Roll a custom Pokédex list</p>
+        </a>
+        <a class="card card-pokescramble" href="/pokescramble/">
+          <p class="card-title">Pokescramble</p>
+          <p class="card-desc">Unscramble 10 in 90 seconds</p>
         </a>
       </div>
     </main>
