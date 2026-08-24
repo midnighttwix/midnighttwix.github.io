@@ -68,21 +68,24 @@ function formatTime(totalSeconds) {
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 }
 
+function setActiveVisual(index) {
+  activeIndex = index;
+  document.querySelectorAll(".board-row").forEach((row) => {
+    row.classList.toggle("active", Number(row.dataset.puzzleIndex) === index && !puzzles[index].solved);
+  });
+  document.querySelectorAll(".clue-item").forEach((item) => {
+    item.classList.toggle("active", Number(item.dataset.puzzleIndex) === index && !puzzles[index].solved);
+  });
+}
+
 function focusFirstBoxOf(index) {
   const firstBox = answerBoard.querySelector(`[data-puzzle-index="${index}"] .answer-box`);
   if (firstBox) firstBox.focus();
 }
 
-function setActiveIndex(index) {
-  if (puzzles[index]?.solved) return;
-  activeIndex = index;
-  renderBoard();
-  focusFirstBoxOf(index);
-}
-
 function advanceToNextUnsolved() {
   const next = puzzles.findIndex((puzzle, i) => i !== activeIndex && !puzzle.solved);
-  if (next !== -1) setActiveIndex(next);
+  if (next !== -1) focusFirstBoxOf(next);
 }
 
 function checkGuess(puzzle, boxes) {
@@ -90,10 +93,27 @@ function checkGuess(puzzle, boxes) {
   return typed.toLowerCase() === puzzle.displayName.toLowerCase() && typed.length === puzzle.displayName.length;
 }
 
-function markSolved(puzzle) {
+function solveRow(index) {
+  const puzzle = puzzles[index];
   puzzle.solved = true;
   solvedCount += 1;
   solvedCountEl.textContent = `${solvedCount} / ${PUZZLE_COUNT} solved`;
+
+  const row = answerBoard.querySelector(`[data-puzzle-index="${index}"]`);
+  row.classList.add("solved");
+  row.classList.remove("active");
+  row.querySelector(".board-row-cells").innerHTML = "";
+  puzzle.displayName.split("").forEach((letter) => {
+    const cell = document.createElement("div");
+    cell.className = "board-cell";
+    cell.textContent = letter.toUpperCase();
+    row.querySelector(".board-row-cells").appendChild(cell);
+  });
+
+  const clueItem = clueList.querySelector(`[data-puzzle-index="${index}"]`);
+  clueItem.classList.add("solved");
+  clueItem.classList.remove("active");
+  clueItem.replaceWith(clueItem.cloneNode(true)); // drop the click listener now that it's solved
 
   if (solvedCount === PUZZLE_COUNT) {
     endGame(true);
@@ -108,11 +128,8 @@ function renderBoard() {
   clueList.innerHTML = "";
 
   puzzles.forEach((puzzle, index) => {
-    const isActive = index === activeIndex && !puzzle.solved;
-
-    // board row
     const row = document.createElement("div");
-    row.className = `board-row${puzzle.solved ? " solved" : ""}${isActive ? " active" : ""}`;
+    row.className = "board-row";
     row.dataset.puzzleIndex = index;
 
     const rowNumber = document.createElement("span");
@@ -123,59 +140,54 @@ function renderBoard() {
     const cells = document.createElement("div");
     cells.className = "board-row-cells";
 
-    const letters = puzzle.solved ? puzzle.displayName.split("") : new Array(puzzle.displayName.length).fill("");
     const boxes = [];
-
-    letters.forEach((letter) => {
+    for (let i = 0; i < puzzle.displayName.length; i += 1) {
       const cell = document.createElement("div");
       cell.className = "board-cell";
 
-      if (puzzle.solved) {
-        cell.textContent = letter.toUpperCase();
-      } else if (isActive) {
-        const box = document.createElement("input");
-        box.type = "text";
-        box.maxLength = 1;
-        box.className = "answer-box";
-        box.autocomplete = "off";
-        cell.appendChild(box);
-        boxes.push(box);
-      }
+      const box = document.createElement("input");
+      box.type = "text";
+      box.maxLength = 1;
+      box.className = "answer-box";
+      box.autocomplete = "off";
+      cell.appendChild(box);
+      boxes.push(box);
 
       cells.appendChild(cell);
-    });
+    }
 
     row.appendChild(cells);
     answerBoard.appendChild(row);
 
-    if (isActive) {
-      boxes.forEach((box, boxIndex) => {
-        box.addEventListener("input", () => {
-          box.value = box.value.replace(/[^a-zA-Z]/g, "").slice(0, 1);
-          if (box.value && boxIndex < boxes.length - 1) {
-            boxes[boxIndex + 1].focus();
-          }
-          if (checkGuess(puzzle, boxes)) {
-            markSolved(puzzle);
-          }
-        });
+    boxes.forEach((box, boxIndex) => {
+      box.addEventListener("focus", () => setActiveVisual(index));
 
-        box.addEventListener("keydown", (event) => {
-          if (event.key === "Backspace" && !box.value && boxIndex > 0) {
-            boxes[boxIndex - 1].focus();
-          } else if (event.key === "ArrowLeft" && boxIndex > 0) {
-            boxes[boxIndex - 1].focus();
-          } else if (event.key === "ArrowRight" && boxIndex < boxes.length - 1) {
-            boxes[boxIndex + 1].focus();
-          }
-        });
+      box.addEventListener("input", () => {
+        box.value = box.value.replace(/[^a-zA-Z]/g, "").slice(0, 1);
+        if (box.value && boxIndex < boxes.length - 1) {
+          boxes[boxIndex + 1].focus();
+        }
+        if (checkGuess(puzzle, boxes)) {
+          solveRow(index);
+        }
       });
-    }
+
+      box.addEventListener("keydown", (event) => {
+        if (event.key === "Backspace" && !box.value && boxIndex > 0) {
+          boxes[boxIndex - 1].focus();
+        } else if (event.key === "ArrowLeft" && boxIndex > 0) {
+          boxes[boxIndex - 1].focus();
+        } else if (event.key === "ArrowRight" && boxIndex < boxes.length - 1) {
+          boxes[boxIndex + 1].focus();
+        }
+      });
+    });
 
     // sidebar clue item
     const item = document.createElement("button");
     item.type = "button";
-    item.className = `clue-item${puzzle.solved ? " solved" : ""}${isActive ? " active" : ""}`;
+    item.className = "clue-item";
+    item.dataset.puzzleIndex = index;
 
     const number = document.createElement("span");
     number.className = "clue-number";
@@ -187,13 +199,12 @@ function renderBoard() {
 
     item.appendChild(number);
     item.appendChild(scramble);
-
-    if (!puzzle.solved) {
-      item.addEventListener("click", () => setActiveIndex(index));
-    }
+    item.addEventListener("click", () => focusFirstBoxOf(index));
 
     clueList.appendChild(item);
   });
+
+  setActiveVisual(0);
 }
 
 function tick() {
