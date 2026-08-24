@@ -19,9 +19,9 @@ const MIN_WORM_TICK_MS = 120;
 const BASE_JOLT_CHANCE = 0.05; // odds a worm bursts/redirects abruptly on a given tick
 const MAX_JOLT_CHANCE = 0.4;
 
-const FINAL_RUSH_SECONDS = 2 * 60; // worms turn frantic once this little time is left
-const FINAL_RUSH_WORM_TICK_MS = 70;
-const FINAL_RUSH_JOLT_CHANCE = 0.6;
+const FINAL_RUSH_SECONDS = 2 * 60; // worms get a small speed nudge once this little time is left
+const FINAL_RUSH_TICK_MULTIPLIER = 0.85; // ~15% faster ticks, not a huge burst
+const FINAL_RUSH_JOLT_BONUS = 0.08; // slightly more likely to jolt/redirect
 
 const HIGH_SCORE_KEY = "avoidOrthworms.highScore";
 
@@ -97,13 +97,13 @@ function currentTickMs() {
 }
 
 function currentWormTickMs() {
-  if (timeRemaining <= FINAL_RUSH_SECONDS) return FINAL_RUSH_WORM_TICK_MS;
-  return lerp(BASE_WORM_TICK_MS, MIN_WORM_TICK_MS, level());
+  const base = lerp(BASE_WORM_TICK_MS, MIN_WORM_TICK_MS, level());
+  return timeRemaining <= FINAL_RUSH_SECONDS ? base * FINAL_RUSH_TICK_MULTIPLIER : base;
 }
 
 function joltChance() {
-  if (timeRemaining <= FINAL_RUSH_SECONDS) return FINAL_RUSH_JOLT_CHANCE;
-  return lerp(BASE_JOLT_CHANCE, MAX_JOLT_CHANCE, level());
+  const base = lerp(BASE_JOLT_CHANCE, MAX_JOLT_CHANCE, level());
+  return timeRemaining <= FINAL_RUSH_SECONDS ? base + FINAL_RUSH_JOLT_BONUS : base;
 }
 
 function pickRandomNonOrthwormId() {
