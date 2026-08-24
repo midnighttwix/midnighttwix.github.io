@@ -225,7 +225,7 @@ h1 {
 
 .guess-history {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: 0.5rem;
   max-height: 260px;
   overflow-y: auto;

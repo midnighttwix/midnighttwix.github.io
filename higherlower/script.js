@@ -112,7 +112,8 @@ function addHistoryRow(guess, direction) {
 
   row.appendChild(guessText);
   row.appendChild(arrow);
-  guessHistoryEl.appendChild(row);
+  guessHistoryEl.prepend(row); // newest guess always shows first, no scrolling needed
+  guessHistoryEl.scrollTop = 0;
 }
 
 function endRound(success) {
