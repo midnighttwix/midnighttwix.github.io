@@ -6,6 +6,7 @@ const gameView = document.getElementById("game-view");
 const endView = document.getElementById("end-view");
 const startBtn = document.getElementById("start-btn");
 const restartBtn = document.getElementById("restart-btn");
+const giveUpBtn = document.getElementById("give-up-btn");
 const timerDisplay = document.getElementById("timer-display");
 const solvedCountEl = document.getElementById("solved-count");
 const answerBoard = document.getElementById("answer-board");
@@ -238,7 +239,7 @@ function startGame() {
   timerId = setInterval(tick, 1000);
 }
 
-function endGame(success) {
+function endGame(success, message) {
   clearInterval(timerId);
   gameView.classList.add("hidden");
   endView.classList.remove("hidden");
@@ -247,7 +248,7 @@ function endGame(success) {
     endMessage.textContent = "Congrats! You unscrambled all 10!";
     endMessage.className = "end-message success";
   } else {
-    endMessage.textContent = "Time's up! Better luck next time.";
+    endMessage.textContent = message || "Time's up! Better luck next time.";
     endMessage.className = "end-message failure";
   }
 
@@ -272,5 +273,6 @@ function setMastheadDate() {
 
 startBtn.addEventListener("click", startGame);
 restartBtn.addEventListener("click", startGame);
+giveUpBtn.addEventListener("click", () => endGame(false, "Game ended early. Here's how you did."));
 
 setMastheadDate();

@@ -108,6 +108,26 @@ body {
   transform: translateY(-1px);
 }
 
+.ghost-btn {
+  border: 2px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-family: Georgia, serif;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.ghost-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+  transform: translateY(-1px);
+}
+
 .hidden {
   display: none !important;
 }
