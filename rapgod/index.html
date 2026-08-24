@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Bungee&family=Poppins:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Inter:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css?v=1" />
@@ -17,30 +17,32 @@
       <section class="panel">
         <div class="topbar">
           <div>
-            <p class="eyebrow">151 Original Pok&eacute;mon, In Order</p>
-            <h1 class="bold-title">RAP GOD</h1>
+            <p class="eyebrow">Playlist &middot; 151 Tracks</p>
+            <h1 class="bold-title">Rap God</h1>
           </div>
         </div>
 
         <div id="study-view" class="study-view">
           <p class="phase-label">
-            Study the order below, then hit ready when you feel confident you've got it memorized.
+            Study the tracklist below, then hit play when you feel confident you've got it memorized.
           </p>
           <div id="study-list" class="study-list"></div>
-          <button id="ready-btn" class="primary-btn" type="button">I'm Ready!</button>
+          <button id="ready-btn" class="primary-btn" type="button"><span class="play-icon">▶</span> I'm Ready!</button>
         </div>
 
         <div id="quiz-view" class="quiz-view hidden">
-          <p class="phase-label">Who comes directly after this Pok&eacute;mon in the rap?</p>
+          <p class="phase-label">Which track plays right after this one?</p>
 
           <div class="pokemon-display">
+            <p class="np-label">Now Playing</p>
             <img id="pokemon-img" class="pokemon-img" src="" alt="" />
             <p id="pokemon-name" class="pokemon-name"></p>
+            <p class="np-subtitle">Kanto Region</p>
           </div>
 
           <div class="guess-row">
             <div class="guess-input-wrap">
-              <input id="guess-input" type="text" placeholder="Type the next Pok&eacute;mon..." autocomplete="off" />
+              <input id="guess-input" type="text" placeholder="Search the next track..." autocomplete="off" />
               <div id="suggestions" class="suggestions hidden"></div>
             </div>
             <button id="submit-guess-btn" class="ghost-btn" type="button">Guess</button>
