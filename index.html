@@ -204,6 +204,16 @@
       .card-pokescramble::before {
         background: linear-gradient(to top, rgba(251, 249, 244, 0.9) 0%, rgba(251, 249, 244, 0.1) 60%);
       }
+
+      /* Higher or Lower: stock-ticker style up/down chart */
+      .card-higherlower {
+        background-color: #0b1220;
+        background-image:
+          linear-gradient(135deg, transparent 40%, rgba(22, 163, 74, 0.35) 40% 42%, transparent 42%),
+          linear-gradient(135deg, transparent 55%, rgba(220, 38, 38, 0.35) 55% 57%, transparent 57%),
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 24px),
+          linear-gradient(160deg, #111b2e, #0b1220);
+      }
     </style>
   </head>
   <body>
@@ -245,6 +255,10 @@
         <a class="card card-pokescramble" href="/pokescramble/">
           <p class="card-title">Pokescramble</p>
           <p class="card-desc">Unscramble 10 in 90 seconds</p>
+        </a>
+        <a class="card card-higherlower" href="/higherlower/">
+          <p class="card-title">Higher or Lower</p>
+          <p class="card-desc">Guess the base stat</p>
         </a>
       </div>
     </main>
