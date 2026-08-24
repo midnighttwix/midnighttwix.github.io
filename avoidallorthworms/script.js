@@ -45,6 +45,7 @@ const canvas = document.getElementById("game-canvas");
 const ctx = canvas.getContext("2d");
 const endMessage = document.getElementById("end-message");
 const finalScoreDisplay = document.getElementById("final-score-display");
+const countdownDisplay = document.getElementById("countdown-display");
 
 let cols = 0;
 let rows = 0;
@@ -60,6 +61,7 @@ let rafId = null;
 let lastFrameTime = null;
 let snakeAcc = 0;
 let wormAcc = 0;
+let countdownToken = 0;
 
 const spriteCache = new Map();
 
@@ -373,14 +375,44 @@ function startGame() {
   scoreDisplay.textContent = "000";
   highScoreDisplay.textContent = `HI: ${getHighScore()}`;
 
-  running = true;
+  running = false;
   lastFrameTime = null;
   snakeAcc = 0;
   wormAcc = 0;
 
   cancelAnimationFrame(rafId);
   draw();
-  rafId = requestAnimationFrame(loop);
+  runCountdown();
+}
+
+function runCountdown() {
+  const token = (countdownToken += 1);
+  const steps = ["3", "2", "1", "GO!"];
+  let i = 0;
+
+  const showStep = () => {
+    if (token !== countdownToken) return;
+    countdownDisplay.textContent = steps[i];
+    countdownDisplay.classList.remove("hidden");
+    countdownDisplay.classList.remove("pop");
+    void countdownDisplay.offsetWidth; // restart the pop animation
+    countdownDisplay.classList.add("pop");
+
+    i += 1;
+    if (i < steps.length) {
+      setTimeout(showStep, 650);
+    } else {
+      setTimeout(() => {
+        if (token !== countdownToken) return;
+        countdownDisplay.classList.add("hidden");
+        running = true;
+        lastFrameTime = null;
+        rafId = requestAnimationFrame(loop);
+      }, 500);
+    }
+  };
+
+  showStep();
 }
 
 document.addEventListener("keydown", (e) => {

@@ -240,6 +240,30 @@ body {
   image-rendering: crisp-edges;
 }
 
+.countdown-display {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background: rgba(5, 10, 8, 0.55);
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(2.5rem, 12vw, 5rem);
+  color: var(--neon-yellow);
+  text-shadow: 0 0 16px rgba(255, 226, 92, 0.8);
+}
+
+.countdown-display.pop {
+  animation: countdown-pop 0.7s ease-out;
+}
+
+@keyframes countdown-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  30% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .dpad {
   display: grid;
   grid-template-columns: repeat(3, 48px);
