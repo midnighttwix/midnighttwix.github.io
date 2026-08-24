@@ -1,0 +1,205 @@
+:root {
+  --bg-1: #fff4c7;
+  --bg-2: #ffd5ec;
+  --bg-3: #d9f5ff;
+  --panel-strong: rgba(255, 255, 255, 0.92);
+  --ink: #2a2156;
+  --muted: #5c4d82;
+  --accent: #ff6eb6;
+  --accent-dark: #d1487f;
+  --danger: #e5533d;
+  --good: #2e8b57;
+  --shadow: rgba(80, 46, 119, 0.18);
+  --grass-1: #86c96b;
+  --grass-2: #5aa251;
+  --wood: #8a5a34;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+  color: var(--ink);
+  font-family: "Satoshi", "Trebuchet MS", "Segoe UI", sans-serif;
+  font-weight: 700;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem 1rem;
+}
+
+.app {
+  width: min(96vw, 820px);
+}
+
+.panel {
+  background: var(--panel-strong);
+  border: 3px solid rgba(126, 93, 160, 0.14);
+  border-radius: 28px;
+  box-shadow: 0 14px 30px var(--shadow);
+  padding: 1.3rem 1.3rem 1.5rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.3rem, 4vw, 1.9rem);
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.timer-display {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--accent-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-display.reset-flash {
+  animation: flash-red 0.6s ease;
+}
+
+@keyframes flash-red {
+  0%, 100% { color: var(--accent-dark); }
+  40% { color: var(--danger); transform: scale(1.15); }
+}
+
+.status-message {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.start-view {
+  text-align: center;
+}
+
+.primary-btn {
+  border: none;
+  background: var(--accent);
+  color: white;
+  padding: 0.8rem 1.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem;
+  box-shadow: 0 8px 16px var(--shadow);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.play-field {
+  position: relative;
+  width: 100%;
+  height: min(58vh, 480px);
+  min-height: 320px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 10px solid var(--wood);
+  background: repeating-conic-gradient(var(--grass-1) 0% 25%, var(--grass-2) 0% 50%) 0 0 / 42px 42px;
+  touch-action: manipulation;
+}
+
+.field-pokemon {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  cursor: pointer;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+  transition: filter 0.1s ease;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.field-pokemon:hover {
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5)) brightness(1.08);
+}
+
+.click-popup {
+  position: absolute;
+  font-weight: 900;
+  font-size: 0.95rem;
+  pointer-events: none;
+  animation: float-up 0.8s ease forwards;
+}
+
+.click-popup.good {
+  color: #2e8b57;
+  text-shadow: 0 0 6px white, 0 0 3px white;
+}
+
+.click-popup.bad {
+  color: #e5533d;
+  text-shadow: 0 0 6px white, 0 0 3px white;
+}
+
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-40px); }
+}
+
+.end-view {
+  text-align: center;
+}
+
+.end-message {
+  margin: 0 0 1rem;
+  font-weight: 800;
+  font-size: 1.2rem;
+}
+
+.end-message.success {
+  color: var(--good);
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .field-pokemon {
+    width: 44px;
+    height: 44px;
+  }
+}
