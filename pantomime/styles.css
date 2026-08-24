@@ -97,13 +97,6 @@ body {
   text-shadow: 0 0 18px rgba(212, 175, 55, 0.55), 0 0 4px rgba(0, 0, 0, 0.6);
 }
 
-.start-copy {
-  max-width: 460px;
-  margin: 0 auto 1.3rem;
-  line-height: 1.55;
-  color: var(--muted);
-}
-
 .primary-btn {
   border: none;
   background: linear-gradient(160deg, var(--gold-bright), var(--gold));
