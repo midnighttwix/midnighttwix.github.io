@@ -1,6 +1,6 @@
 const CELL = 16; // internal grid cell size in px (canvas is scaled up via CSS for a chunky pixel look)
 const DISPLAY_SCALE = 2;
-const TOTAL_SECONDS = 20 * 60;
+const TOTAL_SECONDS = 10 * 60;
 const PENALTY_SECONDS = 30;
 const MAX_DEX_NUMBER = 1025;
 const ORTHWORM_ID = 968;
@@ -12,16 +12,16 @@ const MAX_LEVEL = 10;
 
 const BASE_FOOD_COUNT = 1;
 const MAX_FOOD_COUNT = 4;
-const WORM_COUNT_THRESHOLDS = [
-  { atOrBelow: 5 * 60, count: 4 },
-  { atOrBelow: 10 * 60, count: 3 },
-  { atOrBelow: 15 * 60, count: 2 },
-];
+const WORM_COUNT_THRESHOLDS = [{ atOrBelow: 5 * 60, count: 2 }];
 const BASE_WORM_COUNT = 1;
 const BASE_WORM_TICK_MS = 300;
 const MIN_WORM_TICK_MS = 120;
 const BASE_JOLT_CHANCE = 0.05; // odds a worm bursts/redirects abruptly on a given tick
 const MAX_JOLT_CHANCE = 0.4;
+
+const FINAL_RUSH_SECONDS = 2 * 60; // worms turn frantic once this little time is left
+const FINAL_RUSH_WORM_TICK_MS = 70;
+const FINAL_RUSH_JOLT_CHANCE = 0.6;
 
 const HIGH_SCORE_KEY = "avoidOrthworms.highScore";
 
@@ -97,10 +97,12 @@ function currentTickMs() {
 }
 
 function currentWormTickMs() {
+  if (timeRemaining <= FINAL_RUSH_SECONDS) return FINAL_RUSH_WORM_TICK_MS;
   return lerp(BASE_WORM_TICK_MS, MIN_WORM_TICK_MS, level());
 }
 
 function joltChance() {
+  if (timeRemaining <= FINAL_RUSH_SECONDS) return FINAL_RUSH_JOLT_CHANCE;
   return lerp(BASE_JOLT_CHANCE, MAX_JOLT_CHANCE, level());
 }
 
