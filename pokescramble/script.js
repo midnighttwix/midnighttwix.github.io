@@ -1,4 +1,4 @@
-const GAME_DURATION_SECONDS = 120;
+const GAME_DURATION_SECONDS = 90;
 const PUZZLE_COUNT = 10;
 
 const startView = document.getElementById("start-view");
