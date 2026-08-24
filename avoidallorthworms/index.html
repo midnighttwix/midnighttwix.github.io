@@ -4,41 +4,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Avoid All Orthworms</title>
-    <link rel="preconnect" href="https://api.fontshare.com" />
-    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
-    <main class="app">
-      <section class="panel">
-        <div class="topbar">
-          <div>
-            <p class="eyebrow">Click Anything Except Orthworm</p>
-            <h1 class="bold-title">🪱 Avoid All Orthworms</h1>
+    <main class="cabinet">
+      <div class="marquee">
+        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+        <span class="marquee-text">&#9733; AVOID ALL ORTHWORMS &#9733;</span>
+        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+      </div>
+
+      <section class="screen">
+        <div class="scanlines"></div>
+        <div class="crt-vignette"></div>
+
+        <div class="hud">
+          <div class="hud-cell">
+            <p class="hud-label">Score</p>
+            <p id="score-display" class="hud-value">000</p>
           </div>
-          <p id="timer-display" class="timer-display">6:00:00</p>
+          <div class="hud-cell">
+            <p class="hud-label">Time Left</p>
+            <p id="timer-display" class="hud-value">20:00</p>
+          </div>
+          <div class="hud-cell">
+            <p class="hud-label">High Score</p>
+            <p id="high-score-display" class="hud-value">HI: 0</p>
+          </div>
         </div>
 
         <p id="status-message" class="status-message">
-          Get the timer down to zero. Clicking any Pok&eacute;mon that isn't Orthworm knocks 10 seconds
-          off the clock. Clicking Orthworm resets the timer all the way back to 6 hours!
+          Steer the snake with ARROW KEYS / WASD. Eat any Pok&eacute;mon that isn't Orthworm to knock 30
+          seconds off the clock. Eating Orthworm sends the timer back up to 20 minutes&mdash;but the run
+          keeps going! Only crashing into a wall or your own tail ends the game.
         </p>
 
         <div id="start-view" class="start-view">
-          <button id="start-btn" class="primary-btn" type="button">Start</button>
+          <p class="blink-text">PRESS START</p>
+          <button id="start-btn" class="arcade-btn" type="button">Insert Coin</button>
         </div>
 
         <div id="game-view" class="game-view hidden">
-          <div id="play-field" class="play-field"></div>
+          <div id="play-field" class="play-field">
+            <canvas id="game-canvas"></canvas>
+          </div>
+          <div class="dpad" aria-label="Directional controls">
+            <button type="button" class="dpad-btn dpad-up" data-dir="up" aria-label="Up">&#9650;</button>
+            <button type="button" class="dpad-btn dpad-left" data-dir="left" aria-label="Left">&#9664;</button>
+            <button type="button" class="dpad-btn dpad-right" data-dir="right" aria-label="Right">&#9654;</button>
+            <button type="button" class="dpad-btn dpad-down" data-dir="down" aria-label="Down">&#9660;</button>
+          </div>
         </div>
 
         <div id="end-view" class="end-view hidden">
           <p id="end-message" class="end-message"></p>
-          <button id="restart-btn" class="primary-btn" type="button">Play Again</button>
+          <p id="final-score-display" class="final-score"></p>
+          <button id="restart-btn" class="arcade-btn" type="button">Continue?</button>
         </div>
       </section>
+
+      <div class="control-plate">
+        <div class="joystick-deco"></div>
+        <div class="buttons-deco">
+          <span class="deco-btn red"></span>
+          <span class="deco-btn yellow"></span>
+        </div>
+      </div>
     </main>
 
-    <script src="script.js?v=1"></script>
+    <script src="script.js?v=3"></script>
   </body>
 </html>
