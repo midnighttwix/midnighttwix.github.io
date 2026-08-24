@@ -257,6 +257,20 @@
         border: 3px solid #ff2fa6;
         box-shadow: 0 8px 0 rgba(42, 33, 86, 0.16), 0 0 0 3px #00e5ff inset, 0 14px 26px rgba(42, 33, 86, 0.16);
       }
+
+      /* Seeing Stars: night sky scattered with a faint constellation */
+      .card-seeingstars {
+        background-color: #0b0f2e;
+        background-image:
+          radial-gradient(circle at 20% 30%, #ffffff 1px, transparent 2px),
+          radial-gradient(circle at 68% 18%, #ffffff 1px, transparent 2px),
+          radial-gradient(circle at 40% 55%, #ffd76a 2px, transparent 3px),
+          radial-gradient(circle at 62% 45%, #ffd76a 2px, transparent 3px),
+          radial-gradient(circle at 78% 62%, #ffd76a 2px, transparent 3px),
+          radial-gradient(circle at 30% 78%, #ffffff 1px, transparent 2px),
+          radial-gradient(circle at 85% 85%, #ffffff 1px, transparent 2px),
+          linear-gradient(160deg, #14183f, #05061a);
+      }
     </style>
   </head>
   <body>
@@ -315,6 +329,10 @@
         <a class="card card-avoidallorthworms" href="/avoidallorthworms/">
           <p class="card-title">Avoid All Orthworms</p>
           <p class="card-desc">Retro snake, dodge the Orthworms</p>
+        </a>
+        <a class="card card-seeingstars" href="/seeingstars/">
+          <p class="card-title">Seeing Stars</p>
+          <p class="card-desc">Guess the Pokémon in the constellation</p>
         </a>
       </div>
     </main>
