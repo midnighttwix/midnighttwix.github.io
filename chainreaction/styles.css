@@ -139,6 +139,13 @@ h1 {
   color: var(--gold-bright);
 }
 
+.lockout-message {
+  margin: 0.7rem 0 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--danger);
+}
+
 .timer-display.low-time {
   color: var(--danger);
 }
