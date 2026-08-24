@@ -1,0 +1,236 @@
+:root {
+  --curtain-red: #6b0f1a;
+  --curtain-dark: #3d0810;
+  --gold: #d4af37;
+  --gold-bright: #f2d478;
+  --stage: #12080a;
+  --ink: #fbeee0;
+  --muted: #cbb6a8;
+  --good: #3fd67a;
+  --danger: #ff5c5c;
+  --shadow: rgba(0, 0, 0, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+}
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: radial-gradient(circle at 50% 20%, #2a1014, var(--stage) 70%);
+  color: var(--ink);
+  font-family: "Poppins", "Trebuchet MS", sans-serif;
+  font-weight: 500;
+  overflow-x: hidden;
+}
+
+body {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem 1rem;
+  position: relative;
+}
+
+.curtain {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 12vw;
+  min-width: 60px;
+  max-width: 160px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--curtain-red) 0 22px,
+    var(--curtain-dark) 22px 44px
+  );
+  box-shadow: 0 0 60px 20px rgba(0, 0, 0, 0.6) inset;
+  z-index: 0;
+}
+
+.curtain-left {
+  left: 0;
+  border-radius: 0 40px 40px 0;
+}
+
+.curtain-right {
+  right: 0;
+  border-radius: 40px 0 0 40px;
+}
+
+.app {
+  width: min(90vw, 600px);
+  position: relative;
+  z-index: 1;
+}
+
+.stage {
+  background: rgba(18, 8, 10, 0.85);
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  box-shadow: 0 0 0 6px rgba(212, 175, 55, 0.15), 0 24px 50px var(--shadow);
+  padding: 1.6rem 1.5rem;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.marquee-title {
+  margin: 0 0 1.1rem;
+  font-family: "Cinzel", serif;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 9vw, 3.2rem);
+  letter-spacing: 0.12em;
+  color: var(--gold-bright);
+  text-shadow: 0 0 18px rgba(212, 175, 55, 0.55), 0 0 4px rgba(0, 0, 0, 0.6);
+}
+
+.start-copy {
+  max-width: 460px;
+  margin: 0 auto 1.3rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.primary-btn {
+  border: none;
+  background: linear-gradient(160deg, var(--gold-bright), var(--gold));
+  color: #3a2400;
+  padding: 0.8rem 2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  box-shadow: 0 10px 22px rgba(212, 175, 55, 0.35);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.primary-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+.ghost-btn {
+  border: 2px solid var(--muted);
+  background: transparent;
+  color: var(--ink);
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.ghost-btn:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.game-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+.timer-display {
+  margin: 0;
+  font-family: "Cinzel", serif;
+  font-weight: 900;
+  font-size: 1.8rem;
+  color: var(--gold-bright);
+}
+
+.timer-display.low-time {
+  color: var(--danger);
+}
+
+.streak-display {
+  margin: 0;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.spotlight {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1.6rem 1rem;
+  margin-bottom: 1.2rem;
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 244, 200, 0.16), transparent 70%);
+}
+
+.pokemon-img {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(255, 230, 150, 0.5));
+}
+
+.pokemon-name {
+  margin: 0.3rem 0 0;
+  font-family: "Cinzel", serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  text-transform: capitalize;
+  color: var(--ink);
+}
+
+.action-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.9rem;
+}
+
+.end-view {
+  text-align: center;
+}
+
+.end-message {
+  margin: 0 0 1.1rem;
+  font-family: "Cinzel", serif;
+  font-weight: 900;
+  font-size: 1.7rem;
+}
+
+.end-message.success {
+  color: var(--good);
+}
+
+.end-message.failure {
+  color: var(--danger);
+}
+
+@media (max-width: 480px) {
+  .action-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .curtain {
+    width: 7vw;
+  }
+}

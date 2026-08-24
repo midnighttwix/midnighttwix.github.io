@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pantomime</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;900&family=Poppins:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="curtain curtain-left"></div>
+    <div class="curtain curtain-right"></div>
+
+    <main class="app">
+      <section class="stage">
+        <p class="eyebrow">One Player Watches &middot; Everyone Else Guesses</p>
+        <h1 class="marquee-title">PANTOMIME</h1>
+
+        <div id="start-view" class="start-view">
+          <p class="start-copy">
+            Only one teammate looks at the screen. Act out each Pok&eacute;mon without speaking &mdash;
+            get 3 correct in a row before the 90-second clock runs out to win.
+          </p>
+          <button id="start-btn" class="primary-btn" type="button">Start</button>
+        </div>
+
+        <div id="game-view" class="game-view hidden">
+          <div class="game-topbar">
+            <p id="timer-display" class="timer-display">01:30</p>
+            <p id="streak-display" class="streak-display">0 / 3 in a row</p>
+          </div>
+
+          <div class="spotlight">
+            <img id="pokemon-img" class="pokemon-img" src="" alt="" />
+            <p id="pokemon-name" class="pokemon-name"></p>
+          </div>
+
+          <div class="action-row">
+            <button id="skip-btn" class="ghost-btn" type="button">Skip</button>
+            <button id="correct-btn" class="primary-btn" type="button">Correct!</button>
+          </div>
+        </div>
+
+        <div id="end-view" class="end-view hidden">
+          <p id="end-message" class="end-message"></p>
+          <button id="restart-btn" class="primary-btn" type="button">Play Again</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
