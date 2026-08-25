@@ -1,0 +1,22 @@
+window.WORLD_ROULETTE_CITIES = [
+  { name: "Reykjavik", region: "", country: "Iceland", lat: 64.1466, lon: -21.9426 },
+  { name: "Denver", region: "Colorado", country: "United States", lat: 39.7392, lon: -104.9903 },
+  { name: "Cape Town", region: "", country: "South Africa", lat: -33.9249, lon: 18.4241 },
+  { name: "Kyoto", region: "", country: "Japan", lat: 35.0116, lon: 135.7681 },
+  { name: "Marrakesh", region: "", country: "Morocco", lat: 31.6295, lon: -7.9811 },
+  { name: "Cusco", region: "", country: "Peru", lat: -13.532, lon: -71.9675 },
+  { name: "Queenstown", region: "", country: "New Zealand", lat: -45.0312, lon: 168.6626 },
+  { name: "Bergen", region: "", country: "Norway", lat: 60.3913, lon: 5.3221 },
+  { name: "Savannah", region: "Georgia", country: "United States", lat: 32.0809, lon: -81.0912 },
+  { name: "Porto", region: "", country: "Portugal", lat: 41.1579, lon: -8.6291 },
+  { name: "Banff", region: "Alberta", country: "Canada", lat: 51.1784, lon: -115.5708 },
+  { name: "Ubud", region: "Bali", country: "Indonesia", lat: -8.5069, lon: 115.2625 },
+  { name: "Dubrovnik", region: "", country: "Croatia", lat: 42.6507, lon: 18.0944 },
+  { name: "Hobart", region: "Tasmania", country: "Australia", lat: -42.8821, lon: 147.3272 },
+  { name: "Lucerne", region: "", country: "Switzerland", lat: 47.0502, lon: 8.3093 },
+  { name: "Antigua", region: "", country: "Guatemala", lat: 14.5586, lon: -90.7295 },
+  { name: "Tallinn", region: "", country: "Estonia", lat: 59.437, lon: 24.7536 },
+  { name: "Tromso", region: "", country: "Norway", lat: 69.6492, lon: 18.9553 },
+  { name: "Bologna", region: "", country: "Italy", lat: 44.4949, lon: 11.3426 },
+  { name: "Halifax", region: "Nova Scotia", country: "Canada", lat: 44.6488, lon: -63.5752 }
+];

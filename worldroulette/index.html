@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Roulette</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=2" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="site-header">
+        <a class="back-link" href="../">Zane Games</a>
+        <div class="round-counter" aria-live="polite"><span id="score">0</span><span class="counter-slash">/</span>3</div>
+      </header>
+
+      <section class="hero-copy">
+        <p class="kicker">Somewhere on Earth</p>
+        <h1>World Roulette</h1>
+        <p class="intro">Spin into a city, take in the view, and trust your instincts.</p>
+      </section>
+
+      <section class="mode-picker" aria-label="Game mode">
+        <button class="mode-card active" type="button" data-mode="weather" aria-pressed="true">
+          <span class="mode-icon">☼</span>
+          <span><strong>Weather</strong><small>What is happening outside?</small></span>
+        </button>
+        <button class="mode-card" type="button" data-mode="time" aria-pressed="false">
+          <span class="mode-icon">◷</span>
+          <span><strong>Time</strong><small>What time is it there?</small></span>
+        </button>
+        <button class="mode-card" type="button" data-mode="explore" aria-pressed="false">
+          <span class="mode-icon">◎</span>
+          <span><strong>Explore</strong><small>Take a free trip</small></span>
+        </button>
+      </section>
+
+      <section class="roulette-stage">
+        <div class="stage-topline"><span id="mode-label">WEATHER ROUND</span><span id="status-dot" class="status-dot"></span></div>
+        <div id="status-message" class="status-message">Choose a mode, then spin the wheel.</div>
+        <div id="place-card" class="place-card hidden">
+          <div class="photo-frame">
+            <img id="place-photo" alt="" />
+            <div class="photo-shade"></div>
+            <div class="place-caption"><p id="place-region"></p><h2 id="place-name"></h2></div>
+          </div>
+          <div class="facts-row">
+            <div class="fact"><span>Local time</span><strong id="place-time">--:--</strong></div>
+            <div class="fact"><span>Conditions</span><strong id="weather-condition">--</strong></div>
+            <div class="fact"><span>Temperature</span><strong id="weather-temp">--</strong></div>
+          </div>
+        </div>
+        <button id="randomize-btn" class="spin-button" type="button"><span>↻</span> Spin the world</button>
+      </section>
+
+      <section id="guess-panel" class="guess-panel hidden">
+        <div class="guess-heading"><span id="guess-prompt">Make your call</span><span>Decision</span></div>
+        <div class="guess-actions"><button id="correct-guess-btn" class="answer correct" type="button">I got it right</button><button id="wrong-guess-btn" class="answer wrong" type="button">I missed it</button></div>
+      </section>
+
+      <section id="history-panel" class="history-panel hidden"><div class="history-heading"><span>Trail of guesses</span><span id="history-count">0 rounds</span></div><div id="guess-history" class="guess-history"></div></section>
+    </main>
+    <script src="cities.js?v=2"></script>
+    <script src="script.js?v=2"></script>
+  </body>
+</html>
