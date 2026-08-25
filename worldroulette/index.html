@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="styles.css?v=2" />
   </head>
   <body>
+    <div class="city-backdrop" aria-hidden="true"></div>
     <main class="app-shell">
       <header class="site-header">
         <a class="back-link" href="../">Zane Games</a>
@@ -47,22 +48,25 @@
             <div class="place-caption"><p id="place-region"></p><h2 id="place-name"></h2></div>
           </div>
           <div class="facts-row">
-            <div class="fact"><span>Local time</span><strong id="place-time">--:--</strong></div>
-            <div class="fact"><span>Conditions</span><strong id="weather-condition">--</strong></div>
-            <div class="fact"><span>Temperature</span><strong id="weather-temp">--</strong></div>
+            <div id="time-fact" class="fact"><span>Local time</span><strong id="place-time">--:--</strong></div>
+            <div id="condition-fact" class="fact"><span>Conditions</span><strong id="weather-condition">--</strong></div>
+            <div id="temperature-fact" class="fact"><span>Temperature</span><strong id="weather-temp">--</strong></div>
           </div>
         </div>
         <button id="randomize-btn" class="spin-button" type="button"><span>↻</span> Spin the world</button>
       </section>
 
       <section id="guess-panel" class="guess-panel hidden">
-        <div class="guess-heading"><span id="guess-prompt">Make your call</span><span>Decision</span></div>
-        <div class="guess-actions"><button id="correct-guess-btn" class="answer correct" type="button">I got it right</button><button id="wrong-guess-btn" class="answer wrong" type="button">I missed it</button></div>
+        <div class="guess-heading"><label id="guess-prompt" for="guess-input">Make your call</label><span>Answer</span></div>
+        <form id="guess-form" class="guess-form">
+          <input id="guess-input" name="guess" type="text" autocomplete="off" required />
+          <button class="answer submit-answer" type="submit">Submit answer</button>
+        </form>
       </section>
 
       <section id="history-panel" class="history-panel hidden"><div class="history-heading"><span>Trail of guesses</span><span id="history-count">0 rounds</span></div><div id="guess-history" class="guess-history"></div></section>
     </main>
     <script src="cities.js?v=2"></script>
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=3"></script>
   </body>
 </html>
