@@ -29,9 +29,9 @@ html, body {
   margin: 0;
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, rgba(126, 180, 255, 0.22), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(255, 196, 96, 0.18), transparent 28%),
-    linear-gradient(180deg, #edf7ff 0%, #fdf3df 42%, #f3f7ff 100%);
+    radial-gradient(circle at 18% 18%, rgba(255, 179, 92, 0.3), transparent 18%),
+    radial-gradient(circle at 80% 82%, rgba(148, 196, 255, 0.28), transparent 22%),
+    linear-gradient(180deg, #fbead1 0%, #f7d7b3 25%, #f4efe7 52%, #ebf3ff 100%);
   color: var(--ink);
   font-family: "Satoshi", "Trebuchet MS", "Segoe UI", sans-serif;
   font-weight: 700;
@@ -64,12 +64,12 @@ body {
 }
 
 .panel {
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.88);
+  background: rgba(255, 250, 244, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 34px;
-  box-shadow: 0 24px 50px rgba(24, 44, 64, 0.18);
-  backdrop-filter: blur(18px) saturate(1.2);
-  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 26px 60px rgba(88, 53, 20, 0.14);
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
   padding: 1.2rem 1.05rem 1.1rem;
   position: relative;
   overflow: hidden;
@@ -77,33 +77,33 @@ body {
 
 .travel-panel {
   background:
-    linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.52)),
-    linear-gradient(180deg, rgba(189, 223, 255, 0.18), rgba(255, 236, 186, 0.12));
+    linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,241,220,0.7)),
+    linear-gradient(180deg, rgba(255, 209, 155, 0.18), rgba(205, 225, 255, 0.14));
 }
 
 .travel-panel::before,
 .travel-panel::after {
   content: "";
   position: absolute;
-  border: 1px solid rgba(40, 64, 92, 0.08);
+  border: 1px solid rgba(87, 61, 37, 0.09);
   border-radius: 50%;
   pointer-events: none;
 }
 
 .travel-panel::before {
-  width: 240px;
-  height: 240px;
-  right: -90px;
-  top: -90px;
-  background: radial-gradient(circle, rgba(90, 155, 255, 0.06), transparent 70%);
+  width: 250px;
+  height: 250px;
+  right: -100px;
+  top: -100px;
+  background: radial-gradient(circle, rgba(255, 171, 80, 0.12), transparent 68%);
 }
 
 .travel-panel::after {
-  width: 180px;
-  height: 180px;
-  left: -60px;
-  bottom: -70px;
-  background: radial-gradient(circle, rgba(255, 188, 71, 0.08), transparent 68%);
+  width: 210px;
+  height: 210px;
+  left: -70px;
+  bottom: -80px;
+  background: radial-gradient(circle, rgba(112, 158, 231, 0.12), transparent 70%);
 }
 
 .travel-panel .passport-header {
@@ -111,13 +111,13 @@ body {
 }
 
 .travel-panel .passport-header::after {
-  content: "TRAVEL PASS";
+  content: "WANDER PASS";
   position: absolute;
-  right: 8px;
+  right: 6px;
   top: -2px;
   font-size: 0.52rem;
   letter-spacing: 0.22em;
-  color: rgba(32, 49, 77, 0.34);
+  color: rgba(74, 44, 17, 0.34);
   transform: rotate(9deg);
 }
 
@@ -135,11 +135,11 @@ body {
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(114, 179, 255, 0.22), rgba(255, 188, 92, 0.22));
-  border: 1px solid rgba(39, 63, 103, 0.12);
+  background: linear-gradient(135deg, rgba(255, 186, 98, 0.26), rgba(128, 180, 255, 0.24));
+  border: 1px solid rgba(93, 72, 48, 0.12);
   display: grid;
   place-items: center;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7), 0 10px 16px rgba(131, 170, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 10px 16px rgba(215, 140, 64, 0.1);
 }
 
 .passport-mark-inner {
@@ -164,14 +164,14 @@ h1 {
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #f6bf58 0%, #f29b5f 100%);
-  color: #1c2d43;
+  background: linear-gradient(135deg, #f5b660 0%, #eb8c5a 100%);
+  color: #2a1f17;
   padding: 0.72rem 1.25rem;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 900;
   font-size: 0.96rem;
-  box-shadow: 0 10px 18px rgba(242, 155, 95, 0.26), inset 0 1px 0 rgba(255,255,255,0.72);
+  box-shadow: 0 12px 20px rgba(212, 122, 67, 0.22), inset 0 1px 0 rgba(255,255,255,0.7);
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 
@@ -250,16 +250,16 @@ h1 {
   border-radius: 24px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.82);
-  box-shadow: 0 18px 35px rgba(52, 74, 112, 0.18), inset 0 0 0 1px rgba(255,255,255,0.18);
+  box-shadow: 0 22px 40px rgba(109, 86, 52, 0.18), inset 0 0 0 1px rgba(255,255,255,0.2);
   transform: rotate(-0.18deg);
-  background: #dfeafc;
+  background: #f2dcb3;
 }
 
 .place-photo-wrap::before {
   content: "";
   position: absolute;
   inset: 12px;
-  border: 1px solid rgba(255,255,255,0.34);
+  border: 1px solid rgba(255,255,255,0.38);
   border-radius: 18px;
   pointer-events: none;
   z-index: 2;
@@ -336,11 +336,11 @@ h1 {
   justify-content: center;
   gap: 0.8rem;
   margin-top: 0.1rem;
-  background: linear-gradient(135deg, rgba(255,255,255,0.64), rgba(245, 249, 255, 0.76));
-  border: 1px solid rgba(79, 106, 148, 0.12);
+  background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(253, 233, 212, 0.8));
+  border: 1px solid rgba(117, 83, 47, 0.08);
   border-radius: 999px;
   padding: 0.7rem 1rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72), 0 8px 18px rgba(52, 74, 112, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 8px 18px rgba(111, 76, 42, 0.06);
 }
 
 .weather-emoji {
