@@ -11,9 +11,13 @@
   <body>
     <div id="page-bg" class="page-bg"></div>
     <main class="app">
-      <section class="panel">
-        <div class="topbar">
+      <section class="panel travel-panel">
+        <div class="passport-header">
+          <div class="passport-mark">
+            <span class="passport-mark-inner">✈</span>
+          </div>
           <div>
+            <p class="passport-kicker">Passport Round</p>
             <h1 class="bold-title">World Roulette</h1>
           </div>
           <button id="randomize-btn" class="primary-btn" type="button">Randomize</button>
@@ -22,10 +26,17 @@
         <p id="status-message" class="status-message">Hit Randomize to discover a place.</p>
 
         <div id="place-card" class="place-card hidden">
-          <img id="place-photo" class="place-photo" src="" alt="" />
-          <h2 id="place-name" class="place-name"></h2>
-          <p id="place-region" class="place-region"></p>
-          <p id="place-time" class="place-time"></p>
+          <div class="place-photo-wrap">
+            <img id="place-photo" class="place-photo" src="" alt="" />
+            <div class="photo-overlay">
+              <p id="place-region" class="place-region"></p>
+              <h2 id="place-name" class="place-name"></h2>
+              <div class="time-badge">
+                <span class="time-badge-label">Local time</span>
+                <p id="place-time" class="place-time"></p>
+              </div>
+            </div>
+          </div>
 
           <div class="weather-row">
             <span id="weather-emoji" class="weather-emoji"></span>
@@ -34,6 +45,11 @@
               <p id="weather-temp" class="weather-temp"></p>
             </div>
           </div>
+        </div>
+
+        <div id="guess-controls" class="guess-controls hidden">
+          <button id="correct-guess-btn" class="answer-btn correct-btn" type="button">Correct</button>
+          <button id="wrong-guess-btn" class="answer-btn wrong-btn" type="button">Wrong</button>
         </div>
       </section>
     </main>

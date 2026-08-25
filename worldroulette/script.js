@@ -30,6 +30,9 @@ const WEATHER_CODE_MAP = {
 };
 
 const randomizeBtn = document.getElementById("randomize-btn");
+const correctGuessBtn = document.getElementById("correct-guess-btn");
+const wrongGuessBtn = document.getElementById("wrong-guess-btn");
+const guessControls = document.getElementById("guess-controls");
 const statusMessage = document.getElementById("status-message");
 const placeCard = document.getElementById("place-card");
 const placePhoto = document.getElementById("place-photo");
@@ -43,14 +46,21 @@ const pageBg = document.getElementById("page-bg");
 
 let clockIntervalId = null;
 let rouletteCooldownTimer = null;
+let correctGuesses = 0;
+
+function setGuessControlsEnabled(enabled) {
+  correctGuessBtn.disabled = !enabled;
+  wrongGuessBtn.disabled = !enabled;
+}
 
 function startRouletteCooldown() {
   const until = Date.now() + 20000;
   randomizeBtn.disabled = true;
+  setGuessControlsEnabled(false);
 
   const tick = () => {
     const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
-    statusMessage.textContent = `Wait ${remainingSeconds}s before rolling for a new city.`;
+    statusMessage.textContent = `Wrong! Wait ${remainingSeconds}s before rolling for a new city.`;
     if (remainingSeconds <= 0) {
       randomizeBtn.disabled = false;
       statusMessage.textContent = "Hit Randomize to discover a place.";
@@ -123,7 +133,13 @@ function startClock(timezone) {
 }
 
 async function randomizePlace() {
+  if (rouletteCooldownTimer) {
+    return;
+  }
+
   randomizeBtn.disabled = true;
+  setGuessControlsEnabled(false);
+  guessControls.classList.add("hidden");
   statusMessage.textContent = "Finding a place...";
   placeCard.classList.add("hidden");
 
@@ -150,16 +166,38 @@ async function randomizePlace() {
 
     statusMessage.textContent = "";
     placeCard.classList.remove("hidden");
+    guessControls.classList.remove("hidden");
+    setGuessControlsEnabled(true);
+    randomizeBtn.disabled = false;
   } catch (error) {
     statusMessage.textContent = "Something went wrong fetching that place. Try again.";
     startRouletteCooldown();
-  } finally {
-    if (randomizeBtn.disabled === false) {
-      randomizeBtn.disabled = false;
-    }
   }
 }
 
+function registerCorrectGuess() {
+  correctGuesses += 1;
+  setGuessControlsEnabled(false);
+  guessControls.classList.add("hidden");
+
+  if (correctGuesses >= 2) {
+    statusMessage.textContent = "Congrats! Team wins!";
+    randomizeBtn.disabled = false;
+    return;
+  }
+
+  statusMessage.textContent = `Correct! ${correctGuesses}/2 team guesses so far.`;
+  randomizeBtn.disabled = false;
+}
+
+function registerWrongGuess() {
+  setGuessControlsEnabled(false);
+  guessControls.classList.add("hidden");
+  startRouletteCooldown();
+}
+
 randomizeBtn.addEventListener("click", randomizePlace);
+correctGuessBtn.addEventListener("click", registerCorrectGuess);
+wrongGuessBtn.addEventListener("click", registerWrongGuess);
 
 randomizePlace();
