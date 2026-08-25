@@ -1,20 +1,10 @@
 * { box-sizing: border-box; }
 :root { --ink: #17252d; --muted: #6d7c80; --paper: #f4f1e9; --line: #d9d9cf; --coral: #e86f58; --mint: #cfe5d6; }
 html, body { margin: 0; min-height: 100%; }
-body { position: relative; color: var(--ink); font-family: "DM Sans", sans-serif; background: radial-gradient(circle at 12% 18%, rgba(238, 205, 137, .38), transparent 24%), radial-gradient(circle at 88% 78%, rgba(185, 215, 216, .35), transparent 28%), var(--paper); transition: background .7s ease; }
-body[data-weather="clear"] { background: linear-gradient(135deg, rgba(252, 210, 105, .46), rgba(118, 193, 221, .3) 52%, var(--paper)); }
-body[data-weather="cloud"] { background: linear-gradient(135deg, rgba(176, 193, 199, .4), rgba(219, 216, 198, .45), var(--paper)); }
-body[data-weather="fog"] { background: linear-gradient(135deg, rgba(198, 210, 205, .54), rgba(232, 231, 218, .7), var(--paper)); }
-body[data-weather="rain"] { background: linear-gradient(135deg, rgba(103, 151, 182, .48), rgba(176, 196, 204, .52), var(--paper)); }
-body[data-weather="snow"] { background: linear-gradient(135deg, rgba(192, 217, 232, .62), rgba(236, 240, 235, .74), var(--paper)); }
-body[data-weather="storm"] { background: linear-gradient(135deg, rgba(82, 91, 119, .62), rgba(145, 145, 165, .5), var(--paper)); }
+body { position: relative; color: var(--ink); font-family: "DM Sans", sans-serif; background: radial-gradient(circle at 12% 18%, rgba(238, 205, 137, .38), transparent 24%), radial-gradient(circle at 88% 78%, rgba(185, 215, 216, .35), transparent 28%), var(--paper); }
 body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .38; background-image: linear-gradient(105deg, transparent 0 49.7%, rgba(23,37,45,.05) 49.8% 50.2%, transparent 50.3%), linear-gradient(15deg, transparent 0 49.7%, rgba(23,37,45,.04) 49.8% 50.2%, transparent 50.3%); background-size: 96px 96px; }
 .city-backdrop { position: fixed; inset: -32px; z-index: 0; background: center / cover no-repeat; filter: blur(20px) saturate(1.05); opacity: 0; transition: opacity .6s ease, background-image .6s ease; }
 .city-backdrop.visible { opacity: .58; }
-.app-shell::before { content: ""; position: fixed; width: 180px; height: 180px; right: 5vw; top: 7vh; pointer-events: none; opacity: 0; border-radius: 50%; border: 2px solid rgba(255,255,255,.45); box-shadow: 0 0 0 12px rgba(255,255,255,.12), 0 0 0 26px rgba(255,255,255,.08); transition: opacity .6s ease, transform .8s ease; }
-body[data-weather="clear"] .app-shell::before { opacity: .65; transform: translateY(-10px); }
-body[data-weather="rain"] .app-shell::after, body[data-weather="storm"] .app-shell::after { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .18; background-image: repeating-linear-gradient(112deg, transparent 0 38px, rgba(255,255,255,.45) 39px 40px, transparent 41px 74px); animation: weather-drift 1.8s linear infinite; }
-body[data-weather="snow"] .app-shell::after { content: "✦  ·  ✧  ·  ✦  ·  ✧"; position: fixed; inset: 5% 0 0; pointer-events: none; color: rgba(255,255,255,.7); font-size: 2rem; letter-spacing: 3rem; line-height: 5rem; opacity: .35; animation: snow-drift 8s linear infinite; }
 .app-shell { width: min(100% - 32px, 640px); margin: 0 auto; padding: 16px 0 24px; position: relative; z-index: 1; }
 .site-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
 .back-link { color: var(--ink); text-decoration: none; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
@@ -56,6 +46,8 @@ h1 { font-size: clamp(2.8rem, 8vw, 5rem); line-height: .86; letter-spacing: -.09
 .spin-button span { font-size: 1.25rem; vertical-align: -1px; margin-right: 5px; }
 .spin-button:disabled { opacity: .58; cursor: not-allowed; }
 .guess-panel, .history-panel { margin-top: 18px; background: rgba(255,255,255,.52); border: 1px solid var(--line); border-radius: 5px; padding: 15px; }
+.guess-panel.answer-correct { background: rgba(207, 229, 214, .92); border-color: #79b58c; box-shadow: 0 0 0 3px rgba(121, 181, 140, .22); }
+.guess-panel.answer-wrong { background: rgba(244, 216, 210, .94); border-color: #d77a69; box-shadow: 0 0 0 3px rgba(215, 122, 105, .2); }
 .guess-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; margin-top: 11px; }
 .guess-form input { width: 100%; border: 1px solid var(--line); border-radius: 3px; background: rgba(255,255,255,.78); color: var(--ink); padding: 12px; font: inherit; outline-color: var(--coral); }
 .answer { border: 1px solid var(--line); border-radius: 3px; color: var(--ink); padding: 12px 18px; font-weight: 700; cursor: pointer; }
@@ -70,7 +62,5 @@ h1 { font-size: clamp(2.8rem, 8vw, 5rem); line-height: .86; letter-spacing: -.09
 .hidden { display: none; }
 @keyframes reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes roulette-color { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
-@keyframes weather-drift { from { transform: translateX(-30px); } to { transform: translateX(30px); } }
-@keyframes snow-drift { from { transform: translateY(-15px); } to { transform: translateY(35px); } }
 @media (max-width: 560px) { .app-shell { padding-top: 12px; } .site-header { margin-bottom: 20px; } .mode-picker { grid-template-columns: 1fr; } .mode-card { align-items: center; padding: 10px 12px; } .mode-card small { display: inline; margin-left: 5px; } .facts-row { grid-template-columns: 1fr 1fr 1fr; } .fact { padding: 8px 7px; } .fact strong { font-size: .75rem; } }
 @media (max-width: 390px) { .guess-form { grid-template-columns: 1fr; } }
