@@ -1,18 +1,17 @@
 :root {
-  --bg-1: #fff4c7;
-  --bg-2: #ffd5ec;
-  --bg-3: #d9f5ff;
-  --panel: rgba(255, 255, 255, 0.56);
-  --panel-strong: rgba(255, 255, 255, 0.82);
-  --ink: #20314d;
-  --muted: #4f5f7f;
-  --accent: #ff6eb6;
-  --accent-2: #ffb347;
-  --accent-3: #7ad8c9;
-  --accent-4: #8db7ff;
-  --danger: #ff5d7d;
-  --shadow: rgba(34, 53, 80, 0.18);
-  --stamp: rgba(255, 255, 255, 0.45);
+  --page-bg: #f6f0e7;
+  --panel-bg: rgba(255, 255, 255, 0.82);
+  --panel-strong: rgba(255, 255, 255, 0.94);
+  --ink: #14253d;
+  --muted: #53677f;
+  --accent: #f29a3d;
+  --accent-strong: #ea7d2d;
+  --accent-soft: #f8d8a7;
+  --sky: #dfeeff;
+  --earth: #f1d9b7;
+  --success: #cfeccd;
+  --fail: #f7d8db;
+  --shadow: rgba(18, 34, 55, 0.12);
 }
 
 * {
@@ -29,9 +28,9 @@ html, body {
   margin: 0;
   min-height: 100%;
   background:
-    radial-gradient(circle at 18% 18%, rgba(255, 179, 92, 0.3), transparent 18%),
-    radial-gradient(circle at 80% 82%, rgba(148, 196, 255, 0.28), transparent 22%),
-    linear-gradient(180deg, #fbead1 0%, #f7d7b3 25%, #f4efe7 52%, #ebf3ff 100%);
+    radial-gradient(circle at top left, rgba(255, 190, 111, 0.18), transparent 18%),
+    radial-gradient(circle at bottom right, rgba(104, 145, 214, 0.12), transparent 24%),
+    linear-gradient(180deg, #f9f5ef 0%, #f5efe8 100%);
   color: var(--ink);
   font-family: "Satoshi", "Trebuchet MS", "Segoe UI", sans-serif;
   font-weight: 700;
@@ -58,52 +57,49 @@ body {
 }
 
 .app {
-  width: min(92vw, 460px);
+  width: min(92vw, 620px);
   position: relative;
   z-index: 1;
 }
 
 .panel {
-  background: rgba(255, 250, 244, 0.68);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 34px;
-  box-shadow: 0 26px 60px rgba(88, 53, 20, 0.14);
-  backdrop-filter: blur(18px) saturate(1.1);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
-  padding: 1.2rem 1.05rem 1.1rem;
+  background: var(--panel-bg);
+  border: 1px solid rgba(20, 37, 61, 0.08);
+  border-radius: 30px;
+  box-shadow: 0 18px 40px var(--shadow);
+  backdrop-filter: blur(10px) saturate(1.08);
+  -webkit-backdrop-filter: blur(10px) saturate(1.08);
+  padding: 1.1rem 1.1rem 1rem;
   position: relative;
   overflow: hidden;
 }
 
 .travel-panel {
-  background:
-    linear-gradient(135deg, rgba(255,255,255,0.82), rgba(255,241,220,0.7)),
-    linear-gradient(180deg, rgba(255, 209, 155, 0.18), rgba(205, 225, 255, 0.14));
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,244,232,0.8));
 }
 
 .travel-panel::before,
 .travel-panel::after {
   content: "";
   position: absolute;
-  border: 1px solid rgba(87, 61, 37, 0.09);
   border-radius: 50%;
   pointer-events: none;
 }
 
 .travel-panel::before {
-  width: 250px;
-  height: 250px;
-  right: -100px;
-  top: -100px;
-  background: radial-gradient(circle, rgba(255, 171, 80, 0.12), transparent 68%);
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  top: -110px;
+  background: radial-gradient(circle, rgba(242, 154, 61, 0.12), transparent 68%);
 }
 
 .travel-panel::after {
-  width: 210px;
-  height: 210px;
-  left: -70px;
-  bottom: -80px;
-  background: radial-gradient(circle, rgba(112, 158, 231, 0.12), transparent 70%);
+  width: 220px;
+  height: 220px;
+  left: -80px;
+  bottom: -90px;
+  background: radial-gradient(circle, rgba(72, 118, 189, 0.08), transparent 70%);
 }
 
 .travel-panel .passport-header {
@@ -111,14 +107,14 @@ body {
 }
 
 .travel-panel .passport-header::after {
-  content: "WANDER PASS";
+  content: "EARTH ROULETTE";
   position: absolute;
-  right: 6px;
+  right: 8px;
   top: -2px;
   font-size: 0.52rem;
-  letter-spacing: 0.22em;
-  color: rgba(74, 44, 17, 0.34);
-  transform: rotate(9deg);
+  letter-spacing: 0.18em;
+  color: rgba(20, 37, 61, 0.38);
+  transform: rotate(7deg);
 }
 
 .passport-header {
@@ -135,11 +131,11 @@ body {
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(255, 186, 98, 0.26), rgba(128, 180, 255, 0.24));
-  border: 1px solid rgba(93, 72, 48, 0.12);
+  background: linear-gradient(135deg, rgba(242, 154, 61, 0.22), rgba(140, 181, 242, 0.18));
+  border: 1px solid rgba(20, 37, 61, 0.08);
   display: grid;
   place-items: center;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 10px 16px rgba(215, 140, 64, 0.1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
 }
 
 .passport-mark-inner {
@@ -157,21 +153,22 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(1.5rem, 4vw, 2.1rem);
-  line-height: 1.1;
+  font-size: clamp(1.7rem, 4vw, 2.45rem);
+  line-height: 1.05;
   font-weight: 900;
+  letter-spacing: -0.05em;
 }
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #f5b660 0%, #eb8c5a 100%);
-  color: #2a1f17;
-  padding: 0.72rem 1.25rem;
+  background: linear-gradient(135deg, #f6b963 0%, #ea8a45 100%);
+  color: #1f2a39;
+  padding: 0.72rem 1.2rem;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 900;
   font-size: 0.96rem;
-  box-shadow: 0 12px 20px rgba(212, 122, 67, 0.22), inset 0 1px 0 rgba(255,255,255,0.7);
+  box-shadow: 0 12px 20px rgba(234, 138, 69, 0.2), inset 0 1px 0 rgba(255,255,255,0.7);
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 
@@ -193,6 +190,7 @@ h1 {
   text-align: center;
   min-height: 1.4em;
   letter-spacing: 0.02em;
+  font-size: 0.94rem;
 }
 
 .guess-controls {
@@ -249,17 +247,16 @@ h1 {
   width: 100%;
   border-radius: 24px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  box-shadow: 0 22px 40px rgba(109, 86, 52, 0.18), inset 0 0 0 1px rgba(255,255,255,0.2);
-  transform: rotate(-0.18deg);
-  background: #f2dcb3;
+  border: 1px solid rgba(20, 37, 61, 0.08);
+  box-shadow: 0 18px 30px rgba(25, 39, 62, 0.12);
+  background: #eddab2;
 }
 
 .place-photo-wrap::before {
   content: "";
   position: absolute;
   inset: 12px;
-  border: 1px solid rgba(255,255,255,0.38);
+  border: 1px solid rgba(255,255,255,0.34);
   border-radius: 18px;
   pointer-events: none;
   z-index: 2;
@@ -280,7 +277,7 @@ h1 {
   flex-direction: column;
   justify-content: flex-end;
   padding: 1rem 1rem 0.8rem;
-  background: linear-gradient(to top, rgba(17, 25, 42, 0.88) 0%, rgba(17, 25, 42, 0.4) 34%, rgba(17, 25, 42, 0.06) 100%);
+  background: linear-gradient(to top, rgba(13, 22, 33, 0.78) 0%, rgba(13, 22, 33, 0.2) 38%, rgba(13, 22, 33, 0.04) 100%);
   color: white;
 }
 
@@ -295,11 +292,12 @@ h1 {
 
 .place-name {
   margin: 0;
-  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-size: clamp(1.9rem, 5vw, 2.7rem);
   line-height: 1;
   font-weight: 900;
   text-align: left;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.28);
+  letter-spacing: -0.04em;
 }
 
 .time-badge {
@@ -336,11 +334,11 @@ h1 {
   justify-content: center;
   gap: 0.8rem;
   margin-top: 0.1rem;
-  background: linear-gradient(135deg, rgba(255,255,255,0.7), rgba(253, 233, 212, 0.8));
-  border: 1px solid rgba(117, 83, 47, 0.08);
+  background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(252, 233, 206, 0.82));
+  border: 1px solid rgba(25, 39, 62, 0.06);
   border-radius: 999px;
   padding: 0.7rem 1rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75), 0 8px 18px rgba(111, 76, 42, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
 }
 
 .weather-emoji {
