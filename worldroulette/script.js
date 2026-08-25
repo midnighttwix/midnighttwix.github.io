@@ -43,14 +43,36 @@ const weatherEmoji = document.getElementById("weather-emoji");
 const weatherCondition = document.getElementById("weather-condition");
 const weatherTemp = document.getElementById("weather-temp");
 const pageBg = document.getElementById("page-bg");
+const modeButtons = document.querySelectorAll(".mode-btn");
 
 let clockIntervalId = null;
 let rouletteCooldownTimer = null;
 let correctGuesses = 0;
+let activeMode = "weather";
+let currentCity = null;
+let currentWeatherSummary = null;
+let currentLocalTimeText = "";
 
 function setGuessControlsEnabled(enabled) {
   correctGuessBtn.disabled = !enabled;
   wrongGuessBtn.disabled = !enabled;
+}
+
+function setChallengeMode(mode) {
+  activeMode = mode;
+  modeButtons.forEach((button) => {
+    const isActive = button.dataset.mode === mode;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  if (currentCity && currentWeatherSummary) {
+    const prompt =
+      mode === "weather"
+        ? `Weather challenge: what is the weather in ${currentCity.name}?`
+        : `Time challenge: what time is it in ${currentCity.name}?`;
+    statusMessage.textContent = prompt;
+  }
 }
 
 function startRouletteCooldown() {
@@ -63,7 +85,7 @@ function startRouletteCooldown() {
     statusMessage.textContent = `Wrong! Wait ${remainingSeconds}s before rolling for a new city.`;
     if (remainingSeconds <= 0) {
       randomizeBtn.disabled = false;
-      statusMessage.textContent = "Hit Randomize to discover a place.";
+      statusMessage.textContent = "Pick a challenge and spin the world.";
       return;
     }
 
@@ -149,6 +171,14 @@ async function randomizePlace() {
     const [weather, photoUrl] = await Promise.all([fetchWeather(city), fetchPlacePhoto(city)]);
     const conditionInfo = WEATHER_CODE_MAP[weather.current.weathercode] || { label: "Unknown", emoji: "🌡️" };
 
+    currentCity = city;
+    currentWeatherSummary = conditionInfo.label;
+    currentLocalTimeText = new Date().toLocaleTimeString("en-US", {
+      timeZone: weather.timezone,
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
     placeName.textContent = city.name;
     placeRegion.textContent = formatRegionLine(city);
     placePhoto.src = photoUrl;
@@ -164,7 +194,11 @@ async function randomizePlace() {
     weatherCondition.textContent = conditionInfo.label;
     weatherTemp.textContent = `${Math.round(weather.current.temperature)}°F`;
 
-    statusMessage.textContent = "";
+    const prompt =
+      activeMode === "weather"
+        ? `Weather challenge: what is the weather in ${city.name}?`
+        : `Time challenge: what time is it in ${city.name}?`;
+    statusMessage.textContent = prompt;
     placeCard.classList.remove("hidden");
     guessControls.classList.remove("hidden");
     setGuessControlsEnabled(true);
@@ -180,24 +214,35 @@ function registerCorrectGuess() {
   setGuessControlsEnabled(false);
   guessControls.classList.add("hidden");
 
-  if (correctGuesses >= 2) {
-    statusMessage.textContent = "Congrats! Team wins!";
+  if (correctGuesses >= 3) {
+    statusMessage.textContent = "You win! You nailed 3 correct.";
     randomizeBtn.disabled = false;
     return;
   }
 
-  statusMessage.textContent = `Correct! ${correctGuesses}/2 team guesses so far.`;
+  statusMessage.textContent = `Correct! ${correctGuesses}/3 wins so far.`;
   randomizeBtn.disabled = false;
 }
 
 function registerWrongGuess() {
   setGuessControlsEnabled(false);
   guessControls.classList.add("hidden");
+
+  if (activeMode === "weather") {
+    statusMessage.textContent = `Not quite. The weather was ${currentWeatherSummary} in ${currentCity.name}.`;
+  } else {
+    statusMessage.textContent = `Not quite. The local time was ${currentLocalTimeText} in ${currentCity.name}.`;
+  }
+
   startRouletteCooldown();
 }
 
 randomizeBtn.addEventListener("click", randomizePlace);
 correctGuessBtn.addEventListener("click", registerCorrectGuess);
 wrongGuessBtn.addEventListener("click", registerWrongGuess);
+modeButtons.forEach((button) => {
+  button.addEventListener("click", () => setChallengeMode(button.dataset.mode));
+});
 
+setChallengeMode(activeMode);
 randomizePlace();

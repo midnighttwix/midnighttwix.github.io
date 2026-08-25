@@ -109,14 +109,10 @@ body {
 }
 
 .travel-panel .passport-header::after {
-  content: "DREAM DESTINATIONS";
+  content: "";
   position: absolute;
-  right: 6px;
-  top: -2px;
-  font-size: 0.52rem;
-  letter-spacing: 0.18em;
-  color: rgba(24, 48, 73, 0.36);
-  transform: rotate(7deg);
+  inset: auto;
+  display: none;
 }
 
 .passport-header {
@@ -144,12 +140,12 @@ body {
   font-size: 1.6rem;
 }
 
-.passport-kicker {
-  margin: 0 0 0.18rem;
+.header-subtitle {
+  margin: 0.18rem 0 0;
   color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.62rem;
   font-weight: 800;
 }
 
@@ -159,6 +155,35 @@ h1 {
   line-height: 1.02;
   font-weight: 900;
   letter-spacing: -0.06em;
+}
+
+.mode-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.38);
+  border: 1px solid rgba(24, 48, 73, 0.08);
+  border-radius: 999px;
+  padding: 0.35rem;
+  margin: 0 0 0.8rem;
+}
+
+.mode-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.7rem 0.85rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+  background: linear-gradient(135deg, #f9d799 0%, #f4ad63 100%);
+  color: #1e2b39;
+  box-shadow: 0 8px 14px rgba(232, 146, 72, 0.18);
 }
 
 .primary-btn {
