@@ -14,8 +14,16 @@
         display: grid;
         place-items: center;
         font-family: "Baloo 2", "Trebuchet MS", "Segoe UI", sans-serif;
-        background: linear-gradient(135deg, #fff4c7 0%, #ffd5ec 35%, #d9f5ff 100%);
-        color: #2a2156;
+        background-color: #1d1e20;
+        background-image:
+          linear-gradient(30deg, #292a2c 12%, transparent 12.5%, transparent 87%, #292a2c 87.5%, #292a2c),
+          linear-gradient(150deg, #292a2c 12%, transparent 12.5%, transparent 87%, #292a2c 87.5%, #292a2c),
+          linear-gradient(30deg, #292a2c 12%, transparent 12.5%, transparent 87%, #292a2c 87.5%, #292a2c),
+          linear-gradient(150deg, #292a2c 12%, transparent 12.5%, transparent 87%, #292a2c 87.5%, #292a2c),
+          linear-gradient(60deg, #161719 25%, transparent 25.5%, transparent 75%, #161719 75%);
+        background-position: 0 0, 0 0, 90px 52px, 90px 52px, 0 0;
+        background-size: 180px 104px;
+        color: #f7f4ee;
         padding: 2.5rem 1.5rem;
         box-sizing: border-box;
       }
@@ -33,7 +41,7 @@
       .subtitle {
         margin: 0 0 2.2rem;
         font-weight: 600;
-        color: #5c4d82;
+        color: #c4c6c9;
         font-size: 1.05rem;
       }
       .card-grid {
