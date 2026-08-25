@@ -23,6 +23,30 @@ const MAX_RANK_GAP = 40; // keeps matchups close instead of blowouts
 let currentPair = null; // { a: {name, rank}, b: {name, rank} }
 let selectedSide = null; // "a" | "b"
 let revealed = false;
+let trendCooldownTimer = null;
+
+function startTrendCooldown() {
+  const until = Date.now() + 20000;
+  newRoundBtn.disabled = true;
+
+  const tick = () => {
+    const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    resultMessage.textContent = `Wrong answer. Wait ${remainingSeconds}s before the next one.`;
+    if (remainingSeconds <= 0) {
+      newRoundBtn.disabled = false;
+      resultMessage.textContent = "";
+      resultMessage.classList.remove("incorrect");
+      return;
+    }
+
+    trendCooldownTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (trendCooldownTimer) {
+    window.clearTimeout(trendCooldownTimer);
+  }
+  tick();
+}
 
 function pickClosePair() {
   const total = RANKED_POKEMON.length;
@@ -176,6 +200,7 @@ function revealResult() {
     resultMessage.textContent = `Wrong! ${currentPair[winnerSide].name} was actually visited more in 2025.`;
     resultMessage.classList.add("incorrect");
     resultMessage.classList.remove("correct");
+    startTrendCooldown();
   }
 
   updateScoreMessage();

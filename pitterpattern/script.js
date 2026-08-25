@@ -20,6 +20,7 @@ const restartBtn = document.getElementById("restart-btn");
 
 let sequence = [];
 let guessIndex = 0;
+let pitterCooldownTimer = null;
 
 function normalize(text) {
   return text.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -201,6 +202,34 @@ function submitGuess() {
   guessInput.focus();
 }
 
+function startPitterCooldown() {
+  const until = Date.now() + 20000;
+  const actionButtons = [startBtn, startGuessingBtn, restartBtn, document.getElementById("start-over-btn-memorize"), document.getElementById("start-over-btn-guess")];
+
+  actionButtons.forEach((button) => {
+    if (button) button.disabled = true;
+  });
+
+  const tick = () => {
+    const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    endMessage.textContent = `Not quite! Wait ${remainingSeconds}s before a fresh batch.`;
+    if (remainingSeconds <= 0) {
+      actionButtons.forEach((button) => {
+        if (button) button.disabled = false;
+      });
+      endMessage.textContent = "Try again with a fresh batch!";
+      return;
+    }
+
+    pitterCooldownTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (pitterCooldownTimer) {
+    window.clearTimeout(pitterCooldownTimer);
+  }
+  tick();
+}
+
 function endGame(success, failedAtIndex) {
   guessInput.disabled = true;
   submitGuessBtn.disabled = true;
@@ -213,6 +242,7 @@ function endGame(success, failedAtIndex) {
     endMessage.textContent = `Not quite! You got ${failedAtIndex} of ${SEQUENCE_LENGTH} right before a miss.`;
     endMessage.classList.add("failure");
     endMessage.classList.remove("success");
+    startPitterCooldown();
   }
 
   showView("end");

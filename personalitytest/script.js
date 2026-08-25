@@ -16,6 +16,7 @@ const resultMessageEl = document.getElementById("result-message");
 // phase: "empty" | "setup" | "guess" | "result"
 let phase = "empty";
 let cards = [];
+let personalityCooldownTimer = null;
 
 function randomDexNumber() {
   return Math.floor(Math.random() * MAX_DEX_NUMBER) + 1;
@@ -174,6 +175,34 @@ function lockInAnswers() {
   renderCards();
 }
 
+function startPersonalityCooldown() {
+  const playAgainBtn = document.getElementById("play-again");
+  const randomizeBtn = document.getElementById("randomize-btn");
+  if (!playAgainBtn) return;
+
+  const until = Date.now() + 20000;
+  playAgainBtn.disabled = true;
+  if (randomizeBtn) randomizeBtn.disabled = true;
+
+  const tick = () => {
+    const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    instructionsEl.textContent = `Wrong answer. Wait ${remainingSeconds}s before a fresh list.`;
+    if (remainingSeconds <= 0) {
+      playAgainBtn.disabled = false;
+      if (randomizeBtn) randomizeBtn.disabled = false;
+      instructionsEl.textContent = "Hit Randomize to start a new round.";
+      return;
+    }
+
+    personalityCooldownTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (personalityCooldownTimer) {
+    window.clearTimeout(personalityCooldownTimer);
+  }
+  tick();
+}
+
 function submitGuesses() {
   const namedCards = cards.filter((card) => card.answer.trim() !== "");
   const correctCount = namedCards.filter(
@@ -183,6 +212,10 @@ function submitGuesses() {
   setPhase("result");
   renderCards();
   resultMessageEl.textContent = `Player two guessed ${correctCount} out of ${REQUIRED_NAMES} correctly!`;
+
+  if (correctCount < REQUIRED_NAMES) {
+    startPersonalityCooldown();
+  }
 }
 
 function resetGame() {

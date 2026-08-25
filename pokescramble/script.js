@@ -20,6 +20,33 @@ let solvedCount = 0;
 let secondsLeft = GAME_DURATION_SECONDS;
 let timerId = null;
 let activeIndex = 0;
+let scrambleCooldownTimer = null;
+
+function startScrambleCooldown() {
+  const until = Date.now() + 20000;
+  restartBtn.disabled = true;
+  startBtn.disabled = true;
+
+  const tick = () => {
+    const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    endMessage.textContent = `Time's up! Wait ${remainingSeconds}s before playing again.`;
+    endMessage.className = "end-message failure";
+    if (remainingSeconds <= 0) {
+      restartBtn.disabled = false;
+      startBtn.disabled = false;
+      endMessage.textContent = "Ready for another round?";
+      endMessage.className = "end-message failure";
+      return;
+    }
+
+    scrambleCooldownTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (scrambleCooldownTimer) {
+    window.clearTimeout(scrambleCooldownTimer);
+  }
+  tick();
+}
 
 function capitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
@@ -250,6 +277,7 @@ function endGame(success, message) {
   } else {
     endMessage.textContent = message || "Time's up! Better luck next time.";
     endMessage.className = "end-message failure";
+    startScrambleCooldown();
   }
 
   endReveal.innerHTML = "";

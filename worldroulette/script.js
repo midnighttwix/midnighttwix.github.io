@@ -42,6 +42,29 @@ const weatherTemp = document.getElementById("weather-temp");
 const pageBg = document.getElementById("page-bg");
 
 let clockIntervalId = null;
+let rouletteCooldownTimer = null;
+
+function startRouletteCooldown() {
+  const until = Date.now() + 20000;
+  randomizeBtn.disabled = true;
+
+  const tick = () => {
+    const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    statusMessage.textContent = `Wait ${remainingSeconds}s before rolling for a new city.`;
+    if (remainingSeconds <= 0) {
+      randomizeBtn.disabled = false;
+      statusMessage.textContent = "Hit Randomize to discover a place.";
+      return;
+    }
+
+    rouletteCooldownTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (rouletteCooldownTimer) {
+    window.clearTimeout(rouletteCooldownTimer);
+  }
+  tick();
+}
 
 function pickRandomCity() {
   const index = Math.floor(Math.random() * WEATHER_GAME_CITIES.length);
@@ -129,8 +152,11 @@ async function randomizePlace() {
     placeCard.classList.remove("hidden");
   } catch (error) {
     statusMessage.textContent = "Something went wrong fetching that place. Try again.";
+    startRouletteCooldown();
   } finally {
-    randomizeBtn.disabled = false;
+    if (randomizeBtn.disabled === false) {
+      randomizeBtn.disabled = false;
+    }
   }
 }
 

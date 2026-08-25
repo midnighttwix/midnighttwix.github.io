@@ -41,6 +41,36 @@ let targetPokemon = null;
 let solved = false;
 let guessedNames = new Set();
 let suggestionRequestToken = 0;
+let paletteCooldownTimer = null;
+
+function startPaletteCooldown() {
+  const until = Date.now() + 20000;
+  guessInput.disabled = true;
+  submitGuessBtn.disabled = true;
+  newPaletteBtn.disabled = true;
+
+  const tick = () => {
+    const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    resultMessage.textContent = `Wrong answer. Wait ${remainingSeconds}s before your next guess.`;
+    resultMessage.className = "result-message incorrect";
+    if (remainingSeconds <= 0) {
+      guessInput.disabled = false;
+      submitGuessBtn.disabled = false;
+      newPaletteBtn.disabled = false;
+      resultMessage.textContent = "";
+      resultMessage.className = "result-message";
+      guessInput.focus();
+      return;
+    }
+
+    paletteCooldownTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (paletteCooldownTimer) {
+    window.clearTimeout(paletteCooldownTimer);
+  }
+  tick();
+}
 
 function capitalize(text) {
   return text
@@ -399,6 +429,7 @@ async function submitGuess(rawName) {
   resultMessage.textContent = "Nope, that's not it!";
   resultMessage.className = "result-message incorrect";
   addHistoryRow({ displayName: guessDetails.displayName, sprite: guessDetails.sprite, correct: false, hints });
+  startPaletteCooldown();
 }
 
 guessInput.addEventListener("input", () => {

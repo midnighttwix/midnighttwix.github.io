@@ -46,6 +46,36 @@ const detailsCache = new Map(); // name -> { id, name, displayName, sprite, type
 
 let targetPokemon = null;
 let suggestionRequestToken = 0;
+let alienCooldownTimer = null;
+
+function startAlienCooldown() {
+  const until = Date.now() + 20000;
+  rerollBtn.disabled = true;
+  readyBtn.disabled = true;
+  submitGuessBtn.disabled = true;
+  newGameBtn.disabled = true;
+
+  const tick = () => {
+    const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    resultMessage.textContent = `Wrong! Wait ${remainingSeconds}s before rolling a new Pokémon.`;
+    resultMessage.className = "result-message incorrect";
+    if (remainingSeconds <= 0) {
+      rerollBtn.disabled = false;
+      readyBtn.disabled = false;
+      newGameBtn.disabled = false;
+      resultMessage.textContent = "";
+      resultMessage.className = "result-message";
+      return;
+    }
+
+    alienCooldownTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (alienCooldownTimer) {
+    window.clearTimeout(alienCooldownTimer);
+  }
+  tick();
+}
 
 function capitalize(text) {
   return text
@@ -294,6 +324,7 @@ async function submitGuess(rawName) {
   revealName.textContent = targetPokemon.displayName;
   revealCard.classList.remove("hidden");
   newGameBtn.classList.remove("hidden");
+  startAlienCooldown();
 }
 
 rerollBtn.addEventListener("click", loadNewPokemon);
