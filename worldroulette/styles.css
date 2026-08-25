@@ -1,17 +1,19 @@
 :root {
-  --page-bg: #f6f0e7;
-  --panel-bg: rgba(255, 255, 255, 0.82);
-  --panel-strong: rgba(255, 255, 255, 0.94);
-  --ink: #14253d;
-  --muted: #53677f;
-  --accent: #f29a3d;
-  --accent-strong: #ea7d2d;
+  --page-bg: #f7f2ea;
+  --panel-bg: rgba(255, 255, 255, 0.8);
+  --panel-strong: rgba(255, 255, 255, 0.96);
+  --ink: #183049;
+  --muted: #53657b;
+  --accent: #f3a14a;
+  --accent-strong: #e57d32;
   --accent-soft: #f8d8a7;
-  --sky: #dfeeff;
-  --earth: #f1d9b7;
-  --success: #cfeccd;
-  --fail: #f7d8db;
-  --shadow: rgba(18, 34, 55, 0.12);
+  --sky: #dbeeff;
+  --earth: #f1d7ad;
+  --success: #dff4df;
+  --fail: #f7dfe2;
+  --shadow: rgba(17, 29, 49, 0.12);
+  --gold: #f6d38c;
+  --sand: #f4eadb;
 }
 
 * {
@@ -28,9 +30,9 @@ html, body {
   margin: 0;
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, rgba(255, 190, 111, 0.18), transparent 18%),
-    radial-gradient(circle at bottom right, rgba(104, 145, 214, 0.12), transparent 24%),
-    linear-gradient(180deg, #f9f5ef 0%, #f5efe8 100%);
+    radial-gradient(circle at 20% 15%, rgba(255, 180, 100, 0.24), transparent 20%),
+    radial-gradient(circle at 80% 85%, rgba(135, 176, 238, 0.16), transparent 26%),
+    linear-gradient(180deg, #f9f4eb 0%, #f3ebdf 28%, #ebf3ff 100%);
   color: var(--ink);
   font-family: "Satoshi", "Trebuchet MS", "Segoe UI", sans-serif;
   font-weight: 700;
@@ -63,19 +65,19 @@ body {
 }
 
 .panel {
-  background: var(--panel-bg);
-  border: 1px solid rgba(20, 37, 61, 0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,245,236,0.8));
+  border: 1px solid rgba(24, 48, 73, 0.08);
   border-radius: 30px;
-  box-shadow: 0 18px 40px var(--shadow);
-  backdrop-filter: blur(10px) saturate(1.08);
-  -webkit-backdrop-filter: blur(10px) saturate(1.08);
-  padding: 1.1rem 1.1rem 1rem;
+  box-shadow: 0 24px 48px rgba(33, 61, 93, 0.12);
+  padding: 1.15rem 1.15rem 1rem;
   position: relative;
   overflow: hidden;
 }
 
 .travel-panel {
-  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,244,232,0.8));
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(255,245,232,0.8) 100%),
+    linear-gradient(135deg, rgba(255, 197, 123, 0.12), rgba(125, 175, 255, 0.12));
 }
 
 .travel-panel::before,
@@ -87,19 +89,19 @@ body {
 }
 
 .travel-panel::before {
-  width: 260px;
-  height: 260px;
-  right: -90px;
-  top: -110px;
-  background: radial-gradient(circle, rgba(242, 154, 61, 0.12), transparent 68%);
+  width: 300px;
+  height: 300px;
+  right: -120px;
+  top: -140px;
+  background: radial-gradient(circle, rgba(244, 171, 89, 0.15), transparent 70%);
 }
 
 .travel-panel::after {
-  width: 220px;
-  height: 220px;
-  left: -80px;
-  bottom: -90px;
-  background: radial-gradient(circle, rgba(72, 118, 189, 0.08), transparent 70%);
+  width: 280px;
+  height: 280px;
+  left: -110px;
+  bottom: -120px;
+  background: radial-gradient(circle, rgba(121, 175, 255, 0.12), transparent 70%);
 }
 
 .travel-panel .passport-header {
@@ -107,13 +109,13 @@ body {
 }
 
 .travel-panel .passport-header::after {
-  content: "EARTH ROULETTE";
+  content: "DREAM DESTINATIONS";
   position: absolute;
-  right: 8px;
+  right: 6px;
   top: -2px;
   font-size: 0.52rem;
   letter-spacing: 0.18em;
-  color: rgba(20, 37, 61, 0.38);
+  color: rgba(24, 48, 73, 0.36);
   transform: rotate(7deg);
 }
 
@@ -123,19 +125,19 @@ body {
   align-items: center;
   gap: 0.8rem;
   margin-bottom: 0.9rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(32, 49, 77, 0.18);
+  padding: 0.2rem 0 0.8rem;
+  border-bottom: 1px solid rgba(24, 48, 73, 0.12);
 }
 
 .passport-mark {
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(242, 154, 61, 0.22), rgba(140, 181, 242, 0.18));
-  border: 1px solid rgba(20, 37, 61, 0.08);
+  background: linear-gradient(135deg, rgba(244, 171, 89, 0.3), rgba(127, 177, 255, 0.22));
+  border: 1px solid rgba(24, 48, 73, 0.08);
   display: grid;
   place-items: center;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
 }
 
 .passport-mark-inner {
@@ -153,22 +155,22 @@ body {
 
 h1 {
   margin: 0;
-  font-size: clamp(1.7rem, 4vw, 2.45rem);
-  line-height: 1.05;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  line-height: 1.02;
   font-weight: 900;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.06em;
 }
 
 .primary-btn {
   border: none;
-  background: linear-gradient(135deg, #f6b963 0%, #ea8a45 100%);
+  background: linear-gradient(135deg, #f8c97a 0%, #f39a4a 48%, #ea7f3b 100%);
   color: #1f2a39;
   padding: 0.72rem 1.2rem;
   border-radius: 999px;
   cursor: pointer;
   font-weight: 900;
   font-size: 0.96rem;
-  box-shadow: 0 12px 20px rgba(234, 138, 69, 0.2), inset 0 1px 0 rgba(255,255,255,0.7);
+  box-shadow: 0 12px 20px rgba(234, 138, 69, 0.22), inset 0 1px 0 rgba(255,255,255,0.7);
   transition: transform 0.15s ease, filter 0.15s ease;
 }
 
@@ -184,13 +186,17 @@ h1 {
 }
 
 .status-message {
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.9rem;
   color: var(--muted);
   font-weight: 700;
   text-align: center;
   min-height: 1.4em;
   letter-spacing: 0.02em;
   font-size: 0.94rem;
+  background: rgba(255,255,255,0.3);
+  border: 1px solid rgba(24, 48, 73, 0.06);
+  border-radius: 999px;
+  padding: 0.5rem 0.8rem;
 }
 
 .guess-controls {
@@ -207,6 +213,7 @@ h1 {
   font-weight: 900;
   cursor: pointer;
   transition: transform 0.15s ease, filter 0.15s ease;
+  box-shadow: 0 10px 16px rgba(18, 30, 46, 0.06);
 }
 
 .answer-btn:hover:not(:disabled) {
@@ -245,10 +252,10 @@ h1 {
 .place-photo-wrap {
   position: relative;
   width: 100%;
-  border-radius: 24px;
+  border-radius: 26px;
   overflow: hidden;
-  border: 1px solid rgba(20, 37, 61, 0.08);
-  box-shadow: 0 18px 30px rgba(25, 39, 62, 0.12);
+  border: 1px solid rgba(24, 48, 73, 0.08);
+  box-shadow: 0 20px 34px rgba(25, 39, 62, 0.14);
   background: #eddab2;
 }
 
@@ -256,7 +263,7 @@ h1 {
   content: "";
   position: absolute;
   inset: 12px;
-  border: 1px solid rgba(255,255,255,0.34);
+  border: 1px solid rgba(255,255,255,0.3);
   border-radius: 18px;
   pointer-events: none;
   z-index: 2;
@@ -283,8 +290,8 @@ h1 {
 
 .place-region {
   margin: 0 0 0.2rem;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-size: 0.68rem;
   font-weight: 800;
@@ -292,12 +299,12 @@ h1 {
 
 .place-name {
   margin: 0;
-  font-size: clamp(1.9rem, 5vw, 2.7rem);
+  font-size: clamp(2rem, 5vw, 2.8rem);
   line-height: 1;
   font-weight: 900;
   text-align: left;
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.28);
-  letter-spacing: -0.04em;
+  letter-spacing: -0.05em;
 }
 
 .time-badge {
@@ -305,10 +312,10 @@ h1 {
   display: inline-flex;
   flex-direction: column;
   align-self: flex-start;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 12px;
-  padding: 0.35rem 0.6rem;
+  padding: 0.38rem 0.66rem;
   backdrop-filter: blur(4px);
 }
 
@@ -334,11 +341,11 @@ h1 {
   justify-content: center;
   gap: 0.8rem;
   margin-top: 0.1rem;
-  background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(252, 233, 206, 0.82));
-  border: 1px solid rgba(25, 39, 62, 0.06);
+  background: linear-gradient(135deg, rgba(255,255,255,0.72), rgba(246, 232, 207, 0.88));
+  border: 1px solid rgba(24, 48, 73, 0.08);
   border-radius: 999px;
   padding: 0.7rem 1rem;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
 }
 
 .weather-emoji {
