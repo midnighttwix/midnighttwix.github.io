@@ -1,12 +1,12 @@
 * { box-sizing: border-box; }
 :root { --ink: #17252d; --muted: #6d7c80; --paper: #f4f1e9; --line: #d9d9cf; --coral: #e86f58; --mint: #cfe5d6; }
 html, body { margin: 0; min-height: 100%; }
-body { color: var(--ink); font-family: "DM Sans", sans-serif; background: radial-gradient(circle at 12% 18%, rgba(238, 205, 137, .38), transparent 24%), radial-gradient(circle at 88% 78%, rgba(185, 215, 216, .35), transparent 28%), var(--paper); }
+body { position: relative; color: var(--ink); font-family: "DM Sans", sans-serif; background: radial-gradient(circle at 12% 18%, rgba(238, 205, 137, .38), transparent 24%), radial-gradient(circle at 88% 78%, rgba(185, 215, 216, .35), transparent 28%), var(--paper); }
 body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .38; background-image: linear-gradient(105deg, transparent 0 49.7%, rgba(23,37,45,.05) 49.8% 50.2%, transparent 50.3%), linear-gradient(15deg, transparent 0 49.7%, rgba(23,37,45,.04) 49.8% 50.2%, transparent 50.3%); background-size: 96px 96px; }
-.city-backdrop { position: fixed; inset: -32px; z-index: -1; background: center / cover no-repeat; filter: blur(28px) saturate(.8); opacity: 0; transition: opacity .6s ease, background-image .6s ease; }
+.city-backdrop { position: fixed; inset: -32px; z-index: 0; background: center / cover no-repeat; filter: blur(28px) saturate(.8); opacity: 0; transition: opacity .6s ease, background-image .6s ease; }
 .city-backdrop.visible { opacity: .22; }
-.app-shell { width: min(100% - 32px, 760px); margin: 0 auto; padding: 28px 0 52px; position: relative; }
-.site-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 62px; }
+.app-shell { width: min(100% - 32px, 640px); margin: 0 auto; padding: 24px 0 44px; position: relative; z-index: 1; }
+.site-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 44px; }
 .back-link { color: var(--ink); text-decoration: none; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .back-link::before { content: "← "; color: var(--coral); }
 .round-counter { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.25rem; }
@@ -14,7 +14,7 @@ body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opa
 .hero-copy { max-width: 590px; margin-bottom: 28px; }
 .kicker { color: var(--coral); font-size: .72rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; margin: 0 0 12px; }
 h1, h2, strong { font-family: "Space Grotesk", sans-serif; }
-h1 { font-size: clamp(3.3rem, 10vw, 6.4rem); line-height: .86; letter-spacing: -.09em; margin: 0; }
+h1 { font-size: clamp(3rem, 9vw, 5.4rem); line-height: .86; letter-spacing: -.09em; margin: 0; }
 .intro { color: var(--muted); font-size: 1.05rem; margin: 22px 0 0; }
 .mode-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-bottom: 18px; }
 .mode-card { border: 1px solid var(--line); background: rgba(255,255,255,.45); color: var(--ink); text-align: left; padding: 13px; border-radius: 12px; display: flex; gap: 10px; align-items: flex-start; cursor: pointer; transition: transform .2s, background .2s, border-color .2s; }
@@ -25,7 +25,7 @@ h1 { font-size: clamp(3.3rem, 10vw, 6.4rem); line-height: .86; letter-spacing: -
 .mode-card strong { font-size: .88rem; }
 .mode-card small { color: var(--muted); font-size: .68rem; margin-top: 5px; line-height: 1.2; }
 .mode-card.active small { color: #c6d1d1; }
-.roulette-stage { background: rgba(255,255,255,.68); border: 1px solid var(--line); border-radius: 18px; padding: 12px; box-shadow: 0 20px 45px rgba(40,55,56,.08); }
+.roulette-stage { background: rgba(255,255,255,.76); border: 1px solid var(--line); border-radius: 16px; padding: 10px; box-shadow: 0 16px 34px rgba(40,55,56,.1); }
 .stage-topline, .guess-heading, .history-heading { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .65rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 .stage-topline { padding: 5px 4px 12px; }
 .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #e4b057; }
