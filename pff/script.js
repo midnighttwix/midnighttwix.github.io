@@ -183,6 +183,40 @@ function openRenameModal(pid) {
   }
 }
 
+function openRenameTeamModal(mid) {
+  const m = managerById(mid);
+  if (!m || !m.human) return;
+  modalRoot.innerHTML = `
+    <div class="modal-back">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-head">
+          <p class="panel-title" style="margin:0;flex:1">RENAME TEAM</p>
+          <button class="btn btn-red btn-sm" id="rt-close" type="button">Close</button>
+        </div>
+        <p class="note">Give this franchise a custom team name that stays with it across the season and every format.</p>
+        <input id="rt-input" type="text" maxlength="28" value="${esc(m.name || "")}" placeholder="Team Name" class="rn-input" />
+        <div class="rowbar">
+          <button class="btn btn-green btn-sm" id="rt-save" type="button">Save</button>
+          <span class="spacer"></span>
+          <button class="btn btn-red btn-sm" id="rt-cancel" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+
+  const close = () => {
+    modalRoot.innerHTML = "";
+  };
+  $("rt-close").addEventListener("click", close);
+  $("rt-cancel").addEventListener("click", close);
+  $("rt-save").addEventListener("click", () => {
+    const val = $("rt-input").value.trim();
+    m.name = val || `Team ${m.id + 1}`;
+    save();
+    close();
+    render();
+  });
+}
+
 /* Player card: season total, last season's total, and a week-by-week fantasy points log. */
 function openPlayerCard(pid) {
   const p = L.players[pid];
@@ -547,10 +581,10 @@ function renderHumanNames() {
   host.querySelectorAll("input").forEach((el) => (existing[el.id] = el.value));
   host.innerHTML = Array.from({ length: n }, (_, i) => {
     const id = `human-name-${i}`;
-    const val = existing[id] != null ? existing[id] : i === 0 ? "Team Zane" : `Manager ${i + 1}`;
+    const val = existing[id] != null ? existing[id] : "";
     return `<div class="field">
-      <label for="${id}">Human Team ${i + 1}</label>
-      <input id="${id}" type="text" maxlength="26" value="${esc(val)}" />
+      <label for="${id}">Team ${i + 1}</label>
+      <input id="${id}" type="text" maxlength="26" value="${esc(val)}" placeholder="Team Name" />
     </div>`;
   }).join("");
 }
@@ -697,6 +731,7 @@ function renderDraft() {
   const m = managerById(onClock);
   $("draft-clock").textContent = m.human ? `${m.name} (YOU)` : m.name;
   $("draft-clock").style.color = m.human ? "var(--neon)" : "var(--gold)";
+  $("btn-board-toggle").textContent = boardVisible ? "Hide Board" : "Show Board";
 
   $("draft-board").parentElement.classList.toggle("hidden", !boardVisible);
   if (boardVisible) renderDraftBoard();
@@ -857,7 +892,7 @@ function renderManagerBar() {
         (m) =>
           `<button class="mgr-btn ${m.id === L.activeManagerId ? "active" : ""}" data-mgr="${m.id}" type="button">${esc(
             m.name
-          )}</button>`
+          )}</button><button class="btn-rename" data-team-rename="${m.id}" type="button" title="Rename Team">&#9998;</button>`
       )
       .join("");
 }
@@ -981,7 +1016,10 @@ function renderTeamTab() {
     <div class="grid-2">
       <div>
         <div class="panel">
-          <p class="panel-title">${esc(you.name.toUpperCase())} &middot; STARTING LINEUP &middot; WEEK ${week}</p>
+          <div class="rowbar" style="align-items:center">
+            <p class="panel-title" style="margin:0; flex:1">${esc(you.name.toUpperCase())} &middot; STARTING LINEUP &middot; WEEK ${week}</p>
+            <button class="btn btn-blue btn-sm" data-team-rename="${you.id}" type="button">Rename Team</button>
+          </div>
           <p class="note">${
             selectedBench
               ? `Selected <b>${esc(L.players[selectedBench].name)}</b> &mdash; tap "Put Here" on a slot.`
@@ -2875,6 +2913,11 @@ function bindGameday() {
 }
 
 document.addEventListener("click", (e) => {
+  const teamRename = e.target.closest("[data-team-rename]");
+  if (teamRename) {
+    openRenameTeamModal(Number(teamRename.dataset.teamRename));
+    return;
+  }
   const rename = e.target.closest("[data-rename]");
   if (rename) {
     openRenameModal(Number(rename.dataset.rename));
