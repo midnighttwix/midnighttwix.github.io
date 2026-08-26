@@ -106,7 +106,11 @@ const FIRST_NAMES = [
   "Randy", "Rashad", "Reggie", "Rhamondre", "Robert", "Rowan", "Russell", "Ryan", "Ryder", "Sam",
   "Sawyer", "Saquon", "Stefon", "Tanner", "Tavon", "Tee", "Teddy", "Terry", "Tom", "Tony",
   "Torry", "Travis", "Trevon", "Trevor", "Trey", "Tua", "Tyreek", "Tyrese", "Walter", "Weston",
-  "Will", "Wyatt", "Xavier", "Zach", "Zamir",
+  "Will", "Wyatt", "Xavier", "Zach", "Zamir", "Doug", "Kurt", "Sauce", "Poncho", "Moses", "Swarley",
+  "Eugene", "Eustace", "Carl", "Bazinga", "Shabooya", "Dinkleburg", "Timmy", "Bobby", "Babu", "Randy",
+  "Frostee", "Boogy", "Lucky", "DeMarvion", "Ziggy", "JuJu", "Spyro", "Crash", "Link", "Roy", "Big",
+  "Jet", "Shadow", "Sonic", "Chugg", "The Shell Of", "3 Rats Pretending To Be",
+  "Donk", "Buns", "Booty Boy", "Willy", "Flash", "Knox", "Yoink",
 
   "Biscuit", "Gravy", "Sizzle", "Chunk", "Scooter", "Peewee", "Sarge", "Chief", "Deacon", "Earl",
   "Cooter", "Slim", "Peanut", "Cornbread", "Grits", "Sausage", "Pancake", "Truck", "Bulldozer", "Anvil",
@@ -121,7 +125,7 @@ const FIRST_NAMES = [
   "Swamp Thing", "Bayou", "Cajun", "Hillbilly", "Yokel", "Hayseed", "Backwoods", "Boondock", "Ridge Runner", "Mountain Man",
   "Trailblazer", "Prospector", "Miner", "Lumberjack", "Woodchuck", "Sawdust", "Splinter", "Knothole", "Timber", "Plank",
   "Two-By-Four", "Nail Gun", "Wrench", "Socket", "Pliers", "Hacksaw", "Jigsaw", "Bandsaw", "Buzzsaw", "Chopper",
-  "Doc", "Preacher", "Deputy", "Marshal", "Ranger", "Constable", "Big Country", "Radar", "Snoop", "Stumpy",
+  "Doc", "Preacher", "Deputy", "Marshal", "Ranger", "Constable", "Big Country", "Radar", "Snoop", "Stumpy", "Preston",
 
   "Blorp", "Zibbly", "Florpo", "Gribnitz", "Wobblestein", "Sploot", "Yeetus", "Boof", "Dinglehopper", "Snickerdoodle",
   "Kablammo", "Zonk", "Wackford", "Doodle", "Noodle", "Pretzel", "Snorf", "Bloop", "Glorp", "Fizzwick",
@@ -177,10 +181,12 @@ const NICKNAMES = [
   "The Human Victory Lap", "Lil' Stat Padder", "The Podcast Darling", "Mr. Always Open",
   "The Human Highlight Machine", "Captain Comeback", "The Waterboy's Nightmare", "Sir Catches-a-Lot",
   "The Trade Bait King", "Mr. Locker Room Legend", "The Human Snack Table", "Lil' Playoff Push",
-  "The Bench Warmer's Dream", "Mr. Two-A-Days",
+  "The Bench Warmer's Dream", "Mr. Two-A-Days", "The Ittiest Bittiest", "The Boston Strangler",
+  "Only Here For The Zipline", "Never Talks", "It's Not His Time", "Baby of the Year", "Inventor of Sloppy Steaks",
+  "Big Papi", "Hungry Little Guy", "The Milkman", "The One That Tells Lies",
 ];
 
-const SUFFIXES = ["", "", "", "", "", "", " Jr.", " III", " Sr.", " II", " IV"];
+const SUFFIXES = ["", "", "", "", "", "", " Jr.", " III", " Sr.", " II", " IV",];
 
 const COACH_FIRST = ["Coach", "Mr.", "Skipper", "Big", "Papa", "Capn", "Daddy", "Big Man",];
 
@@ -200,7 +206,7 @@ const AI_MANAGER_NAMES = [
   "The Salamence Slammers", "Zoroark's Zealots", "The Corviknight Crew", "Toxtricity Turbo",
   "The Grimmsnarl Gauntlet", "Dragapult Demolition", "The Hatterene Hitmen", "Cinderace Circuit",
   "The Rillaboom Rowdies", "Inteleon Inc.", "The Wobuffet Wannabees", "The Punky Pidoves",
-  "The Perserrker Pirates",
+  "The Perserrker Pirates", "The Pecan Sandygasts", "Rock, Paper, Scizors", "THE MOON KICKS YOU!",
   "The Snorlax Snoozefest", "Weezing Out The Competition", "Slowbro's Slow Cookers", "Magcargo's Molten Misfits",
   "The Ditto Copycats", "Muk's Toxic Waste Management", "Grimer's Garbage Squad", "The Voltorb Volatility",
   "Electrode's Explosive Ending", "Koffing Around", "Jigglypuff's Lullaby Legion", "The Exeggutor Eggheads",
@@ -208,12 +214,11 @@ const AI_MANAGER_NAMES = [
   "Mimikyu's Disguise Crew", "The Wailord Whale Watchers", "Gyarados's Rage Quitters", "The Metapod Harden Squad",
   "Kakuna's Cocoon Crew", "The Magikarp Millionaires", "Zubat's Cave Dwellers", "The Ekans Charmers",
   "Weedle's Sting Operation", "Rattata's Run It Back", "The Spearow Squadron", "Pidgey's Flock",
-  "The Diglett's Dig Deep", "Sandshrew's Sandstorm Squad",
+  "The Diglett's Dig Deep", "Sandshrew's Sandstorm Squad", "The Vivacious Venonats", 
 ];
 
 const FRIEND_NAMES = [
-  "Zane", "Cush", "Peebr", "Chris", "Sketch", "Shannon", "DeliciousPeter", "Bailey",
-  "Sketch's Dog Cubone", "Chris's Uncle", "Duggy", "Bacula", "Schweppo", "Zumel", "Fish Stomper", "Rat Gumpus",
+  "Zane", "Cush", "Peebr", "Chris", "Sketch", "Shannon", "Peter", "Bailey",
 ];
 
 /* Silly weekly events. {kind, text, mult, weeksOut} */
@@ -256,6 +261,10 @@ const BOOST_EVENTS = [
   "got told they smell like a champion by the equipment guy",
   "just discovered their true Pokemon type match-up advantage",
   "had a really good nap in the locker room",
+  "saw Chris's uncle catch a moth, put it in his beer, and drink it",
+  "saw Chris's uncle do a backflip off a tire swing",
+  "saw Chris's uncle arm wrestle a raccoon for seeds",
+
 ];
 
 const SLUMP_EVENTS = [
@@ -337,6 +346,11 @@ const INJURY_EVENTS = [
   { note: "bruised a heel landing wrong on a jump", weeks: 1 },
   { note: "strained a hamstring chasing down an interception", weeks: 2 },
   { note: "hurt a wrist bracing for a hit", weeks: 1 },
+  { note: "was dared to pretend to be hurt for 4 weeks", weeks: 4 },
+  { note: "torn ACL", weeks: 18 },
+  { note: "broken heart", weeks: 2 },
+  { note: "leg just straight up fell off", weeks: 2 },
+
 ];
 
 const ABSENCE_EVENTS = [
@@ -387,11 +401,14 @@ const ABSENCE_EVENTS = [
   { note: "watched an Espathra paint a tunnel with an open road on the other side onto the wall and tried to run through it", weeks: 1 },
   { note: "had to stop and wait for two guys carrying a big glass pane very carefully passing by", weeks: 1 },
   { note: "left to go on a long pilgrimage", weeks: 2 },
+  { note: "a giant bird literally flew down, grabbed him, and just took off", weeks: 1 },
+
 ];
 
 /* Flavor quotes for mid-season NFL-to-NFL player trades (backups seeking snaps, injury replacements, etc). */
 const TRADE_QUOTES = [
   "\"We wish {name} the best, but everybody needs a fresh start sometimes,\" said the {oldTeam} coach.",
+  "\"We HATED {name}! I don't care if he scored or was super cool! I freakin' hate that guy this is personal this is my personal choice!,\" said the {oldTeam} coach.",
   "\"{name} wanted a real shot at snaps, and we couldn't promise that here,\" the {oldTeam} GM admitted.",
   "\"Excited to bring in {name}. We think there's another level there,\" said the {newTeam} coach.",
   "\"{name} texted me at 2 AM asking to be traded. Who am I to say no,\" joked the {oldTeam} GM.",
@@ -403,6 +420,15 @@ const TRADE_QUOTES = [
   "\"{name} still has a lot of football left in the tank. We got a steal here,\" said the {newTeam} coach.",
   "\"It's a business. {name} understood that better than most,\" said the {oldTeam} GM.",
   "\"{name} called it 'a business decision.' We call it addition by subtraction,\" laughed the {newTeam} coach.",
+  "\"Honestly? {name} beat me at cards on the team plane one too many times,\" admitted the {oldTeam} coach.",
+  "\"{name} kept eating all the pregame snacks meant for the whole team. We had to make a change,\" said the {oldTeam} GM.",
+  "\"We tried to keep {name}, but he really wanted to play somewhere with a nicer mascot,\" said the {oldTeam} front office.",
+  "\"{name} showed up to the {newTeam} facility with donuts for everybody. Instant fan favorite,\" said a {newTeam} staffer.",
+  "\"No hard feelings. {name} just really wanted to guard the {newTeam} state line,\" joked the {oldTeam} GM.",
+  "\"{name} said the {oldTeam} locker room smelled weird. That's on the record, that's what he said,\" the {oldTeam} coach sighed.",
+  "\"We're thrilled. {name} once beat our starter in a footrace during a scouting visit,\" said the {newTeam} coach.",
+  "\"{name} asked for a bigger role and honestly, we just didn't have a whiteboard marker to draw one up,\" said the {oldTeam} coach.",
+  "\"Adding {name} was a no-brainer. Our fans have been chanting his name since the rumor started,\" said the {newTeam} GM.",
 ];
 
 /* Post-game spotlight blurbs, keyed by how a player's outing compared to their usual output. */
@@ -415,6 +441,11 @@ const SPOTLIGHT_HOT = [
   "{name} looked like the best player on the field, full stop.",
   "{name} is playing with a confidence that should terrify next week's opponent.",
   "{name} turned in a performance that's going to be hard to bench moving forward.",
+  "{name} made it look like a video game on rookie difficulty.",
+  "{name} is must-start territory now, no ifs, ands, or buts.",
+  "{name} is the kind of story that makes a bye week manager start sweating.",
+  "{name} just cashed the biggest check of the season and it wasn't close.",
+  "{name} has officially entered 'must-watch' status heading into next week.",
 ];
 const SPOTLIGHT_COLD = [
   "{name} looked lost out there and needs to figure it out fast before the bench calls.",
@@ -425,6 +456,11 @@ const SPOTLIGHT_COLD = [
   "{name} is trending in the wrong direction and needs a bounce-back game, badly.",
   "{name} had one of those games everybody wants to forget as soon as possible.",
   "{name} could be in danger of losing snaps if this continues.",
+  "{name} looked like they left their cleats at home and just wore socks out there.",
+  "{name} is testing the patience of anyone who drafted them early.",
+  "{name} needs a serious gut check before next week rolls around.",
+  "{name} might want to just forget this game ever happened.",
+  "{name} is one more dud away from a permanent bench role.",
 ];
 const SPOTLIGHT_STEADY = [
   "{name} did exactly what was expected, nothing more, nothing less.",
@@ -432,6 +468,10 @@ const SPOTLIGHT_STEADY = [
   "{name} quietly got the job done. Nothing flashy, but reliable as ever.",
   "{name} kept things simple and got the job done without much fuss.",
   "{name} is what they are at this point: dependable, if unspectacular.",
+  "{name} showed up, did the job, went home. Nothing to see here.",
+  "{name} is the human equivalent of a vanilla milkshake — fine, always fine.",
+  "{name} won't wow anybody, but they won't sink you either.",
+  "{name} is the definition of 'just start them and don't think about it too hard.'",
 ];
 
 /* Analyst-style follow-up lines used to flesh out the player card scouting report. */
@@ -440,35 +480,52 @@ const SURPRISE_GOOD_NOTES = [
   "{name} wasn't projected for anything close to that, but here we are.",
   "Even the coaching staff looked shocked at how well {name} played.",
   "That's the kind of breakout line that gets a player a bigger role going forward.",
+  "Even {name}'s own family group chat didn't see that one coming.",
+  "Vegas would've laughed you out of the building for predicting that stat line from {name}.",
+  "That performance from {name} is going straight into the highlight reel nobody expected.",
 ];
 const SURPRISE_BAD_NOTES = [
   "That's a stunner — nobody expected {name} to come up that empty.",
   "{name} had a much rougher day than anyone anticipated.",
   "A real head-scratcher of a performance from {name}.",
   "Even the most pessimistic projections had {name} doing better than that.",
+  "Somewhere, {name}'s fantasy owner is staring at a wall right now.",
+  "Nobody, and we mean nobody, had {name} doing that little.",
+  "That's the kind of dud that makes you double check the box score twice.",
 ];
 const INJURY_STEPUP_NOTES = [
   "{name} stepped up big with {teammate} banged up, and made the most of the opportunity.",
   "With {teammate} sidelined, {name} saw a bigger workload and cashed in.",
   "{name} filled in admirably while {teammate} nurses an injury.",
   "The extra snaps with {teammate} out clearly agreed with {name}.",
+  "{name} answered the call the second {teammate} went down, no hesitation.",
+  "Injuries are nobody's friend, but {name} sure made the most of {teammate}'s absence.",
+  "{name} took advantage of every extra rep with {teammate} out of the lineup.",
 ];
 const BYE_OUTLOOK_NOTES = [
   "{name} is on a bye next week, so pencil in someone else.",
   "No game for {name} next week — bye week, plan accordingly.",
   "{name} gets a breather next week on the bye.",
+  "{name} is off next week. Don't be the manager who forgets and starts them anyway.",
+  "{name} is resting up on a bye — find a fill-in for the week.",
 ];
 const MATCHUP_OUTLOOK_EASY = [
   "{name} draws a leaky {team} defense next week and could keep it rolling.",
   "The matchup sets up nicely for {name} against a {team} defense that's been an open door.",
   "Analysts love this spot for {name} — {team} has struggled to slow anybody down.",
   "{name} should have plenty of room to work against {team} next week.",
+  "Circle it now: {name} against {team} looks like a smash spot on paper.",
+  "{team} has been giving up points in bunches, and {name} is next in line to feast.",
+  "If there's a week to start {name} with confidence, it's this one against {team}.",
 ];
 const MATCHUP_OUTLOOK_TOUGH = [
   "{name} faces a stingy {team} defense next week — expect a tougher outing.",
   "It won't be easy for {name} against a {team} unit that's been suffocating opponents.",
   "Buyer beware: {name} draws one of the league's better defenses in {team} next week.",
   "{name} will have to work for everything against a stout {team} defense.",
+  "{team} has been a house of horrors for opposing players, and {name} is walking right into it.",
+  "Temper expectations for {name} — {team} has been shutting people down all year.",
+  "This is the kind of matchup where {name} could use a bench-worthy backup plan.",
 ];
 
 const RETIRE_EVENTS = [
