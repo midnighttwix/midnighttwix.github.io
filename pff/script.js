@@ -1826,17 +1826,66 @@ function renderStatsTab() {
 let faFilter = "ALL";
 let faSearch = "";
 
-/* Unowned players worth grabbing right now: on a heater, or lit up the box score last week. */
+/*
+ * Bars a free agent must clear to count as a genuine pickup. Tuned against the
+ * sim's own free-agent scoring spread: BIG_WEEK sits around the 95th percentile
+ * weekly score for the position, STEADY_PPG around the 90th percentile season
+ * average. Backup QBs score far more than a spare TE, hence the per-position
+ * numbers rather than one flat threshold.
+ */
+const HOT_BIG_WEEK = { QB: 28, RB: 22, WR: 18, TE: 16, K: 14, DEF: 16 };
+const HOT_STEADY_PPG = { QB: 17.5, RB: 12, WR: 10, TE: 8.5, K: 7.5, DEF: 8 };
+const HOT_MIN_GAMES = 3;
+
+/* Most recent weeks the player actually suited up for, newest first. */
+function recentScores(p, upTo, count) {
+  const out = [];
+  for (let w = upTo; w >= 1 && out.length < count; w--) {
+    const rec = p.weeks[w];
+    if (rec && rec.pts != null) out.push(rec.pts);
+  }
+  return out;
+}
+
+/* Unowned players worth grabbing: just exploded, or quietly producing every week. */
 function hotFreeAgents() {
   const wk = L.lastPlayedWeek;
+  if (!wk) return [];
   return freeAgents(L)
+    .filter((p) => !(p.status.weeks > 1)) // still shelved next week, not a pickup
     .map((p) => {
-      const lastPts = wk && p.weeks[wk] ? p.weeks[wk].pts : null;
-      const boosted = !!(p.form && p.form.mult > 1);
-      const score = (boosted ? 50 : 0) + (lastPts || 0);
-      return { p, lastPts, boosted, score };
+      const bigBar = HOT_BIG_WEEK[p.pos] || 20;
+      const steadyBar = HOT_STEADY_PPG[p.pos] || 12;
+      const rec = p.weeks[wk];
+      const last = rec && rec.pts != null ? rec.pts : null;
+      const recent = recentScores(p, wk, 3);
+      const recentAvg = recent.length ? recent.reduce((s, v) => s + v, 0) / recent.length : 0;
+      const ppg = p.gamesPlayed ? p.seasonPts / p.gamesPlayed : 0;
+
+      const bigWeek = last != null && last >= bigBar;
+      const steady = p.gamesPlayed >= HOT_MIN_GAMES && ppg >= steadyBar;
+      const heater = recent.length >= 2 && recentAvg >= steadyBar * 1.15;
+
+      // Rank on how far past its own positional bar a line is, so a great TE
+      // isn't permanently outranked by a merely good RB.
+      const over = (v, bar) => v / bar - 1;
+      const score =
+        (bigWeek ? over(last, bigBar) * 1.3 + 0.5 : 0) +
+        (steady ? over(ppg, steadyBar) + 0.35 : 0) +
+        (heater ? over(recentAvg, steadyBar) * 0.6 : 0) +
+        (p.form && p.form.mult > 1 ? 0.1 : 0);
+
+      const reason = bigWeek
+        ? `${last.toFixed(1)} PTS WK ${wk}`
+        : steady
+        ? `${ppg.toFixed(1)} PPG &middot; ${p.gamesPlayed} GM`
+        : heater
+        ? `${recentAvg.toFixed(1)} PPG LAST ${recent.length}`
+        : "";
+
+      return { p, reason, hot: bigWeek || steady || heater, score };
     })
-    .filter((e) => e.boosted || (e.lastPts != null && e.lastPts >= 10))
+    .filter((e) => e.hot)
     .sort((a, b) => b.score - a.score)
     .slice(0, 6);
 }
@@ -1861,9 +1910,8 @@ function renderPlayersTab() {
         ${
           hot.length
             ? hot
-                .map(({ p, lastPts, boosted }) => {
+                .map(({ p, reason }) => {
                   const t = teamOf(p);
-                  const reason = lastPts != null ? `${lastPts.toFixed(1)} PTS` : boosted ? "TRENDING" : "";
                   return `<div class="trend-card">
                     <button class="trend-add" data-add="${p.id}" type="button" title="Add ${esc(displayName(p))}">+</button>
                     <span class="trend-info clickable-card" data-card="${p.id}">
