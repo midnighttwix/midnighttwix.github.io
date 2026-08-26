@@ -66,6 +66,12 @@ function teamOf(p) {
   return NFL_TEAMS[p.team];
 }
 
+/* Custom names stick to the player object itself, so they survive trades, drops and re-signs. */
+function displayName(p) {
+  if (!p) return "";
+  return p.customName || p.name;
+}
+
 function managerById(id) {
   if (id === -1 || id == null) return { id: -1, name: "The Ditto (phantom)", human: false, roster: [], lineups: {} };
   return L.managers.find((m) => m.id === id);
@@ -80,6 +86,7 @@ function activeManager() {
 }
 
 function shortName(p) {
+  if (p.customName) return p.customName;
   if (p.pos === "DEF") return `${teamOf(p).abbr} D`;
   return p.last.replace(/ (Jr\.|Sr\.|II|III)$/, "");
 }
@@ -106,24 +113,74 @@ function playerRow(p, opts = {}) {
   const rightSub = opts.rightSub != null ? opts.rightSub : ppg != null ? "PPG" : "PROJ";
   const badge = opts.slot || p.pos;
   const bye = L.byeWeeks[p.team];
+  const flavorBits = [p.customName ? `born ${esc(p.name)}` : null, p.nickname ? `<span class="nick">"${esc(p.nickname)}"</span>` : null]
+    .filter(Boolean)
+    .map((bit) => ` &middot; ${bit}`)
+    .join("");
   const sub =
     p.pos === "DEF"
-      ? `D/ST &middot; ${t.abbr} &middot; BYE ${bye}${p.nickname ? ` &middot; <span class="nick">"${esc(p.nickname)}"</span>` : ""}`
-      : `${p.pos} &middot; ${t.abbr} ${esc(t.nick)} &middot; BYE ${bye}${
-          p.nickname ? ` &middot; <span class="nick">"${esc(p.nickname)}"</span>` : ""
-        }`;
+      ? `D/ST &middot; ${t.abbr} &middot; BYE ${bye}${flavorBits}`
+      : `${p.pos} &middot; ${t.abbr} ${esc(t.nick)} &middot; BYE ${bye}${flavorBits}`;
   return `
     <div class="prow pos-tint-${p.pos} ${opts.rowClass || ""}" ${opts.dataAttr || ""}>
       <span class="pos-badge pos-${badge}">${badge}</span>
       ${avatarHtml(p)}
       <span class="pname">
-        <span class="nm">${esc(p.name)} ${statusTag(p, week)}</span>
+        <span class="nm">${esc(displayName(p))} ${statusTag(p, week)}</span>
         <span class="sub">${sub}</span>
       </span>
+      <button class="btn-rename" data-rename="${p.id}" type="button" title="Rename">&#9998;</button>
       ${opts.adp || ""}
       <span class="stat">${rightMain}<span class="sub">${rightSub}</span></span>
       ${opts.action || ""}
     </div>`;
+}
+
+/* Custom names live on the player object, so they follow the player through trades, drops and re-signs. */
+function openRenameModal(pid) {
+  const p = L.players[pid];
+  if (!p) return;
+  modalRoot.innerHTML = `
+    <div class="modal-back">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-head">
+          <p class="panel-title" style="margin:0;flex:1">RENAME PLAYER</p>
+          <button class="btn btn-red btn-sm" id="rn-close" type="button">Close</button>
+        </div>
+        <p class="note">Give ${esc(p.name)} a custom name for the whole league to see. It sticks with them through trades and drops.</p>
+        <input id="rn-input" type="text" maxlength="40" value="${esc(p.customName || "")}" placeholder="${esc(
+    p.name
+  )}" class="rn-input" />
+        <div class="rowbar">
+          <button class="btn btn-green btn-sm" id="rn-save" type="button">Save</button>
+          ${p.customName ? `<button class="btn btn-blue btn-sm" id="rn-clear" type="button">Reset to Default</button>` : ""}
+          <span class="spacer"></span>
+          <button class="btn btn-red btn-sm" id="rn-cancel" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+
+  const close = () => {
+    modalRoot.innerHTML = "";
+  };
+  $("rn-close").addEventListener("click", close);
+  $("rn-cancel").addEventListener("click", close);
+  $("rn-save").addEventListener("click", () => {
+    const val = $("rn-input").value.trim();
+    p.customName = val ? val.slice(0, 40) : null;
+    save();
+    close();
+    render();
+  });
+  const clearBtn = $("rn-clear");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      p.customName = null;
+      save();
+      close();
+      render();
+    });
+  }
 }
 
 function statSummary(line) {
@@ -346,7 +403,7 @@ function renderDraftBoard() {
       const pk = d.picksMade[overall];
       if (pk) {
         const p = L.players[pk.playerId];
-        cells += `<div class="bcell cell-${p.pos}" title="${esc(p.name)} (${p.pos}, ${teamOf(p).abbr})">
+        cells += `<div class="bcell cell-${p.pos}" title="${esc(displayName(p))} (${p.pos}, ${teamOf(p).abbr})">
           <span class="bpos">${p.pos}</span>
           <span class="bname">${esc(shortName(p))}</span>
         </div>`;
@@ -437,7 +494,7 @@ function renderDraft() {
       const mm = managerById(pk.managerId);
       return `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span>#${pk.overall} <b>${esc(
         mm.name
-      )}</b> select ${esc(p.name)} (${p.pos}, ${teamOf(p).abbr})</span></div>`;
+      )}</b> select ${esc(displayName(p))} (${p.pos}, ${teamOf(p).abbr})</span></div>`;
     })
     .join("");
 
@@ -647,7 +704,7 @@ function renderTeamTab() {
         .sort((a, b) => b.weeks[L.lastPlayedWeek].pts - a.weeks[L.lastPlayedWeek].pts)
         .map(
           (p) =>
-            `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(p.name)}</b> (${
+            `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> (${
               p.pos
             }) &mdash; <span style="color:var(--gold)">${p.weeks[L.lastPlayedWeek].pts.toFixed(
               1
@@ -776,7 +833,7 @@ function lineupPreview(m, week) {
     const played = p.weeks[week] && p.weeks[week].pts != null;
     const val = played ? p.weeks[week].pts : Math.max(0, weeklyProjection(L, p, week));
     proj += val;
-    return `<tr><td><span class="pos-badge pos-${slot}">${slot}</span></td><td>${esc(p.name)} <span class="note">${
+    return `<tr><td><span class="pos-badge pos-${slot}">${slot}</span></td><td>${esc(displayName(p))} <span class="note">${
       p.pos
     } ${teamOf(p).abbr}</span> ${statusTag(p, week)}</td><td class="num" style="color:var(--gold)">${val.toFixed(
       1
@@ -927,7 +984,7 @@ function topPerformers(wk) {
     .slice(0, 8)
     .map(
       (p) =>
-        `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(p.name)}</b> (${p.pos}, ${
+        `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> (${p.pos}, ${
           teamOf(p).abbr
         }) <span style="color:var(--gold)">${p.weeks[wk].pts.toFixed(1)}</span><br /><span class="note">${statSummary(
           lineOf(p, wk)
@@ -1139,7 +1196,7 @@ function gameLeaders(g) {
   return entries
     .map(
       (e) =>
-        `<div class="wire-item">${avatarHtml(e.p, "sprite sprite-sm")}<span><b>${esc(e.p.name)}</b> (${e.p.pos}, ${
+        `<div class="wire-item">${avatarHtml(e.p, "sprite sprite-sm")}<span><b>${esc(displayName(e.p))}</b> (${e.p.pos}, ${
           teamOf(e.p).abbr
         }) <span style="color:var(--gold)">${e.pts.toFixed(1)} fpts</span><br /><span class="note">${statSummary(
           e.line
@@ -1217,7 +1274,7 @@ function renderStandingsTab() {
                 .join("")
             : ""
         }
-        ${L.seasonHistory && L.seasonHistory.length ? `<p class="panel-title" style="margin-top:0.8rem">FRANCHISE RECAPS</p>${L.seasonHistory.slice().reverse().map((h) => { const close = h.closest; const wide = h.widest; const nfl = h.nflWinner != null ? NFL_TEAMS[h.nflWinner] : null; const mvps = Object.entries(h.managerMvp || {}).map(([mid, pid]) => { const mvp = L.players[pid]; return mvp ? `${esc(managerById(Number(mid)).name)}: ${esc(mvp.name)}` : ""; }).filter(Boolean).join(" · "); return `<div class="wire-item"><span><b>Season ${h.season}</b> &middot; Champion: ${esc(managerById(h.champion).name)}<br /><span class="note">Poké-NFL champion: ${nfl ? `${esc(nfl.city)} ${esc(nfl.nick)}` : "n/a"} &middot; Closest: ${close ? `${esc(managerById(close.a).name)} ${close.aScore.toFixed(1)} - ${close.bScore.toFixed(1)} ${esc(managerById(close.b).name)}` : "n/a"} &middot; Widest: ${wide ? `${Math.abs(wide.aScore - wide.bScore).toFixed(1)} point margin` : "n/a"}<br />Team MVPs: ${mvps || "n/a"}</span></span></div>`; }).join("")}` : ""}
+        ${L.seasonHistory && L.seasonHistory.length ? `<p class="panel-title" style="margin-top:0.8rem">FRANCHISE RECAPS</p>${L.seasonHistory.slice().reverse().map((h) => { const close = h.closest; const wide = h.widest; const nfl = h.nflWinner != null ? NFL_TEAMS[h.nflWinner] : null; const mvps = Object.entries(h.managerMvp || {}).map(([mid, pid]) => { const mvp = L.players[pid]; return mvp ? `${esc(managerById(Number(mid)).name)}: ${esc(displayName(mvp))}` : ""; }).filter(Boolean).join(" · "); return `<div class="wire-item"><span><b>Season ${h.season}</b> &middot; Champion: ${esc(managerById(h.champion).name)}<br /><span class="note">Poké-NFL champion: ${nfl ? `${esc(nfl.city)} ${esc(nfl.nick)}` : "n/a"} &middot; Closest: ${close ? `${esc(managerById(close.a).name)} ${close.aScore.toFixed(1)} - ${close.bScore.toFixed(1)} ${esc(managerById(close.b).name)}` : "n/a"} &middot; Widest: ${wide ? `${Math.abs(wide.aScore - wide.bScore).toFixed(1)} point margin` : "n/a"}<br />Team MVPs: ${mvps || "n/a"}</span></span></div>`; }).join("")}` : ""}
       </div>
     </div>`;
 }
@@ -1232,18 +1289,18 @@ function renderStatsTab() {
   const fantasyOwner = (pid) => L.managers.find((manager) => manager.roster.includes(pid) || (manager.ir || []).includes(pid));
   const players = allPlayers
     .filter((p) => statsFilter === "ALL" || p.pos === statsFilter)
-    .filter((p) => !statsSearch || p.name.toLowerCase().includes(statsSearch))
+    .filter((p) => !statsSearch || p.name.toLowerCase().includes(statsSearch) || (p.customName || "").toLowerCase().includes(statsSearch))
     .sort((a, b) => b.seasonPts - a.seasonPts);
   const leaders = POSITIONS.map((pos) => {
     const p = allPlayers.filter((x) => x.pos === pos).sort((a, b) => b.seasonPts - a.seasonPts)[0];
     const owner = p && fantasyOwner(p.id);
-    return p ? `<tr><td><span class="pos-badge pos-${pos}">${pos}</span></td><td>${esc(p.name)}</td><td>${owner ? esc(owner.name) : "<span class=\"note\">Free Agent</span>"}</td><td class="num">${p.seasonPts.toFixed(1)}</td></tr>` : "";
+    return p ? `<tr><td><span class="pos-badge pos-${pos}">${pos}</span></td><td>${esc(displayName(p))}</td><td>${owner ? esc(owner.name) : "<span class=\"note\">Free Agent</span>"}</td><td class="num">${p.seasonPts.toFixed(1)}</td></tr>` : "";
   }).join("");
   const rows = players.slice(0, 160).map((p, i) => {
     const stats = p.seasonStats || {};
     const positionRank = allPlayers.filter((x) => x.pos === p.pos).sort((a, b) => b.seasonPts - a.seasonPts).findIndex((x) => x.id === p.id) + 1;
     const owner = fantasyOwner(p.id);
-    return `<tr><td>${positionRank}</td><td>${esc(p.name)} ${statusTag(p, L.week)}</td><td>${p.pos}</td><td>${owner ? esc(owner.name) : "<span class=\"note\">Free Agent</span>"}</td><td class="num">${p.seasonPts.toFixed(1)}</td><td class="num">${p.gamesPlayed}</td><td class="num">${stats.passYds || 0}</td><td class="num">${stats.passTd || 0}</td><td class="num">${stats.passInt || 0}</td><td class="num">${stats.rushYds || 0}</td><td class="num">${stats.rushTd || 0}</td><td class="num">${stats.recYds || 0}</td><td class="num">${stats.rec || 0}</td><td class="num">${stats.recTd || 0}</td></tr>`;
+    return `<tr><td>${positionRank}</td><td>${esc(displayName(p))} ${statusTag(p, L.week)}</td><td>${p.pos}</td><td>${owner ? esc(owner.name) : "<span class=\"note\">Free Agent</span>"}</td><td class="num">${p.seasonPts.toFixed(1)}</td><td class="num">${p.gamesPlayed}</td><td class="num">${stats.passYds || 0}</td><td class="num">${stats.passTd || 0}</td><td class="num">${stats.passInt || 0}</td><td class="num">${stats.rushYds || 0}</td><td class="num">${stats.rushTd || 0}</td><td class="num">${stats.recYds || 0}</td><td class="num">${stats.rec || 0}</td><td class="num">${stats.recTd || 0}</td></tr>`;
   }).join("");
   $("tab-stats").innerHTML = `<div class="grid-2"><div class="panel"><p class="panel-title">LEAGUE LEADERS BY POSITION</p><table class="tbl"><tr><th>POS</th><th>PLAYER</th><th>FANTASY TEAM</th><th class="num">PTS</th></tr>${leaders}</table></div><div class="panel"><p class="panel-title">PLAYER SEARCH</p><div class="rowbar"><select id="stats-filter">${["ALL", ...POSITIONS].map((p) => `<option value="${p}" ${p === statsFilter ? "selected" : ""}>${p === "ALL" ? "All Positions" : p}</option>`).join("")}</select><input id="stats-search" type="text" placeholder="search name..." value="${esc(statsSearch)}" /></div><p class="note">Rank is within the selected position. Season totals include every completed game.</p></div></div><div class="panel"><p class="panel-title">SEASON PLAYER TOTALS</p><div class="scroll"><table class="tbl"><tr><th>#</th><th>PLAYER</th><th>POS</th><th>FANTASY TEAM</th><th class="num">PTS</th><th class="num">GP</th><th class="num">PASS YDS</th><th class="num">PASS TD</th><th class="num">INT</th><th class="num">RUSH YDS</th><th class="num">RUSH TD</th><th class="num">REC YDS</th><th class="num">REC</th><th class="num">REC TD</th></tr>${rows || `<tr><td colspan="14">No player stats yet. Play a week.</td></tr>`}</table></div></div>`;
   $("stats-filter").addEventListener("change", (e) => { statsFilter = e.target.value; renderStatsTab(); });
@@ -1260,7 +1317,7 @@ function renderPlayersTab() {
   const fas = freeAgents(L)
     .filter((p) => {
       if (faFilter !== "ALL" && p.pos !== faFilter) return false;
-      if (faSearch && !p.name.toLowerCase().includes(faSearch)) return false;
+      if (faSearch && !p.name.toLowerCase().includes(faSearch) && !(p.customName || "").toLowerCase().includes(faSearch)) return false;
       return true;
     })
     .sort((a, b) => tradeValue(L, b) - tradeValue(L, a))
@@ -1319,7 +1376,7 @@ function addFreeAgent(pid) {
     <div class="modal-back">
       <div class="modal">
         <div class="modal-head">
-          <p class="panel-title" style="margin:0;flex:1">CUT SOMEONE TO ADD ${esc(incoming.name).toUpperCase()}</p>
+          <p class="panel-title" style="margin:0;flex:1">CUT SOMEONE TO ADD ${esc(displayName(incoming)).toUpperCase()}</p>
           <button class="btn btn-red btn-sm" id="cut-close" type="button">Cancel</button>
         </div>
         ${you.roster
@@ -1377,7 +1434,7 @@ function renderTradeTab() {
             return `<label class="pick-row ${set.has(pid) ? "sel" : ""}">
               <input type="checkbox" ${attr}="${pid}" ${set.has(pid) ? "checked" : ""} />
               ${avatarHtml(p, "sprite sprite-sm")}
-              <span class="pname"><span class="nm">${esc(p.name)}</span><span class="sub">${p.pos} &middot; ${
+              <span class="pname"><span class="nm">${esc(displayName(p))}</span><span class="sub">${p.pos} &middot; ${
               teamOf(p).abbr
             } &middot; val ${tradeValue(L, p).toFixed(0)}</span></span>
             </label>`;
@@ -1444,8 +1501,8 @@ function executeTrade(you, partner, give, get) {
     week: L.week,
     kind: "boost",
     playerId: get[0],
-    text: `TRADE: ${you.name} sends ${give.map((p) => L.players[p].name).join(", ")} to ${partner.name} for ${get
-      .map((p) => L.players[p].name)
+    text: `TRADE: ${you.name} sends ${give.map((p) => displayName(L.players[p])).join(", ")} to ${partner.name} for ${get
+      .map((p) => displayName(L.players[p]))
       .join(", ")}.`,
   });
   tradeGive = new Set();
@@ -1737,20 +1794,20 @@ function applyDecision(m, player, opt, isCpu) {
   }
   if (opt.risk) GD.risks.push({ pid: player.id, risk: opt.risk });
   const text = isCpu
-    ? `${m.name} ${pick(CPU_DECISION_FLAVOR)} with ${player.name}: "${opt.label}".`
-    : `${m.name} &rarr; ${(opt.text || opt.label).replace(/\{name\}/g, player.name)}`;
+    ? `${m.name} ${pick(CPU_DECISION_FLAVOR)} with ${displayName(player)}: "${opt.label}".`
+    : `${m.name} &rarr; ${(opt.text || opt.label).replace(/\{name\}/g, displayName(player))}`;
   pushFeed(text, opt.sit ? "slump" : mult >= 1.1 ? "boost" : mult < 1 ? "slump" : "", player.id);
   GD.liveWire.push({
     week: GD.week,
     kind: opt.sit ? "absence" : mult >= 1.1 ? "boost" : "slump",
     playerId: player.id,
-    text: `COACH CALL &mdash; ${m.name}: ${player.name}, "${opt.label}".`,
+    text: `COACH CALL &mdash; ${m.name}: ${displayName(player)}, "${opt.label}".`,
   });
 }
 
 function showDecisionModal(entry, next) {
   const { m, player, scenario, when } = entry;
-  const prompt = scenario.prompt.replace(/\{name\}/g, player.name);
+  const prompt = scenario.prompt.replace(/\{name\}/g, displayName(player));
   modalRoot.innerHTML = `
     <div class="modal-back">
       <div class="modal decision">
@@ -1758,7 +1815,7 @@ function showDecisionModal(entry, next) {
         <div class="decision-head">
           ${avatarHtml(player, "sprite sprite-lg")}
           <div>
-            <p class="decision-name">${esc(player.name)}</p>
+            <p class="decision-name">${esc(displayName(player))}</p>
             <p class="note">${player.pos} &middot; ${teamOf(player).city} ${esc(teamOf(player).nick)}${
     player.nickname ? ` &middot; "${esc(player.nickname)}"` : ""
   } &middot; CURRENT ${((GD.totals[player.id] || 0)).toFixed(1)} FANTASY PTS</p>
@@ -1884,26 +1941,26 @@ function maybeLiveEvent(progress) {
   if (roll < 0.12) {
     GD.sat[p.id] = true;
     const note = pick(RETIRE_EVENTS);
-    pushFeed(`${p.name} ${note}`, "slump", p.id);
-    GD.liveWire.push({ week: GD.week, kind: "retire", playerId: p.id, text: `${p.name} ${note}` });
+    pushFeed(`${displayName(p)} ${note}`, "slump", p.id);
+    GD.liveWire.push({ week: GD.week, kind: "retire", playerId: p.id, text: `${displayName(p)} ${note}` });
     p.status = { type: "retired", weeks: 99, note };
   } else if (roll < 0.3) {
     GD.sat[p.id] = true;
     const inj = pick(INJURY_EVENTS);
     p.status = { type: "questionable", weeks: 0, note: inj.note };
-    const alert = { title: "QUESTIONABLE", text: `${p.name} is out for the day: ${inj.note}.`, playerId: p.id };
+    const alert = { title: "QUESTIONABLE", text: `${displayName(p)} is out for the day: ${inj.note}.`, playerId: p.id };
     GD.alerts.push(alert);
     showLiveHealthAlert(alert);
-    pushFeed(`${p.name} is down. ${inj.note}. He's out for the day.`, "injury", p.id);
+    pushFeed(`${displayName(p)} is down. ${inj.note}. He's out for the day.`, "injury", p.id);
     GD.risks.push({ pid: p.id, risk: 1, weeks: inj.weeks, note: inj.note });
   } else if (roll < 0.65) {
     GD.mods[p.id] = (GD.mods[p.id] || 1) * 1.35;
     const note = pick(BOOST_EVENTS);
-    pushFeed(`${p.name} is heating up &mdash; ${note}.`, "boost", p.id);
+    pushFeed(`${displayName(p)} is heating up &mdash; ${note}.`, "boost", p.id);
   } else {
     GD.mods[p.id] = (GD.mods[p.id] || 1) * 0.7;
     const note = pick(SLUMP_EVENTS);
-    pushFeed(`${p.name} is unraveling &mdash; ${note}.`, "slump", p.id);
+    pushFeed(`${displayName(p)} is unraveling &mdash; ${note}.`, "slump", p.id);
   }
 }
 
@@ -1938,8 +1995,8 @@ function endGameday() {
     if (!chance(r.risk)) return;
     const inj = r.weeks ? { weeks: r.weeks, note: r.note } : pick(INJURY_EVENTS);
     p.status = { type: "injured", weeks: inj.weeks + 1, note: inj.note };
-    GD.alerts.push({ title: "INJURY REPORT", text: `${p.name} left the game: ${inj.note}. Out ${inj.weeks + 1} week${inj.weeks > 0 ? "s" : ""}.`, playerId: p.id });
-    const text = `${p.name} left Week ${GD.week} banged up &mdash; ${inj.note}. Out ${inj.weeks} week${
+    GD.alerts.push({ title: "INJURY REPORT", text: `${displayName(p)} left the game: ${inj.note}. Out ${inj.weeks + 1} week${inj.weeks > 0 ? "s" : ""}.`, playerId: p.id });
+    const text = `${displayName(p)} left Week ${GD.week} banged up &mdash; ${inj.note}. Out ${inj.weeks} week${
       inj.weeks > 1 ? "s" : ""
     }.`;
     GD.liveWire.push({ week: GD.week, kind: "injury", playerId: p.id, text });
@@ -2049,7 +2106,7 @@ function renderGamedayLive() {
       return `<div class="gd-row ${hot ? "flash" : ""}">
         <span class="pos-badge pos-${slot}">${slot}</span>
         ${avatarHtml(p, "sprite sprite-sm")}
-        <span class="pname"><span class="nm">${esc(p.name)} ${tag}</span><span class="sub">${p.pos} &middot; ${
+        <span class="pname"><span class="nm">${esc(displayName(p))} ${tag}</span><span class="sub">${p.pos} &middot; ${
         teamOf(p).abbr
       }</span></span>
         <span class="stat">${pts.toFixed(1)}</span>
@@ -2094,7 +2151,7 @@ function playWeek(live) {
     const changes = nextSeason(L);
     L.lastPlayedWeek = 0;
     L.offseasonReport = {
-      retired: changes.retired.map((p) => `${p.name} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) hangs it up at ${p.age}.`),
+      retired: changes.retired.map((p) => `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) hangs it up at ${p.age}.`),
       rookies: changes.rookies.slice(0, 20).map((p) => `${p.name} (${p.pos}) drafted by the ${NFL_TEAMS[p.team].nick}.`),
     };
     L.phase = "offseason";
@@ -2230,6 +2287,11 @@ function bindGameday() {
   $("gd-skip").addEventListener("click", skipToEnd);
   $("gd-done").addEventListener("click", finishWeekButton);
 }
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-rename]");
+  if (btn) openRenameModal(Number(btn.dataset.rename));
+});
 
 initSetup();
 bindDraft();

@@ -319,6 +319,30 @@ select {
 }
 .nick { color: var(--pink); }
 
+.btn-rename {
+  flex: none;
+  background: none;
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  color: var(--dim);
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.28rem 0.4rem;
+  cursor: pointer;
+}
+.btn-rename:hover { color: var(--gold); border-color: var(--gold); }
+
+.rn-input {
+  width: 100%;
+  margin: 0.6rem 0;
+  padding: 0.5rem;
+  background: #08131f;
+  color: var(--ink);
+  border: 2px solid var(--line);
+  border-radius: 6px;
+  font-size: 1.05rem;
+}
+
 .pos-badge {
   font-family: "Press Start 2P", monospace;
   font-size: 0.4rem;

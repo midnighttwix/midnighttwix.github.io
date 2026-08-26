@@ -438,7 +438,7 @@ function simDrive(L, ctx, offTeam, defTeam, week) {
           team: offTeam,
           type: "sack",
           big: true,
-          desc: playDesc("sack", { passer: qb.name, yards: -loss, teamAbbr: abbrDef }),
+          desc: playDesc("sack", { passer: displayName(qb), yards: -loss, teamAbbr: abbrDef }),
           playerId: defUnit ? defUnit.id : null,
           fp: Object.assign({ [qb.id]: -loss * SCORING.passYd }, defUnit ? { [defUnit.id]: SCORING.defSack } : {}),
           score: { ...score },
@@ -456,7 +456,7 @@ function simDrive(L, ctx, offTeam, defTeam, week) {
           team: offTeam,
           type: "incomplete",
           big: false,
-          desc: playDesc("incomplete", { passer: qb.name, target: receiver.name }),
+          desc: playDesc("incomplete", { passer: displayName(qb), target: displayName(receiver) }),
           playerId: receiver.id,
           fp: {},
           score: { ...score },
@@ -480,7 +480,7 @@ function simDrive(L, ctx, offTeam, defTeam, week) {
         team: offTeam,
         type: scored ? "td" : "pass",
         big: scored || yards >= 20,
-        desc: playDesc("pass", { passer: qb.name, target: receiver.name, yards, td: scored }),
+        desc: playDesc("pass", { passer: displayName(qb), target: displayName(receiver), yards, td: scored }),
         playerId: receiver.id,
         fp: {
           [qb.id]: yards * SCORING.passYd + (scored ? SCORING.passTd : 0),
@@ -505,7 +505,7 @@ function simDrive(L, ctx, offTeam, defTeam, week) {
         team: offTeam,
         type: scored ? "td" : "rush",
         big: scored || yards >= 18,
-        desc: playDesc("rush", { rusher: rusher.name, yards, td: scored }),
+        desc: playDesc("rush", { rusher: displayName(rusher), yards, td: scored }),
         playerId: rusher.id,
         fp: { [rusher.id]: yards * SCORING.rushYd + (scored ? SCORING.rushTd : 0) },
         score: { ...score },
@@ -524,7 +524,7 @@ function simDrive(L, ctx, offTeam, defTeam, week) {
         team: offTeam,
         type: "turnover",
         big: true,
-        desc: playDesc("int", { passer: qb.name, teamAbbr: abbrDef }),
+        desc: playDesc("int", { passer: displayName(qb), teamAbbr: abbrDef }),
         playerId: defUnit ? defUnit.id : null,
         fp: Object.assign(
           { [qb.id]: SCORING.interception },
@@ -540,7 +540,7 @@ function simDrive(L, ctx, offTeam, defTeam, week) {
         team: offTeam,
         type: "turnover",
         big: true,
-        desc: playDesc("fumble", { rusher: carrier ? carrier.name : "Someone", teamAbbr: abbrDef }),
+        desc: playDesc("fumble", { rusher: carrier ? displayName(carrier) : "Someone", teamAbbr: abbrDef }),
         playerId: defUnit ? defUnit.id : null,
         fp: Object.assign(
           carrier ? { [carrier.id]: SCORING.fumbleLost } : {},
@@ -594,8 +594,8 @@ function simDrive(L, ctx, offTeam, defTeam, week) {
         type: made ? "fg" : "fgmiss",
         big: true,
         desc: made
-          ? `${kicker.name} drills a ${dist}-yard field goal.`
-          : `${kicker.name} yanks a ${dist}-yard field goal wide. Somewhere a fantasy manager screams.`,
+          ? `${displayName(kicker)} drills a ${dist}-yard field goal.`
+          : `${displayName(kicker)} yanks a ${dist}-yard field goal wide. Somewhere a fantasy manager screams.`,
         playerId: kicker.id,
         fp: { [kicker.id]: made ? fgPoints(dist) : SCORING.fgMiss },
         score: { ...score },
@@ -637,7 +637,7 @@ function finishTd(L, ctx, offTeam, defTeam) {
         team: offTeam,
         type: "twopt",
         big: true,
-        desc: `They go for two and ${guy.name} gets in! Chaos.`,
+        desc: `They go for two and ${displayName(guy)} gets in! Chaos.`,
         playerId: guy.id,
         fp: { [guy.id]: SCORING.twoPt },
         score: { ...score },
@@ -668,7 +668,7 @@ function finishTd(L, ctx, offTeam, defTeam) {
         team: offTeam,
         type: "xpmiss",
         big: false,
-        desc: `${kicker.name} MISSES the extra point. Unbelievable.`,
+        desc: `${displayName(kicker)} MISSES the extra point. Unbelievable.`,
         playerId: kicker.id,
         fp: {},
         score: { ...score },
@@ -728,7 +728,7 @@ function generateWeeklyEvents(L, week) {
       p.status.weeks--;
       if (p.status.weeks <= 0) {
         if (p.status.type !== "healthy") {
-          wire.push({ week, kind: "return", playerId: pid, text: `${p.name} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) is back and cleared to play.` });
+          wire.push({ week, kind: "return", playerId: pid, text: `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) is back and cleared to play.` });
         }
         p.status = { type: "healthy", weeks: 0, note: "" };
       }
@@ -743,7 +743,7 @@ function generateWeeklyEvents(L, week) {
           week,
           kind: boost ? "boost" : "slump",
           playerId: pid,
-          text: `${p.name} ${boost ? "is fired up after a players-only meeting." : "spent the week arguing about who ate whose lunch."}`,
+          text: `${displayName(p)} ${boost ? "is fired up after a players-only meeting." : "spent the week arguing about who ate whose lunch."}`,
         });
       }
       return;
@@ -752,20 +752,20 @@ function generateWeeklyEvents(L, week) {
     const roll = Math.random();
     if (roll < 0.004) {
       p.status = { type: "retired", weeks: 99, note: pick(RETIRE_EVENTS) };
-      wire.push({ week, kind: "retire", playerId: pid, text: `${p.name} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) ${p.status.note}` });
+      wire.push({ week, kind: "retire", playerId: pid, text: `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) ${p.status.note}` });
     } else if (roll < 0.045) {
       const inj = pick(INJURY_EVENTS);
       p.status = { type: "injured", weeks: inj.weeks, note: inj.note };
-      wire.push({ week, kind: "injury", playerId: pid, text: `${p.name} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) - ${inj.note}. Out ${inj.weeks} week${inj.weeks > 1 ? "s" : ""}.` });
+      wire.push({ week, kind: "injury", playerId: pid, text: `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) - ${inj.note}. Out ${inj.weeks} week${inj.weeks > 1 ? "s" : ""}.` });
     } else if (roll < 0.062) {
       const abs = pick(ABSENCE_EVENTS);
       p.status = { type: "out", weeks: abs.weeks, note: abs.note };
-      wire.push({ week, kind: "absence", playerId: pid, text: `${p.name} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) ${abs.note}. Out ${abs.weeks} week${abs.weeks > 1 ? "s" : ""}.` });
+      wire.push({ week, kind: "absence", playerId: pid, text: `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) ${abs.note}. Out ${abs.weeks} week${abs.weeks > 1 ? "s" : ""}.` });
     } else if (roll < 0.13) {
       const boost = chance(0.55);
       const note = boost ? pick(BOOST_EVENTS) : pick(SLUMP_EVENTS);
       p.form = { mult: boost ? 1.15 + Math.random() * 0.4 : 0.5 + Math.random() * 0.35, note };
-      wire.push({ week, kind: boost ? "boost" : "slump", playerId: pid, text: `${p.name} ${note}.` });
+      wire.push({ week, kind: boost ? "boost" : "slump", playerId: pid, text: `${displayName(p)} ${note}.` });
     }
   });
   return wire;
@@ -1104,7 +1104,7 @@ function aiRosterMoves(L) {
     if (better && tradeValue(L, better) > tradeValue(L, worst) * 1.1) {
       m.roster = m.roster.filter((pid) => pid !== worst.id);
       m.roster.push(better.id);
-      notes.push(`${m.name} added ${better.name} (${better.pos}) and dropped ${worst.name}.`);
+      notes.push(`${m.name} added ${displayName(better)} (${better.pos}) and dropped ${displayName(worst)}.`);
     }
   });
   return notes;
