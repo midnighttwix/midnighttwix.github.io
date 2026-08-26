@@ -429,6 +429,36 @@ const TRADE_QUOTES = [
   "\"We're thrilled. {name} once beat our starter in a footrace during a scouting visit,\" said the {newTeam} coach.",
   "\"{name} asked for a bigger role and honestly, we just didn't have a whiteboard marker to draw one up,\" said the {oldTeam} coach.",
   "\"Adding {name} was a no-brainer. Our fans have been chanting his name since the rumor started,\" said the {newTeam} GM.",
+  "\"It smelled like a retirement over there. That's the sole reason I left,\" said {name}.",
+  "\"I will have my revenge...,\" said {name} about {oldTeam}.",
+  "\"I've heard this city's Applebee's stays open until 2am so that definitely factored into my decision,\" said {name} about {newTeam}.",
+  "\"I have a lot of respect for the players and coaches of {oldTeam}. I don't know any of there names but I respect them,\" said {name}.",
+  "\"I'm gonna miss the guy who washed my car the most. He always left a chocolate in the window',\" said {name}.",
+  "\"These uniforms are SO MUCH COOLER!,\" said {name} about {newTeam}.",
+  "\"{name} kept calling the {oldTeam} logo 'cringe.' We had no choice,\" said the {oldTeam} GM.",
+  "\"I just needed a fresh start, and also there's a really good taco truck near the {newTeam} facility,\" said {name}.",
+  "\"{name} refused to stop doing the team handshake wrong. Every single time. We gave up,\" said the {oldTeam} coach.",
+  "\"Honestly {oldTeam} fans were too nice to me. I need some heckling in my life,\" said {name}.",
+  "\"{name} asked if we had a hot tub in the locker room. We do not. That was that,\" said the {oldTeam} GM.",
+  "\"I heard {newTeam} has a better fantasy football league in their front office. Had to be a part of it,\" said {name}.",
+  "\"We didn't trade {name}, {name} traded us. There's a difference and I don't have time to explain it,\" said the {oldTeam} coach.",
+  "\"{name} wouldn't stop naming the equipment truck. It has feelings now. We can't undo that,\" said the {oldTeam} GM.",
+  "\"{newTeam} promised {name} unlimited postgame smoothies. We could not compete with that offer,\" said the {oldTeam} GM.",
+  "\"{name} said the vibes were off. Can't argue with vibes,\" said the {oldTeam} coach.",
+  "\"Our mascot and {name} got into it backstage. Never fully recovered from that one,\" said the {oldTeam} GM.",
+  "\"{name} wanted a locker closer to the vending machine. {newTeam} delivered. We couldn't,\" said the {oldTeam} coach.",
+  "\"I just really believe in {newTeam}'s pregame playlist,\" said {name}.",
+  "\"{name} said our stadium nachos were 'mid.' That's when I knew this was over,\" said the {oldTeam} GM.",
+  "\"We offered {name} a raise. He wanted a parking spot closer to the door instead. We couldn't make that happen,\" said the {oldTeam} GM.",
+  "\"{newTeam} has better group chat energy. That's just facts,\" said {name}.",
+  "\"{name} said he manifested this trade during a meditation retreat. Who am I to argue with the universe,\" said the {oldTeam} coach.",
+  "\"Frankly, we just ran out of nicknames for {name}. Had to let him find a new team that could keep up,\" said the {oldTeam} GM.",
+  "\"{name} wanted to be closer to his fantasy football league's in-person draft. We respect the hustle,\" said the {newTeam} coach.",
+  "\"{oldTeam} just didn't have room in the budget for {name}'s snack requests anymore,\" said the {oldTeam} GM.",
+  "\"{name} said something about destiny and a fortune cookie. We didn't ask questions,\" said the {newTeam} coach.",
+  "\"We really just wanted to see {name} in a different colored jersey. Simple as that,\" said the {oldTeam} GM.",
+  "\"{name} beat our mascot in a dance-off and things got weird after that,\" said the {oldTeam} coach.",
+  "\"{newTeam} let {name} name the team bus. That's the kind of commitment we couldn't match,\" said the {oldTeam} GM.",
 ];
 
 /* Post-game spotlight blurbs, keyed by how a player's outing compared to their usual output. */
@@ -446,6 +476,19 @@ const SPOTLIGHT_HOT = [
   "{name} is the kind of story that makes a bye week manager start sweating.",
   "{name} just cashed the biggest check of the season and it wasn't close.",
   "{name} has officially entered 'must-watch' status heading into next week.",
+  "{name} might be literally the best player in the league. Emphasis on 'might be' I don't know cuz I don't watch football.",
+  "{name} has the makings of an every week fantasy stud if they can keep this up.",
+  "{name} looked like they were playing a different sport than everybody else out there.",
+  "{name} put together a Sunday that fantasy managers will be bragging about for weeks.",
+  "{name} is the reason bye weeks feel personal now.",
+  "{name} is playing angry, and it is working out great for everybody who drafted them.",
+  "{name} just declared war on opposing secondaries everywhere.",
+  "{name} looks like they found a cheat code and isn't telling anybody.",
+  "{name} is somehow getting better every single week, which shouldn't be legal.",
+  "{name} just posted numbers that are going to get talked about at the water cooler all week.",
+  "{name} is must-see TV right now and the opposing coordinator knows it.",
+  "{name} is balling out so hard that even rival fans are tipping the cap.",
+  "{name} is peaking at exactly the right time and the timing could not be better.",
 ];
 const SPOTLIGHT_COLD = [
   "{name} looked lost out there and needs to figure it out fast before the bench calls.",
@@ -461,6 +504,19 @@ const SPOTLIGHT_COLD = [
   "{name} needs a serious gut check before next week rolls around.",
   "{name} might want to just forget this game ever happened.",
   "{name} is one more dud away from a permanent bench role.",
+  "{name} looking like a man with glass bones and paper skin.",
+  "{name} is a whiny, pouty, shell of a man. Straight bad vibes in the locker room right now.",
+  "{name} played like they left their game plan at home along with their cleats.",
+  "{name} is giving off major 'please bench me' energy right now.",
+  "{name} looked like they were moving in slow motion while everyone else played at full speed.",
+  "{name} is in full-blown fantasy football witness protection mode.",
+  "{name} needs a vacation, a nap, and a completely different game plan, in that order.",
+  "{name} is on thin ice and the bench is getting warmer by the week.",
+  "{name} might want to sit this next matchup out mentally before they sit it out for real.",
+  "{name} looked like they forgot the snap count was a real thing.",
+  "{name} put together a performance that even their own mother might bench.",
+  "{name} is cratering hard and there's no floor in sight right now.",
+  "{name} needs to have a long talk with their fantasy football conscience.",
 ];
 const SPOTLIGHT_STEADY = [
   "{name} did exactly what was expected, nothing more, nothing less.",
@@ -472,6 +528,14 @@ const SPOTLIGHT_STEADY = [
   "{name} is the human equivalent of a vanilla milkshake — fine, always fine.",
   "{name} won't wow anybody, but they won't sink you either.",
   "{name} is the definition of 'just start them and don't think about it too hard.'",
+  "{name} put up the exact same stat line their agent probably predicted before the season.",
+  "{name} is the reliable sedan of fantasy football: not exciting, but it always starts.",
+  "{name} shows up on time, does the job, clocks out. Union rep would be proud.",
+  "{name} isn't going to win you the week, but they sure aren't going to lose it either.",
+  "{name} is boring in the best possible way for a fantasy manager.",
+  "{name} keeps doing the same thing every week and honestly, respect for the consistency.",
+  "{name} is the kind of player you forget is even on your roster until they show up on the stat sheet.",
+  "{name} delivered a totally unremarkable, perfectly acceptable stat line.",
 ];
 
 /* Analyst-style follow-up lines used to flesh out the player card scouting report. */
@@ -483,6 +547,12 @@ const SURPRISE_GOOD_NOTES = [
   "Even {name}'s own family group chat didn't see that one coming.",
   "Vegas would've laughed you out of the building for predicting that stat line from {name}.",
   "That performance from {name} is going straight into the highlight reel nobody expected.",
+  "Somewhere, a scout who cut {name} is quietly rethinking their whole career.",
+  "{name} just made every fantasy manager who benched them regret every decision they've ever made.",
+  "That game from {name} is going to get replayed on every highlight show this week.",
+  "Even {name}'s harshest critics have to tip the cap after that showing.",
+  "The fantasy waiver wire is about to get very crowded because of {name}.",
+  "{name} just turned doubters into believers in the span of one afternoon.",
 ];
 const SURPRISE_BAD_NOTES = [
   "That's a stunner — nobody expected {name} to come up that empty.",
@@ -492,6 +562,12 @@ const SURPRISE_BAD_NOTES = [
   "Somewhere, {name}'s fantasy owner is staring at a wall right now.",
   "Nobody, and we mean nobody, had {name} doing that little.",
   "That's the kind of dud that makes you double check the box score twice.",
+  "The projections owe {name}'s fantasy managers a written apology.",
+  "Nobody circled this game as a trap, and yet here we are.",
+  "{name} really said 'not today' to an entire fanbase's expectations.",
+  "That was a special kind of quiet from a player who's usually anything but.",
+  "Somewhere a waiver-wire pickup is laughing at {name} right now.",
+  "This is the kind of week that makes you question every scouting report ever written on {name}.",
 ];
 const INJURY_STEPUP_NOTES = [
   "{name} stepped up big with {teammate} banged up, and made the most of the opportunity.",
@@ -501,6 +577,11 @@ const INJURY_STEPUP_NOTES = [
   "{name} answered the call the second {teammate} went down, no hesitation.",
   "Injuries are nobody's friend, but {name} sure made the most of {teammate}'s absence.",
   "{name} took advantage of every extra rep with {teammate} out of the lineup.",
+  "{name} was next in line and cashed in the second {teammate} went down.",
+  "Somebody had to pick up the slack for {teammate}, and {name} volunteered in a big way.",
+  "{name} turned {teammate}'s misfortune into the best game of their season.",
+  "It's next-man-up mentality, and {name} answered the call in a big way with {teammate} out.",
+  "{name} made the most of an opportunity that only existed because {teammate} went down.",
 ];
 const BYE_OUTLOOK_NOTES = [
   "{name} is on a bye next week, so pencil in someone else.",
@@ -508,6 +589,10 @@ const BYE_OUTLOOK_NOTES = [
   "{name} gets a breather next week on the bye.",
   "{name} is off next week. Don't be the manager who forgets and starts them anyway.",
   "{name} is resting up on a bye — find a fill-in for the week.",
+  "Mark it down: {name} doesn't suit up next week thanks to the bye.",
+  "{name} is taking a scheduled week off, so don't leave an empty slot behind.",
+  "The bye week comes for everyone, and this week it's {name}'s turn.",
+  "{name} won't be adding to the stat sheet next week — bye week is here.",
 ];
 const MATCHUP_OUTLOOK_EASY = [
   "{name} draws a leaky {team} defense next week and could keep it rolling.",
@@ -517,6 +602,10 @@ const MATCHUP_OUTLOOK_EASY = [
   "Circle it now: {name} against {team} looks like a smash spot on paper.",
   "{team} has been giving up points in bunches, and {name} is next in line to feast.",
   "If there's a week to start {name} with confidence, it's this one against {team}.",
+  "{team} has been the softest touch in the league lately, and {name} is walking right into it.",
+  "This is exactly the kind of matchup {name}'s fantasy managers dream about.",
+  "{name} versus {team} is about as close to a guaranteed lock as it gets.",
+  "{team} has allowed points in bunches all year, and {name} is licking their chops.",
 ];
 const MATCHUP_OUTLOOK_TOUGH = [
   "{name} faces a stingy {team} defense next week — expect a tougher outing.",
@@ -526,6 +615,10 @@ const MATCHUP_OUTLOOK_TOUGH = [
   "{team} has been a house of horrors for opposing players, and {name} is walking right into it.",
   "Temper expectations for {name} — {team} has been shutting people down all year.",
   "This is the kind of matchup where {name} could use a bench-worthy backup plan.",
+  "{team} has quietly become one of the toughest defenses to game plan against, bad news for {name}.",
+  "Don't expect fireworks from {name} this week — {team} has been lights out.",
+  "{name} is walking into a defensive buzzsaw in {team} next week.",
+  "History says {team} gives fits to players just like {name} — proceed with caution.",
 ];
 
 const RETIRE_EVENTS = [
@@ -554,7 +647,8 @@ const RETIRE_EVENTS = [
   "quit to open a very niche antique spoon store",
   "retired to finally learn the accordion",
   "walked away to become a weather balloon enthusiast",
-  "bought a boat. nuff said"
+  "bought a boat. nuff said",
+  "they got him...",
 ];
 
 const HIGHLIGHT_VERBS = {
