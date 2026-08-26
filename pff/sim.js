@@ -806,6 +806,28 @@ function autoLineup(L, manager, week) {
   return lineup;
 }
 
+/* Best Ball: after the week's actually played, every rostered player (bench included) is eligible -
+   the highest scorer at each slot wins it, so a hot bench guy can outscore your starter automatically. */
+function bestBallLineup(L, manager, week) {
+  const available = manager.roster
+    .map((pid) => L.players[pid])
+    .filter((p) => p && p.weeks[week] && p.weeks[week].pts != null)
+    .sort((a, b) => b.weeks[week].pts - a.weeks[week].pts);
+  const used = new Set();
+  const lineup = {};
+  ROSTER_SLOTS.forEach((slot, i) => {
+    const key = `${slot}${i}`;
+    const found = available.find((p) => !used.has(p.id) && eligibleForSlot(slot, p.pos));
+    if (found) {
+      used.add(found.id);
+      lineup[key] = found.id;
+    } else {
+      lineup[key] = null;
+    }
+  });
+  return lineup;
+}
+
 function weeklyProjection(L, p, week) {
   if (!p) return -1;
   if (p.status.type === "retired") return -1;
@@ -904,7 +926,11 @@ function finalizeWeek(L, games, wire, playerPts) {
   });
 
   L.managers.forEach((m) => {
-    if (!m.lineups[week]) m.lineups[week] = autoLineup(L, m, week);
+    if (L.mode === "bestball") {
+      m.lineups[week] = bestBallLineup(L, m, week);
+    } else if (!m.lineups[week]) {
+      m.lineups[week] = autoLineup(L, m, week);
+    }
   });
 
   const matchups =
@@ -1148,6 +1174,7 @@ function aiDraftPick(L, manager, pool) {
 /* ------------------------------------------------------- league creation */
 
 function createLeague(settings) {
+  applyRosterSizeForMode(settings.mode);
   const L = {
     version: 2,
     settings,
@@ -1165,6 +1192,7 @@ function createLeague(settings) {
     champions: [],
     seasonHistory: [],
     nflRecords: {},
+    keeperSelections: {},
   };
 
   createPlayerPool(L);
@@ -1195,38 +1223,138 @@ function createLeague(settings) {
   L.activeManagerId = 0;
 
   makeFantasySchedule(L);
-  startDraft(L);
+  startDraft(L, { managerOrder: draftManagerOrder(L, settings) });
   return L;
 }
 
-function startDraft(L) {
-  const order = shuffle(L.managers.map((m) => m.id));
+/* Builds the base (pre-snake) manager order for a draft, honoring a manual "choose my slot" preference. */
+function draftManagerOrder(L, settings) {
+  const ids = L.managers.map((m) => m.id);
+  if (settings && settings.draftPositionMode === "manual" && settings.draftPositionSlot) {
+    const rest = shuffle(ids.filter((id) => id !== 0));
+    const slot = clamp(Number(settings.draftPositionSlot) - 1, 0, ids.length - 1);
+    rest.splice(slot, 0, 0);
+    return rest;
+  }
+  return shuffle(ids);
+}
+
+function buildSnakeOrder(managerIds, rounds) {
+  const order = [];
+  for (let r = 0; r < rounds; r++) {
+    const roundOrder = r % 2 === 0 ? managerIds : managerIds.slice().reverse();
+    order.push(...roundOrder);
+  }
+  return order;
+}
+
+/* opts: { managerOrder, rounds, reserved, rookieOnly, poolIds } */
+function startDraft(L, opts = {}) {
+  const managerOrder = opts.managerOrder || shuffle(L.managers.map((m) => m.id));
+  const rounds = opts.rounds || ROSTER_SIZE;
+  let order = buildSnakeOrder(managerOrder, rounds);
+  if (opts.rookieOnly && opts.poolIds) order = order.slice(0, opts.poolIds.length);
   assignAdp(L);
   L.draft = {
     order,
-    round: 1,
-    pickIndex: 0,
-    totalPicks: L.managers.length * ROSTER_SIZE,
+    reserved: opts.reserved || {},
+    totalPicks: order.length,
     picksMade: [],
-    complete: false,
+    complete: order.length === 0,
+    rookieOnly: !!opts.rookieOnly,
+    poolIds: opts.poolIds || null,
   };
-  L.phase = "draft";
+  L.phase = order.length === 0 ? "regular" : "draft";
+  if (order.length === 0) L.week = 1;
+}
+
+/* Rookie-only redraft used every year in Dynasty mode - full rosters carry over, only new rookies are picked. */
+function startRookieDraft(L, rookies) {
+  const managerOrder = draftManagerOrder(L, L.settings);
+  startDraft(L, {
+    managerOrder,
+    rounds: Math.max(1, Math.ceil(rookies.length / L.managers.length)),
+    rookieOnly: true,
+    poolIds: rookies.map((p) => p.id),
+  });
+}
+
+/* Franchise keepers: figure out which snake-draft slot each kept player reserves for its owner. */
+function buildKeeperReservations(L, managerOrder, rounds) {
+  const n = managerOrder.length;
+  const reserved = {};
+  L.managers.forEach((m) => {
+    const keeperIds = (L.keeperSelections && L.keeperSelections[m.id]) || [];
+    const used = new Set();
+    const withRounds = keeperIds
+      .map((pid) => {
+        const p = L.players[pid];
+        return { pid, round: p && p.draftedRound != null ? p.draftedRound : Infinity };
+      })
+      .sort((a, b) => a.round - b.round);
+    withRounds.forEach(({ pid, round }) => {
+      let r = round === Infinity ? rounds : Math.min(round, rounds);
+      while (used.has(r) && r > 1) r--;
+      used.add(r);
+      const roundStart = (r - 1) * n;
+      const roundOrder = (r - 1) % 2 === 0 ? managerOrder : managerOrder.slice().reverse();
+      const slot = roundOrder.indexOf(m.id);
+      if (slot >= 0) reserved[roundStart + slot] = { playerId: pid, managerId: m.id };
+    });
+  });
+  return reserved;
+}
+
+/* CPU teams don't need a UI - just lock in their two best players the moment keeper season opens. */
+function autoPickKeepersForCpus(L) {
+  L.keeperSelections = L.keeperSelections || {};
+  const max = Number((L.settings && L.settings.keeperCount) || 0);
+  L.managers.forEach((m) => {
+    if (m.human) return;
+    const ranked = m.roster
+      .map((pid) => L.players[pid])
+      .filter(Boolean)
+      .sort((a, b) => b.seasonPts - a.seasonPts);
+    L.keeperSelections[m.id] = ranked.slice(0, max).map((p) => p.id);
+  });
+}
+
+/* Locks in keeper picks, resets everyone else's roster to just their keepers, and starts the redraft. */
+function finalizeKeepersAndDraft(L) {
+  L.managers.forEach((m) => {
+    const max = Number((L.settings && L.settings.keeperCount) || 0);
+    const keep = (L.keeperSelections[m.id] || []).slice(0, max);
+    m.roster = keep.slice();
+    m.ir = [];
+  });
+  const managerOrder = draftManagerOrder(L, L.settings);
+  const rounds = ROSTER_SIZE;
+  const reserved = buildKeeperReservations(L, managerOrder, rounds);
+  startDraft(L, { managerOrder, rounds, reserved });
 }
 
 function draftOnTheClock(L) {
   const d = L.draft;
-  const n = L.managers.length;
-  const overall = d.picksMade.length;
-  const round = Math.floor(overall / n);
-  const slot = overall % n;
-  const idx = round % 2 === 0 ? slot : n - 1 - slot;
-  return d.order[idx];
+  while (d.picksMade.length < d.totalPicks && d.reserved && d.reserved[d.picksMade.length]) {
+    const info = d.reserved[d.picksMade.length];
+    d.picksMade.push({ managerId: info.managerId, playerId: info.playerId, overall: d.picksMade.length + 1, keeper: true });
+    if (d.picksMade.length >= d.totalPicks) {
+      d.complete = true;
+      L.phase = "regular";
+      L.week = 1;
+    }
+  }
+  if (d.picksMade.length >= d.totalPicks) return null;
+  return d.order[d.picksMade.length];
 }
 
 function makeDraftPick(L, managerId, playerId) {
   const m = L.managers.find((x) => x.id === managerId);
   m.roster.push(playerId);
-  L.draft.picksMade.push({ managerId, playerId, overall: L.draft.picksMade.length + 1 });
+  const overall = L.draft.picksMade.length;
+  const player = L.players[playerId];
+  if (player) player.draftedRound = Math.floor(overall / L.managers.length) + 1;
+  L.draft.picksMade.push({ managerId, playerId, overall: overall + 1 });
   if (L.draft.picksMade.length >= L.draft.totalPicks) {
     L.draft.complete = true;
     L.phase = "regular";
@@ -1236,7 +1364,14 @@ function makeDraftPick(L, managerId, playerId) {
 
 function availablePlayers(L) {
   const taken = new Set(L.draft.picksMade.map((p) => p.playerId));
-  return L.playerIds.map((pid) => L.players[pid]).filter((p) => !taken.has(p.id));
+  // Also exclude anyone already on a roster (matters for dynasty/keeper drafts where rosters aren't empty).
+  L.managers.forEach((m) => m.roster.forEach((pid) => taken.add(pid)));
+  let pool = L.playerIds.map((pid) => L.players[pid]).filter((p) => !taken.has(p.id));
+  if (L.draft.rookieOnly && L.draft.poolIds) {
+    const poolSet = new Set(L.draft.poolIds);
+    pool = pool.filter((p) => poolSet.has(p.id));
+  }
+  return pool;
 }
 
 /* --------------------------------------------------------- next season */
@@ -1258,6 +1393,11 @@ function nextSeason(L) {
   const widest = matchupGames.slice().sort((a, b) => Math.abs(b.aScore - b.bScore) - Math.abs(a.aScore - a.bScore))[0];
   L.seasonHistory = L.seasonHistory || [];
   L.seasonHistory.push({ season: L.season, champion: champ, closest, widest, managerMvp, nflWinner: nflWinner ? Number(nflWinner[0]) : null });
+
+  const isDynasty = L.mode === "dynasty";
+  const keepersEnabled = L.mode === "franchise" && L.settings && Number(L.settings.keeperCount) > 0;
+  const keepRoster = isDynasty || keepersEnabled;
+
   L.managers.forEach((m) => {
     m.history.push({
       season: L.season,
@@ -1273,8 +1413,10 @@ function nextSeason(L) {
     m.ties = 0;
     m.pointsFor = 0;
     m.pointsAgainst = 0;
-    m.roster = [];
-    m.ir = [];
+    if (!keepRoster) {
+      m.roster = [];
+      m.ir = [];
+    }
     m.lineups = {};
   });
 
@@ -1314,6 +1456,13 @@ function nextSeason(L) {
   const retiredIds = new Set(retiring.map((p) => p.id));
   L.playerIds = L.playerIds.filter((pid) => !retiredIds.has(pid));
   retiring.forEach((p) => delete L.players[p.id]);
+
+  if (keepRoster) {
+    L.managers.forEach((m) => {
+      m.roster = m.roster.filter((pid) => !retiredIds.has(pid));
+      m.ir = (m.ir || []).filter((pid) => !retiredIds.has(pid));
+    });
+  }
 
   // Backfill rosters with rookies
   const dexPool = shuffle(POKEDEX.filter((p) => p.id <= SPRITE_DEX_MAX && !usedDex.has(p.id)));
@@ -1366,6 +1515,15 @@ function nextSeason(L) {
   L.bracket = null;
   makeNflSchedule(L);
   makeFantasySchedule(L);
-  startDraft(L);
+
+  if (isDynasty) {
+    startRookieDraft(L, rookies);
+  } else if (keepersEnabled) {
+    L.keeperSelections = {};
+    autoPickKeepersForCpus(L);
+    L.phase = "keepers";
+  } else {
+    startDraft(L, { managerOrder: draftManagerOrder(L, L.settings) });
+  }
   return { retired: retiring, rookies };
 }

@@ -75,8 +75,16 @@ const PA_TIERS = [
 
 const ROSTER_SLOTS = ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "K", "DEF"];
 const FLEX_OK = ["RB", "WR", "TE"];
-const BENCH_SIZE = 6;
-const ROSTER_SIZE = ROSTER_SLOTS.length + BENCH_SIZE;
+const NORMAL_BENCH_SIZE = 6;
+const DYNASTY_BENCH_SIZE = 20;
+let BENCH_SIZE = NORMAL_BENCH_SIZE;
+let ROSTER_SIZE = ROSTER_SLOTS.length + BENCH_SIZE;
+
+/* Dynasty leagues carry way deeper benches since rosters persist year to year. */
+function applyRosterSizeForMode(mode) {
+  BENCH_SIZE = mode === "dynasty" ? DYNASTY_BENCH_SIZE : NORMAL_BENCH_SIZE;
+  ROSTER_SIZE = ROSTER_SLOTS.length + BENCH_SIZE;
+}
 
 const REG_SEASON_WEEKS = 14;
 const NFL_WEEKS = 17;

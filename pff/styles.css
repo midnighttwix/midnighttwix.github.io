@@ -1078,3 +1078,71 @@ td.clickable-card:hover { color: var(--gold); }
 .save-slot-info { display: flex; flex-direction: column; gap: 0.1rem; }
 .save-slot-actions { display: flex; align-items: center; gap: 0.35rem; flex: none; }
 
+/* ------------------------------------------------------------ keepers */
+.keeper-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  color: var(--dim);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.keeper-pick input { width: 16px; height: 16px; cursor: pointer; }
+.prow.kept {
+  border-left: 4px solid var(--neon);
+  background: rgba(53, 240, 160, 0.08);
+}
+
+/* ================================================== mobile-only layout
+   Nothing here touches anything above max-width: 700px, so desktop is
+   pixel-for-pixel unchanged. Purely fixes small-screen overflow/clipping
+   (player rows, forms, cards) where fixed-width flex children previously
+   pushed buttons like "Draft" off the edge of the screen. */
+@media (max-width: 700px) {
+  body { padding: 0.6rem 0.5rem 3rem; }
+  .screen { padding: 0.6rem; }
+
+  .prow {
+    flex-wrap: wrap;
+    row-gap: 0.3rem;
+  }
+  .prow .adp { display: none; }
+  .prow .sprite { width: 34px; height: 34px; }
+  .prow .pname { flex: 1 1 120px; }
+  .prow .stat { min-width: 0; }
+
+  .field {
+    flex-wrap: wrap;
+  }
+  .field input,
+  .field select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .save-slot {
+    flex-wrap: wrap;
+    row-gap: 0.4rem;
+  }
+  .save-slot-actions { flex-wrap: wrap; }
+
+  .modal-head {
+    flex-wrap: wrap;
+  }
+  .modal { padding: 0.7rem; }
+
+  .decision-head {
+    flex-wrap: wrap;
+  }
+
+  .rowbar select,
+  .rowbar input {
+    flex: 1 1 auto;
+  }
+
+  .trend-card { min-width: 160px; }
+
+  table.tbl { font-size: 0.9rem; }
+}
+

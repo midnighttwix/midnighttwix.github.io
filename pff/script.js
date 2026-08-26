@@ -17,6 +17,7 @@ const draftView = $("draft-view");
 const seasonView = $("season-view");
 const gamedayView = $("gameday-view");
 const offseasonView = $("offseason-view");
+const keepersView = $("keepers-view");
 const modalRoot = $("modal-root");
 
 /* --------------------------------------------------------- helpers */
@@ -391,13 +392,21 @@ function initSetup() {
   }
   sel.addEventListener("change", () => {
     rebuildHumanOptions();
+    rebuildDraftPositionOptions();
     updateSetupSummary();
   });
   $("input-humans").addEventListener("change", () => {
     renderHumanNames();
     updateSetupSummary();
   });
+  $("input-mode").addEventListener("change", () => {
+    updateModeFieldVisibility();
+    updateSetupSummary();
+  });
+  $("input-draftpos").addEventListener("change", updateModeFieldVisibility);
   rebuildHumanOptions();
+  rebuildDraftPositionOptions();
+  updateModeFieldVisibility();
 
   migrateLegacySave();
   renderSaveSlots();
@@ -410,14 +419,18 @@ function initSetup() {
       humanNames.push((el && el.value.trim()) || `Team ${i + 1}`);
     }
     const leagueName = $("input-league").value.trim() || "The Poke Bowl";
+    const mode = $("input-mode").value;
     const settings = {
       leagueName,
       teamName: humanNames[0],
       humanNames,
       managerCount: Number($("input-managers").value),
       ppr: Number($("input-ppr").value),
-      mode: $("input-mode").value,
+      mode,
       irSpots: Number($("input-ir").value),
+      keeperCount: mode === "franchise" ? Number($("input-keepers").value) : 0,
+      draftPositionMode: $("input-draftpos").value,
+      draftPositionSlot: Number($("input-draftpos-slot").value) || 1,
     };
     L = createLeague(settings);
     L.lastPlayedWeek = 0;
@@ -432,6 +445,7 @@ function initSetup() {
     if (loadBtn) {
       L = loadSlot(loadBtn.dataset.slotLoad);
       if (L) {
+        applyRosterSizeForMode(L.mode);
         if (L.activeManagerId == null) L.activeManagerId = 0;
         L.managers.forEach((m) => {
           if (m.human == null) m.human = !!m.isUser;
@@ -544,16 +558,39 @@ function renderHumanNames() {
 function updateSetupSummary() {
   const n = Number($("input-managers").value);
   const h = Number($("input-humans").value);
+  const mode = $("input-mode").value;
+  const bench = mode === "dynasty" ? DYNASTY_BENCH_SIZE : NORMAL_BENCH_SIZE;
+  const rosterSize = ROSTER_SLOTS.length + bench;
   $("setup-summary").innerHTML = `${n} managers (${h} human, ${n - h} CPU) &middot; ${playoffCount(
     n
-  )} playoff teams &middot; ${ROSTER_SIZE}-player rosters &middot; ${REG_SEASON_WEEKS}-week regular season`;
+  )} playoff teams &middot; ${rosterSize}-player rosters &middot; ${REG_SEASON_WEEKS}-week regular season`;
+}
+
+function rebuildDraftPositionOptions() {
+  const n = Number($("input-managers").value);
+  const sel = $("input-draftpos-slot");
+  const prev = Number(sel.value) || 1;
+  sel.innerHTML = "";
+  for (let i = 1; i <= n; i++) {
+    const o = document.createElement("option");
+    o.value = String(i);
+    o.textContent = `Slot ${i}`;
+    sel.appendChild(o);
+  }
+  sel.value = String(Math.min(prev, n));
+}
+
+function updateModeFieldVisibility() {
+  const mode = $("input-mode").value;
+  $("field-keepers").style.display = mode === "franchise" ? "" : "none";
+  $("field-draftpos-slot").style.display = $("input-draftpos").value === "manual" ? "" : "none";
 }
 
 /* ------------------------------------------------------------ router */
 
 function render() {
   renderLeagueTicker();
-  [setupView, draftView, seasonView, gamedayView, offseasonView].forEach((v) => v.classList.add("hidden"));
+  [setupView, draftView, seasonView, gamedayView, offseasonView, keepersView].forEach((v) => v.classList.add("hidden"));
   if (!L) {
     setupView.classList.remove("hidden");
     return;
@@ -566,6 +603,11 @@ function render() {
   if (L.phase === "draft") {
     draftView.classList.remove("hidden");
     renderDraft();
+    return;
+  }
+  if (L.phase === "keepers") {
+    keepersView.classList.remove("hidden");
+    renderKeepers();
     return;
   }
   if (L.phase === "offseason") {
@@ -583,8 +625,7 @@ function draftSlotFor(overall) {
   const n = L.managers.length;
   const round = Math.floor(overall / n);
   const slot = overall % n;
-  const idx = round % 2 === 0 ? slot : n - 1 - slot;
-  return { round, slot, managerId: L.draft.order[idx] };
+  return { round, slot, managerId: L.draft.order[overall] };
 }
 
 function renderDraftBoard() {
@@ -648,6 +689,11 @@ function renderDraft() {
   $("draft-round").textContent = Math.floor(overall / n) + 1;
   $("draft-pick").textContent = (overall % n) + 1;
   const onClock = draftOnTheClock(L);
+  if (onClock == null) {
+    save();
+    render();
+    return;
+  }
   const m = managerById(onClock);
   $("draft-clock").textContent = m.human ? `${m.name} (YOU)` : m.name;
   $("draft-clock").style.color = m.human ? "var(--neon)" : "var(--gold)";
@@ -710,6 +756,11 @@ function runAiPicks() {
   const d = L.draft;
   if (d.complete) return;
   const onClock = draftOnTheClock(L);
+  if (onClock == null) {
+    save();
+    render();
+    return;
+  }
   const m = managerById(onClock);
   if (m.human) {
     renderDraft();
@@ -743,7 +794,7 @@ function bindDraft() {
     const btn = e.target.closest("[data-draft]");
     if (!btn) return;
     const onClock = draftOnTheClock(L);
-    if (!managerById(onClock).human) return;
+    if (onClock == null || !managerById(onClock).human) return;
     makeDraftPick(L, onClock, Number(btn.dataset.draft));
     if (L.draft.complete) {
       save();
@@ -754,6 +805,11 @@ function bindDraft() {
   });
   $("btn-autopick").addEventListener("click", () => {
     const onClock = draftOnTheClock(L);
+    if (onClock == null) {
+      save();
+      render();
+      return;
+    }
     const m = managerById(onClock);
     if (!m.human) return;
     const choice = aiDraftPick(L, m, availablePlayers(L));
@@ -769,6 +825,7 @@ function bindDraft() {
     let guard = 0;
     while (!L.draft.complete && guard < 500) {
       const onClock = draftOnTheClock(L);
+      if (onClock == null) break;
       const m = managerById(onClock);
       makeDraftPick(L, m.id, aiDraftPick(L, m, availablePlayers(L)).id);
       guard++;
@@ -818,8 +875,9 @@ function renderSeason() {
   const simBtn = $("btn-sim");
   const fastBtn = $("btn-sim-fast");
   if (L.phase === "done") {
-    simBtn.textContent = L.mode === "franchise" ? "Start Next Season" : "Season Complete";
-    simBtn.disabled = L.mode !== "franchise";
+    const continues = ["franchise", "dynasty"].includes(L.mode);
+    simBtn.textContent = continues ? "Start Next Season" : "Season Complete";
+    simBtn.disabled = !continues;
     fastBtn.classList.add("hidden");
   } else {
     simBtn.disabled = false;
@@ -1472,7 +1530,7 @@ function renderStandingsTab() {
       const inPlayoffs = i < playoffCount(L.managers.length);
       return `<tr class="${m.human ? "me" : ""}">
         <td>${i + 1}${inPlayoffs ? ' <span class="tag tag-hot">x</span>' : ""}</td>
-        <td>${esc(m.name)}${m.human ? ' <span class="tag tag-rk">HUMAN</span>' : ""}${
+        <td>${esc(m.name)}${
         m.titles ? ` <span class="tag tag-rk">${m.titles}&#9733;</span>` : ""
       }</td>
         <td class="num">${m.wins}-${m.losses}${m.ties ? `-${m.ties}` : ""}</td>
@@ -1762,7 +1820,7 @@ function renderTradeTab() {
 
   const col = (m, set, attr) => `
     <div class="panel">
-      <p class="panel-title">${esc(m.name)}${m.human ? " (HUMAN)" : ""}</p>
+      <p class="panel-title">${esc(m.name)}</p>
       <div class="scroll" style="max-height:330px">
         ${m.roster
           .map((pid) => {
@@ -2410,13 +2468,13 @@ function renderGamedayLive() {
       const bs = mu.b === -1 ? round1(avg) : liveScore(b);
       const focused = GD.focus === "all" || mu.a === GD.focus || mu.b === GD.focus;
       return `<div class="matchup-board live ${focused ? "focus" : ""}">
-        <div class="mb-side ${as >= bs ? "win" : ""}"><div class="mb-name">${esc(a.name)}${
-        a.human ? ' <span class="tag tag-rk">H</span>' : ""
-      }</div><div class="mb-score">${as.toFixed(1)}</div></div>
+        <div class="mb-side ${as >= bs ? "win" : ""}"><div class="mb-name">${esc(
+        a.name
+      )}</div><div class="mb-score">${as.toFixed(1)}</div></div>
         <div class="mb-vs">VS</div>
-        <div class="mb-side ${bs > as ? "win" : ""}"><div class="mb-name">${esc(b.name)}${
-        b.human ? ' <span class="tag tag-rk">H</span>' : ""
-      }</div><div class="mb-score">${bs.toFixed(1)}</div></div>
+        <div class="mb-side ${bs > as ? "win" : ""}"><div class="mb-name">${esc(
+        b.name
+      )}</div><div class="mb-score">${bs.toFixed(1)}</div></div>
       </div>`;
     })
     .join("");
@@ -2491,6 +2549,7 @@ function playWeek(live) {
       retired: changes.retired.map((p) => `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) hangs it up at ${p.age}.`),
       rookies: changes.rookies.slice(0, 20).map((p) => `${p.name} (${p.pos}) drafted by the ${NFL_TEAMS[p.team].nick}.`),
     };
+    L.postOffseasonPhase = L.phase;
     L.phase = "offseason";
     save();
     render();
@@ -2525,7 +2584,7 @@ function showChampionModal() {
           }</p>
         </div>
         <div class="rowbar">
-          ${L.mode === "franchise" ? `<button class="btn btn-green" id="champ-next" type="button">Start Next Season (Franchise Mode)</button>` : ""}
+          ${["franchise", "dynasty"].includes(L.mode) ? `<button class="btn btn-green" id="champ-next" type="button">Start Next Season</button>` : ""}
           <button class="btn btn-blue btn-sm" id="champ-close" type="button">Look Around First</button>
         </div>
       </div>
@@ -2561,11 +2620,102 @@ function renderOffseason() {
         </div>
       </div>
       <div class="rowbar" style="margin-top:0.8rem">
-        <button class="btn btn-green" id="btn-to-draft" type="button">To The Draft</button>
+        <button class="btn btn-green" id="btn-to-draft" type="button">${
+          L.postOffseasonPhase === "keepers" ? "Pick Your Keepers" : "To The Draft"
+        }</button>
       </div>
     </div>`;
   $("btn-to-draft").addEventListener("click", () => {
-    L.phase = "draft";
+    L.phase = L.postOffseasonPhase || "draft";
+    save();
+    render();
+  });
+}
+
+/* --------------------------------------------------------- keepers */
+
+function renderKeepers() {
+  const you = activeManager();
+  const max = Number((L.settings && L.settings.keeperCount) || 0);
+  L.keeperSelections = L.keeperSelections || {};
+  const mine = new Set(L.keeperSelections[you.id] || []);
+  const humans = humanManagers();
+
+  const switcher =
+    humans.length > 1
+      ? `<div class="manager-bar">
+          <span class="mb-label">MANAGING:</span>
+          ${humans
+            .map(
+              (m) =>
+                `<button class="mgr-btn ${m.id === L.activeManagerId ? "active" : ""}" data-keeper-mgr="${
+                  m.id
+                }" type="button">${esc(m.name)}</button>`
+            )
+            .join("")}
+        </div>`
+      : "";
+
+  const rows = you.roster
+    .map((pid) => L.players[pid])
+    .filter(Boolean)
+    .sort((a, b) => b.seasonPts - a.seasonPts)
+    .map((p) => {
+      const costLabel = p.draftedRound != null ? `Round ${p.draftedRound} pick` : "Your last pick";
+      const checked = mine.has(p.id);
+      return playerRow(p, {
+        rowClass: checked ? "kept" : "",
+        rightMain: p.seasonPts.toFixed(1),
+        rightSub: "PTS",
+        action: `<label class="keeper-pick"><input type="checkbox" data-keep="${p.id}" ${
+          checked ? "checked" : ""
+        } />${esc(costLabel)}</label>`,
+      });
+    })
+    .join("");
+
+  keepersView.innerHTML = `
+    ${switcher}
+    <div class="panel">
+      <p class="panel-title">${esc(you.name.toUpperCase())} &middot; PICK UP TO ${max} KEEPER${max === 1 ? "" : "S"}</p>
+      <p class="note">
+        A kept player skips the redraft but costs you the draft slot they cost last year (undrafted pickups cost
+        your very last pick). Selected: <b>${mine.size}</b>/${max}
+      </p>
+      <div class="scroll" style="max-height:520px">${rows || `<p class="note">No roster from last season.</p>`}</div>
+    </div>
+    <div class="rowbar" style="margin-top:0.6rem">
+      <button class="btn btn-green" id="btn-confirm-keepers" type="button">Confirm &amp; Start The Draft</button>
+    </div>`;
+
+  keepersView.querySelectorAll("[data-keeper-mgr]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      L.activeManagerId = Number(btn.dataset.keeperMgr);
+      renderKeepers();
+    });
+  });
+
+  keepersView.querySelectorAll("[data-keep]").forEach((cb) => {
+    cb.addEventListener("change", (e) => {
+      const pid = Number(e.target.dataset.keep);
+      const set = new Set(L.keeperSelections[you.id] || []);
+      if (e.target.checked) {
+        if (set.size >= max) {
+          e.target.checked = false;
+          return;
+        }
+        set.add(pid);
+      } else {
+        set.delete(pid);
+      }
+      L.keeperSelections[you.id] = [...set];
+      save();
+      renderKeepers();
+    });
+  });
+
+  $("btn-confirm-keepers").addEventListener("click", () => {
+    finalizeKeepersAndDraft(L);
     save();
     render();
   });
@@ -2648,7 +2798,7 @@ function setTickerEnabled(on) {
 function renderLeagueTicker() {
   const bar = $("league-ticker");
   if (!bar) return;
-  if (!L || L.phase === "draft" || L.phase === "offseason") {
+  if (!L || L.phase === "draft" || L.phase === "offseason" || L.phase === "keepers") {
     bar.classList.add("hidden");
     return;
   }

@@ -58,7 +58,32 @@
               <select id="input-mode">
                 <option value="season" selected>One Season</option>
                 <option value="franchise">Franchise (keep playing)</option>
+                <option value="dynasty">Dynasty (keep rosters &amp; deep benches)</option>
+                <option value="bestball">Best Ball (auto-optimal lineups)</option>
               </select>
+            </div>
+            <div class="field" id="field-keepers" style="display: none">
+              <label for="input-keepers">Keepers</label>
+              <select id="input-keepers">
+                <option value="0" selected>No keepers</option>
+                <option value="1">1 keeper</option>
+                <option value="2">2 keepers</option>
+              </select>
+              <p class="helper" style="margin: 0.2rem 0 0">
+                A kept player skips next year's redraft but costs you the draft slot you got them at
+                (undrafted pickups cost your very last pick).
+              </p>
+            </div>
+            <div class="field">
+              <label for="input-draftpos">Draft Position</label>
+              <select id="input-draftpos">
+                <option value="auto" selected>Random / Auto</option>
+                <option value="manual">Choose My Slot</option>
+              </select>
+            </div>
+            <div class="field" id="field-draftpos-slot" style="display: none">
+              <label for="input-draftpos-slot">Your Draft Slot</label>
+              <select id="input-draftpos-slot"></select>
             </div>
             <div class="field">
               <label for="input-ir">IR Spots</label>
@@ -234,6 +259,9 @@
 
         <!-- =========================== OFFSEASON =========================== -->
         <div id="offseason-view" class="hidden"></div>
+
+        <!-- ============================ KEEPERS ============================ -->
+        <div id="keepers-view" class="hidden"></div>
       </section>
 
     </div>
@@ -248,8 +276,8 @@
     <div id="modal-root"></div>
 
     <script src="pokedata.js?v=1"></script>
-    <script src="data.js?v=4"></script>
-    <script src="sim.js?v=4"></script>
-    <script src="script.js?v=4"></script>
+    <script src="data.js?v=5"></script>
+    <script src="sim.js?v=5"></script>
+    <script src="script.js?v=5"></script>
   </body>
 </html>
