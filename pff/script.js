@@ -814,6 +814,8 @@ function onTeamClick(e) {
 
 /* ----------------------------------------------------- matchup tab */
 
+let matchupFocusId = null;
+
 function currentMatchupFor(mid) {
   if (L.phase === "playoffs" && L.bracket) {
     const round = L.bracket.rounds[L.bracket.current];
@@ -821,6 +823,13 @@ function currentMatchupFor(mid) {
   }
   const games = L.schedule[L.week] || [];
   return games.find((g) => g.a === mid || g.b === mid) || null;
+}
+
+/* Every real head-to-head this week, human or CPU, for the "scout the league" picker. */
+function weekMatchups() {
+  const games =
+    L.phase === "playoffs" && L.bracket ? L.bracket.rounds[L.bracket.current] : L.schedule[L.week] || [];
+  return games.filter((g) => g.a != null && g.b != null);
 }
 
 function lineupPreview(m, week) {
@@ -845,42 +854,86 @@ function lineupPreview(m, week) {
 function renderMatchupTab() {
   const you = activeManager();
   const week = L.week;
-  const mu = currentMatchupFor(you.id);
-  if (!mu) {
+  const games = weekMatchups();
+  if (!games.length) {
     $("tab-matchup").innerHTML = `<div class="panel"><p class="big-note">${
       L.phase === "playoffs" ? "This team is not in the current playoff round." : "No matchup scheduled."
     }</p></div>`;
     return;
   }
-  const oppId = mu.a === you.id ? mu.b : mu.a;
-  const opp = managerById(oppId);
-  const mine = lineupPreview(you, week);
-  const theirs = opp && opp.id !== -1 ? lineupPreview(opp, week) : { rows: "", proj: 0 };
+
+  let mu = games.find((g) => g.a === matchupFocusId || g.b === matchupFocusId);
+  if (!mu) {
+    mu = games.find((g) => g.a === you.id || g.b === you.id) || games[0];
+  }
+  matchupFocusId = mu.a;
+
+  const sideA = managerById(mu.a);
+  const sideB = managerById(mu.b);
+  const previewA = sideA.id === -1 ? { rows: "", proj: 0 } : lineupPreview(sideA, week);
+  const previewB = sideB.id === -1 ? { rows: "", proj: 0 } : lineupPreview(sideB, week);
+
+  const pickerRows = games
+    .map((g) => {
+      const a = managerById(g.a);
+      const b = managerById(g.b);
+      const active = g === mu;
+      const involvesYou = g.a === you.id || g.b === you.id;
+      const pa = a.id === -1 ? 0 : lineupPreview(a, week).proj;
+      const pb = b.id === -1 ? 0 : lineupPreview(b, week).proj;
+      return `<button class="matchup-pick ${active ? "active" : ""} ${involvesYou ? "mine" : ""}" data-mu-focus="${
+        g.a
+      }" type="button">
+        <span class="mp-team">${esc(a.name)}${a.human ? " &#9733;" : ""}<span class="mp-score">${pa.toFixed(
+        1
+      )}</span></span>
+        <span class="mp-at">@</span>
+        <span class="mp-team">${esc(b.name)}${b.human ? " &#9733;" : ""}<span class="mp-score">${pb.toFixed(
+        1
+      )}</span></span>
+      </button>`;
+    })
+    .join("");
 
   $("tab-matchup").innerHTML = `
+    <div class="panel">
+      <p class="panel-title">WEEK ${week} MATCHUPS &middot; TAP ANY GAME TO SCOUT IT</p>
+      <div class="matchup-list">${pickerRows}</div>
+    </div>
     <div class="matchup-board">
-      <div class="mb-side"><div class="mb-name">${esc(you.name)}</div><div class="mb-score">${mine.proj.toFixed(
+      <div class="mb-side"><div class="mb-name">${esc(sideA.name)}</div><div class="mb-score">${previewA.proj.toFixed(
     1
   )}</div></div>
       <div class="mb-vs">VS</div>
-      <div class="mb-side"><div class="mb-name">${esc(opp ? opp.name : "BYE")}</div><div class="mb-score">${theirs.proj.toFixed(
+      <div class="mb-side"><div class="mb-name">${esc(sideB.name)}</div><div class="mb-score">${previewB.proj.toFixed(
     1
   )}</div></div>
     </div>
     <div class="grid-2">
       <div class="panel">
-        <p class="panel-title">${esc(you.name.toUpperCase())}</p>
-        <table class="tbl"><tbody>${mine.rows}</tbody></table>
+        <p class="panel-title">${esc(sideA.name.toUpperCase())}</p>
+        ${
+          sideA.id !== -1
+            ? `<table class="tbl"><tbody>${previewA.rows}</tbody></table>`
+            : `<p class="note">The Ditto copies the league average score this week. Beat the average, get the win.</p>`
+        }
       </div>
       <div class="panel">
-        <p class="panel-title">${esc(opp ? opp.name.toUpperCase() : "PHANTOM")}</p>
+        <p class="panel-title">${esc(sideB.name.toUpperCase())}</p>
         ${
-          opp && opp.id !== -1
-            ? `<table class="tbl"><tbody>${theirs.rows}</tbody></table>`
+          sideB.id !== -1
+            ? `<table class="tbl"><tbody>${previewB.rows}</tbody></table>`
             : `<p class="note">The Ditto copies the league average score this week. Beat the average, get the win.</p>`
         }
       </div>
     </div>`;
+
+  $("tab-matchup").onclick = (e) => {
+    const btn = e.target.closest("[data-mu-focus]");
+    if (!btn) return;
+    matchupFocusId = Number(btn.dataset.muFocus);
+    renderMatchupTab();
+  };
 }
 
 /* ------------------------------------------------------ scores tab */
@@ -1285,6 +1338,7 @@ let statsFilter = "ALL";
 let statsSearch = "";
 
 function renderStatsTab() {
+  const you = activeManager();
   const allPlayers = L.playerIds.map((pid) => L.players[pid]);
   const fantasyOwner = (pid) => L.managers.find((manager) => manager.roster.includes(pid) || (manager.ir || []).includes(pid));
   const players = allPlayers
@@ -1300,11 +1354,19 @@ function renderStatsTab() {
     const stats = p.seasonStats || {};
     const positionRank = allPlayers.filter((x) => x.pos === p.pos).sort((a, b) => b.seasonPts - a.seasonPts).findIndex((x) => x.id === p.id) + 1;
     const owner = fantasyOwner(p.id);
-    return `<tr><td>${positionRank}</td><td>${esc(displayName(p))} ${statusTag(p, L.week)}</td><td>${p.pos}</td><td>${owner ? esc(owner.name) : "<span class=\"note\">Free Agent</span>"}</td><td class="num">${p.seasonPts.toFixed(1)}</td><td class="num">${p.gamesPlayed}</td><td class="num">${stats.passYds || 0}</td><td class="num">${stats.passTd || 0}</td><td class="num">${stats.passInt || 0}</td><td class="num">${stats.rushYds || 0}</td><td class="num">${stats.rushTd || 0}</td><td class="num">${stats.recYds || 0}</td><td class="num">${stats.rec || 0}</td><td class="num">${stats.recTd || 0}</td></tr>`;
+    const action = owner
+      ? esc(owner.name)
+      : `<span class="note">Free Agent</span> <button class="btn btn-green btn-sm" data-add="${p.id}" type="button">Add</button>`;
+    return `<tr><td>${positionRank}</td><td>${esc(displayName(p))} ${statusTag(p, L.week)}</td><td>${p.pos}</td><td>${action}</td><td class="num">${p.seasonPts.toFixed(1)}</td><td class="num">${p.gamesPlayed}</td><td class="num">${stats.passYds || 0}</td><td class="num">${stats.passTd || 0}</td><td class="num">${stats.passInt || 0}</td><td class="num">${stats.rushYds || 0}</td><td class="num">${stats.rushTd || 0}</td><td class="num">${stats.recYds || 0}</td><td class="num">${stats.rec || 0}</td><td class="num">${stats.recTd || 0}</td></tr>`;
   }).join("");
-  $("tab-stats").innerHTML = `<div class="grid-2"><div class="panel"><p class="panel-title">LEAGUE LEADERS BY POSITION</p><table class="tbl"><tr><th>POS</th><th>PLAYER</th><th>FANTASY TEAM</th><th class="num">PTS</th></tr>${leaders}</table></div><div class="panel"><p class="panel-title">PLAYER SEARCH</p><div class="rowbar"><select id="stats-filter">${["ALL", ...POSITIONS].map((p) => `<option value="${p}" ${p === statsFilter ? "selected" : ""}>${p === "ALL" ? "All Positions" : p}</option>`).join("")}</select><input id="stats-search" type="text" placeholder="search name..." value="${esc(statsSearch)}" /></div><p class="note">Rank is within the selected position. Season totals include every completed game.</p></div></div><div class="panel"><p class="panel-title">SEASON PLAYER TOTALS</p><div class="scroll"><table class="tbl"><tr><th>#</th><th>PLAYER</th><th>POS</th><th>FANTASY TEAM</th><th class="num">PTS</th><th class="num">GP</th><th class="num">PASS YDS</th><th class="num">PASS TD</th><th class="num">INT</th><th class="num">RUSH YDS</th><th class="num">RUSH TD</th><th class="num">REC YDS</th><th class="num">REC</th><th class="num">REC TD</th></tr>${rows || `<tr><td colspan="14">No player stats yet. Play a week.</td></tr>`}</table></div></div>`;
+  $("tab-stats").innerHTML = `<div class="grid-2"><div class="panel"><p class="panel-title">LEAGUE LEADERS BY POSITION</p><table class="tbl"><tr><th>POS</th><th>PLAYER</th><th>FANTASY TEAM</th><th class="num">PTS</th></tr>${leaders}</table></div><div class="panel"><p class="panel-title">PLAYER SEARCH</p><div class="rowbar"><select id="stats-filter">${["ALL", ...POSITIONS].map((p) => `<option value="${p}" ${p === statsFilter ? "selected" : ""}>${p === "ALL" ? "All Positions" : p}</option>`).join("")}</select><input id="stats-search" type="text" placeholder="search name..." value="${esc(statsSearch)}" /></div><p class="note">Rank is within the selected position. Season totals include every completed game. Free agents can be added to ${esc(you.name)} straight from the table below.</p></div></div><div class="panel"><p class="panel-title">SEASON PLAYER TOTALS</p><div class="scroll"><table class="tbl"><tr><th>#</th><th>PLAYER</th><th>POS</th><th>FANTASY TEAM</th><th class="num">PTS</th><th class="num">GP</th><th class="num">PASS YDS</th><th class="num">PASS TD</th><th class="num">INT</th><th class="num">RUSH YDS</th><th class="num">RUSH TD</th><th class="num">REC YDS</th><th class="num">REC</th><th class="num">REC TD</th></tr>${rows || `<tr><td colspan="14">No player stats yet. Play a week.</td></tr>`}</table></div></div>`;
   $("stats-filter").addEventListener("change", (e) => { statsFilter = e.target.value; renderStatsTab(); });
   $("stats-search").addEventListener("input", (e) => { statsSearch = e.target.value.trim().toLowerCase(); renderStatsTab(); });
+  $("tab-stats").onclick = (e) => {
+    const btn = e.target.closest("[data-add]");
+    if (!btn) return;
+    addFreeAgent(Number(btn.dataset.add));
+  };
 }
 
 /* ---------------------------------------------------- free agent tab */
@@ -1368,7 +1430,7 @@ function addFreeAgent(pid) {
   if (you.roster.length < ROSTER_SIZE) {
     you.roster.push(pid);
     save();
-    renderPlayersTab();
+    renderSeason();
     return;
   }
   const incoming = L.players[pid];
@@ -1403,7 +1465,7 @@ function addFreeAgent(pid) {
     });
     modalRoot.innerHTML = "";
     save();
-    renderPlayersTab();
+    renderSeason();
   };
 }
 
@@ -2249,6 +2311,7 @@ function bindSeason() {
     if (!btn) return;
     L.activeManagerId = Number(btn.dataset.mgr);
     selectedBench = null;
+    matchupFocusId = null;
     tradeGive = new Set();
     tradeGet = new Set();
     tradePartner = null;
