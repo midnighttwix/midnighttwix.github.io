@@ -369,7 +369,69 @@ const ABSENCE_EVENTS = [
   { note: "took an unscheduled trip to Six Flags", weeks: 1 },
   { note: "is in a legal dispute over a parking spot", weeks: 1 },
   { note: "went home sick after eating a suspicious gas station hot dog", weeks: 1 },
-  { note: "is grounded by their mom for missing curfew", weeks: 1 },
+  { note: "is grounded by their mom for missing curfew", weeks: 1 },  { note: "ran too fast and their feet caught on fire", weeks: 1 },
+  { note: "got cramps from eating too much beef", weeks: 1 },
+  { note: "went to watch that movie about the beach that makes you old", weeks: 1 },
+  { note: "got distracted by what they thought was a UFO but was definitely in no way, shape, or form a UFO", weeks: 1 },
+  { note: "needed a Diet Doctor Pib mid-game, got held up in traffic on the way to the store, forgot their wallet, drove home, drove back, slowed down to look at a car accident, but anyway do you want anything from the store", weeks: 1 },
+  { note: "bloodfarts", weeks: 1 },
+  { note: "opened their phone during a timeout and won't stop doomscrolling", weeks: 1 },
+  { note: "was caught pretending to be Petey Piranha from Super Mario Sunshine on the wrong side of the field instead of playing", weeks: 1 },
+  { note: "got into an argument with a fan in the stands", weeks: 1 },
+  { note: "got the hiccups", weeks: 1 },
+  { note: "got the suds", weeks: 1 },
+  { note: "got what sounded like a family emergency phone call during the snap. hope everything is okay", weeks: 1 },
+  { note: "found out their Amazon account got hacked and needed a sub", weeks: 1 },
+  { note: "fingers got too pruny from sweat", weeks: 1 },
+  { note: "realized they don't even like football", weeks: 1 },
+  { note: "watched an Espathra paint a tunnel with an open road on the other side onto the wall and tried to run through it", weeks: 1 },
+  { note: "had to stop and wait for two guys carrying a big glass pane very carefully passing by", weeks: 1 },
+  { note: "left to go on a long pilgrimage", weeks: 2 },
+];
+
+/* Flavor quotes for mid-season NFL-to-NFL player trades (backups seeking snaps, injury replacements, etc). */
+const TRADE_QUOTES = [
+  "\"We wish {name} the best, but everybody needs a fresh start sometimes,\" said the {oldTeam} coach.",
+  "\"{name} wanted a real shot at snaps, and we couldn't promise that here,\" the {oldTeam} GM admitted.",
+  "\"Excited to bring in {name}. We think there's another level there,\" said the {newTeam} coach.",
+  "\"{name} texted me at 2 AM asking to be traded. Who am I to say no,\" joked the {oldTeam} GM.",
+  "\"{name} deserves to start somewhere, and it wasn't going to be here,\" said an {oldTeam} insider.",
+  "\"We've been calling about {name} for weeks. Thrilled it finally got done,\" said the {newTeam} front office.",
+  "\"{name} is a great locker room guy, we just had too many bodies at the position,\" said the {oldTeam} coach.",
+  "\"Sometimes a change of scenery is all a player needs,\" the {newTeam} coach said of {name}.",
+  "\"{name} asked out. We respected that and made it happen,\" the {oldTeam} GM said.",
+  "\"{name} still has a lot of football left in the tank. We got a steal here,\" said the {newTeam} coach.",
+  "\"It's a business. {name} understood that better than most,\" said the {oldTeam} GM.",
+  "\"{name} called it 'a business decision.' We call it addition by subtraction,\" laughed the {newTeam} coach.",
+];
+
+/* Post-game spotlight blurbs, keyed by how a player's outing compared to their usual output. */
+const SPOTLIGHT_HOT = [
+  "{name} looked like a completely different player out there and should only build on it next week.",
+  "{name} dominated the field and looks primed to play even better next week in an easier matchup.",
+  "{name} was a problem all game and the tape will only get scarier from here.",
+  "{name} is heating up at the perfect time — buy stock now before it's too late.",
+  "{name} put the league on notice. Don't be surprised if this becomes a weekly thing.",
+  "{name} looked like the best player on the field, full stop.",
+  "{name} is playing with a confidence that should terrify next week's opponent.",
+  "{name} turned in a performance that's going to be hard to bench moving forward.",
+];
+const SPOTLIGHT_COLD = [
+  "{name} looked lost out there and needs to figure it out fast before the bench calls.",
+  "{name} was a non-factor and the concern is starting to feel real.",
+  "{name} is in a slump that's bordering on worrisome heading into next week.",
+  "{name} struggled to find a rhythm all game long — buyer beware next week.",
+  "{name} looked a step slow and it might be time to pump the brakes on expectations.",
+  "{name} is trending in the wrong direction and needs a bounce-back game, badly.",
+  "{name} had one of those games everybody wants to forget as soon as possible.",
+  "{name} could be in danger of losing snaps if this continues.",
+];
+const SPOTLIGHT_STEADY = [
+  "{name} did exactly what was expected, nothing more, nothing less.",
+  "{name} was steady as always, the kind of floor you can build a lineup around.",
+  "{name} quietly got the job done. Nothing flashy, but reliable as ever.",
+  "{name} kept things simple and got the job done without much fuss.",
+  "{name} is what they are at this point: dependable, if unspectacular.",
 ];
 
 const RETIRE_EVENTS = [

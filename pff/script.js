@@ -101,7 +101,6 @@ function statusTag(p, week) {
   if (week && L.byeWeeks[p.team] === week) return `<span class="tag tag-bye">BYE</span>`;
   if (p.form && p.form.mult > 1) return `<span class="tag tag-hot" title="${esc(p.form.note)}">HOT</span>`;
   if (p.form && p.form.mult < 1) return `<span class="tag tag-cold" title="${esc(p.form.note)}">COLD</span>`;
-  if (p.rookie) return `<span class="tag tag-rk">RK</span>`;
   return "";
 }
 
@@ -113,6 +112,7 @@ function playerRow(p, opts = {}) {
   const rightSub = opts.rightSub != null ? opts.rightSub : ppg != null ? "PPG" : "PROJ";
   const badge = opts.slot || p.pos;
   const bye = L.byeWeeks[p.team];
+  const ageBit = p.pos !== "DEF" ? ` &middot; Age ${p.age}` : "";
   const flavorBits = [p.customName ? `born ${esc(p.name)}` : null, p.nickname ? `<span class="nick">"${esc(p.nickname)}"</span>` : null]
     .filter(Boolean)
     .map((bit) => ` &middot; ${bit}`)
@@ -120,13 +120,13 @@ function playerRow(p, opts = {}) {
   const sub =
     p.pos === "DEF"
       ? `D/ST &middot; ${t.abbr} &middot; BYE ${bye}${flavorBits}`
-      : `${p.pos} &middot; ${t.abbr} ${esc(t.nick)} &middot; BYE ${bye}${flavorBits}`;
+      : `${p.pos} &middot; ${t.abbr} ${esc(t.nick)} &middot; BYE ${bye}${ageBit}${flavorBits}`;
   return `
     <div class="prow pos-tint-${p.pos} ${opts.rowClass || ""}" ${opts.dataAttr || ""}>
       <span class="pos-badge pos-${badge}">${badge}</span>
       <span class="clickable-card" data-card="${p.id}">${avatarHtml(p)}</span>
       <span class="pname clickable-card" data-card="${p.id}">
-        <span class="nm">${esc(displayName(p))} ${statusTag(p, week)}</span>
+        <span class="nm">${esc(displayName(p))} ${p.rookie ? `<span class="tag tag-rookie" title="Rookie">R</span>` : ""} ${statusTag(p, week)}</span>
         <span class="sub">${sub}</span>
       </span>
       <button class="btn-rename" data-rename="${p.id}" type="button" title="Rename">&#9998;</button>
@@ -241,11 +241,11 @@ function openPlayerCard(pid) {
         <div class="modal-head">
           ${avatarHtml(p, "sprite sprite-lg")}
           <div style="flex:1">
-            <p class="panel-title" style="margin:0">${esc(displayName(p))}</p>
+            <p class="panel-title" style="margin:0">${esc(displayName(p))} ${p.rookie ? `<span class="tag tag-rookie" title="Rookie">R</span>` : ""}</p>
             <p class="note" style="margin:0.15rem 0 0">
               ${p.customName ? `born ${esc(p.name)} &middot; ` : ""}${p.pos} &middot; ${esc(t.city)} ${esc(t.nick)} &middot; BYE ${
     L.byeWeeks[p.team]
-  }${owner ? ` &middot; ${esc(owner.name)}` : ` &middot; <span class="note">Free Agent</span>`}
+  }${p.pos !== "DEF" ? ` &middot; Age ${p.age}` : ""}${owner ? ` &middot; ${esc(owner.name)}` : ` &middot; <span class="note">Free Agent</span>`}
             </p>
           </div>
           <button class="btn btn-red btn-sm" id="pc-close" type="button">Close</button>
@@ -305,6 +305,16 @@ function lineOf(p, wk) {
   if (!w || w.gameIndex == null) return null;
   const g = r.games[w.gameIndex];
   return g && g.box ? g.box[p.id] : null;
+}
+
+/* Fun oversold/undersold blurb comparing a player's last outing to their usual output. */
+function spotlightNote(p, week) {
+  const wk = p.weeks[week];
+  if (!wk || wk.pts == null) return null;
+  const baseline = Math.max(3, p.gamesPlayed ? p.seasonPts / p.gamesPlayed : projectPPG(p));
+  const ratio = wk.pts / baseline;
+  const pool = ratio >= 1.35 ? SPOTLIGHT_HOT : ratio <= 0.6 ? SPOTLIGHT_COLD : SPOTLIGHT_STEADY;
+  return esc(pick(pool).replace(/\{name\}/g, displayName(p)));
 }
 
 /* ------------------------------------------------------ persistence */
@@ -1001,14 +1011,16 @@ function renderTeamTab() {
         .map((pid) => L.players[pid])
         .filter((p) => p && lineOf(p, L.lastPlayedWeek))
         .sort((a, b) => b.weeks[L.lastPlayedWeek].pts - a.weeks[L.lastPlayedWeek].pts)
-        .map(
-          (p) =>
-            `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> (${
-              p.pos
-            }) &mdash; <span style="color:var(--gold)">${p.weeks[L.lastPlayedWeek].pts.toFixed(
-              1
-            )} pts</span><br /><span class="note">${statSummary(lineOf(p, L.lastPlayedWeek))}</span></span></div>`
-        )
+        .map((p) => {
+          const spotlight = spotlightNote(p, L.lastPlayedWeek);
+          return `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> (${
+            p.pos
+          }) &mdash; <span style="color:var(--gold)">${p.weeks[L.lastPlayedWeek].pts.toFixed(
+            1
+          )} pts</span><br /><span class="note">${statSummary(lineOf(p, L.lastPlayedWeek))}</span>${
+            spotlight ? `<br /><span class="spotlight-note">${spotlight}</span>` : ""
+          }</span></div>`;
+        })
         .join("")
     : `<p class="note">Nothing played yet.</p>`;
 
@@ -2283,7 +2295,7 @@ function showDecisionModal(entry, next) {
 
 function startTicker() {
   if (GD.timer) clearInterval(GD.timer);
-  GD.timer = setInterval(gdTick, 110);
+  GD.timer = setInterval(gdTick, 320);
   renderGameday();
 }
 
@@ -2311,7 +2323,7 @@ function ownerOfPlayer(pid) {
 
 function gdTick() {
   if (GD.paused) return;
-  const perTick = 5 * GD.speed;
+  const perTick = 2 * GD.speed;
   for (let i = 0; i < perTick && GD.idx < GD.timeline.length; i++) {
     const entry = GD.timeline[GD.idx];
     applyPlayToTotals(entry);

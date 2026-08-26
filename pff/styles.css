@@ -383,6 +383,7 @@ select {
 .tag-hot { background: rgba(53, 240, 160, 0.18); color: var(--neon); }
 .tag-cold { background: rgba(121, 208, 255, 0.15); color: #9fdcff; }
 .tag-rk { background: rgba(255, 210, 63, 0.2); color: var(--gold); }
+.tag-rookie { background: rgba(53, 240, 160, 0.22); color: var(--neon); font-family: "Press Start 2P", monospace; font-size: 0.55rem; padding: 0.1rem 0.3rem; }
 
 /* ------------------------------------------------------ scoreboard */
 .matchup-board {
@@ -557,6 +558,13 @@ table.tbl tr.me td { background: rgba(53, 240, 160, 0.1); color: var(--neon); }
 .wire-item.absence { border-left-color: var(--gold); }
 .wire-item.retire { border-left-color: var(--pink); }
 .wire-item.return { border-left-color: #8fa8c4; }
+.wire-item.trade { border-left-color: var(--cyan); }
+
+.spotlight-note {
+  color: var(--dim);
+  font-style: italic;
+  font-size: 0.9rem;
+}
 
 /* ------------------------------------------------------- controls */
 .rowbar {

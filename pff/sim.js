@@ -750,26 +750,77 @@ function generateWeeklyEvents(L, week) {
     }
 
     const roll = Math.random();
-    if (roll < 0.004) {
+    const retireOdds = p.age >= 34 ? 0.012 : p.age >= 31 ? 0.006 : p.age >= 27 ? 0.002 : 0.0006;
+    const injuryMult = p.age >= 34 ? 1.6 : p.age >= 30 ? 1.25 : p.age <= 24 ? 0.85 : 1;
+    if (roll < retireOdds) {
       p.status = { type: "retired", weeks: 99, note: pick(RETIRE_EVENTS) };
       wire.push({ week, kind: "retire", playerId: pid, text: `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) ${p.status.note}` });
-    } else if (roll < 0.045) {
+    } else if (roll < retireOdds + 0.041 * injuryMult) {
       const inj = pick(INJURY_EVENTS);
       p.status = { type: "injured", weeks: inj.weeks, note: inj.note };
       wire.push({ week, kind: "injury", playerId: pid, text: `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) - ${inj.note}. Out ${inj.weeks} week${inj.weeks > 1 ? "s" : ""}.` });
-    } else if (roll < 0.062) {
+    } else if (roll < retireOdds + 0.041 * injuryMult + 0.017) {
       const abs = pick(ABSENCE_EVENTS);
       p.status = { type: "out", weeks: abs.weeks, note: abs.note };
       wire.push({ week, kind: "absence", playerId: pid, text: `${displayName(p)} (${p.pos}, ${NFL_TEAMS[p.team].abbr}) ${abs.note}. Out ${abs.weeks} week${abs.weeks > 1 ? "s" : ""}.` });
-    } else if (roll < 0.13) {
+    } else if (roll < retireOdds + 0.041 * injuryMult + 0.017 + 0.068) {
       const boost = chance(0.55);
       const note = boost ? pick(BOOST_EVENTS) : pick(SLUMP_EVENTS);
       p.form = { mult: boost ? 1.15 + Math.random() * 0.4 : 0.5 + Math.random() * 0.35, note };
       wire.push({ week, kind: boost ? "boost" : "slump", playerId: pid, text: `${displayName(p)} ${note}.` });
     }
   });
+  maybeNflTrade(L, week, wire);
   return wire;
 }
+
+/* Occasional in-season NFL-to-NFL trades: a backup wants a bigger role, or a long-term injury opens a need. */
+function maybeNflTrade(L, week, wire) {
+  if (!chance(0.05)) return;
+  const eligible = L.playerIds
+    .map((pid) => L.players[pid])
+    .filter((p) => p.pos !== "DEF" && p.pos !== "K" && p.status.type !== "retired");
+  if (!eligible.length) return;
+
+  const byTeamPos = {};
+  eligible.forEach((p) => {
+    const key = `${p.team}_${p.pos}`;
+    (byTeamPos[key] = byTeamPos[key] || []).push(p);
+  });
+
+  const candidates = eligible.filter((p) => {
+    const mates = byTeamPos[`${p.team}_${p.pos}`];
+    const rank = mates.slice().sort((a, b) => b.skill - a.skill).indexOf(p);
+    return rank > 0; // not the top guy at his position on his own team = tradeable backup
+  });
+  if (!candidates.length) return;
+
+  const p = pick(candidates);
+  const otherTeams = NFL_TEAMS.map((t, i) => i).filter((i) => i !== p.team);
+  const targetTeam = otherTeams
+    .map((i) => {
+      const mates = byTeamPos[`${i}_${p.pos}`] || [];
+      const worst = mates.length ? Math.min(...mates.map((m) => m.skill)) : 0;
+      return { i, worst };
+    })
+    .sort((a, b) => a.worst - b.worst)[0];
+  if (targetTeam == null) return;
+
+  const oldTeam = NFL_TEAMS[p.team];
+  const newTeam = NFL_TEAMS[targetTeam.i];
+  p.team = targetTeam.i;
+  const quote = pick(TRADE_QUOTES)
+    .replace(/\{name\}/g, displayName(p))
+    .replace(/\{oldTeam\}/g, oldTeam.nick)
+    .replace(/\{newTeam\}/g, newTeam.nick);
+  wire.push({
+    week,
+    kind: "trade",
+    playerId: p.id,
+    text: `TRADE: ${displayName(p)} (${p.pos}) is traded from the ${oldTeam.city} ${oldTeam.nick} to the ${newTeam.city} ${newTeam.nick}. ${quote}`,
+  });
+}
+
 
 /* ------------------------------------------------------------- lineups */
 
@@ -1439,7 +1490,8 @@ function nextSeason(L) {
       return;
     }
     p.age++;
-    const retireOdds = p.status.type === "retired" ? 1 : p.age >= 34 ? 0.55 : p.age >= 31 ? 0.22 : 0.04;
+    const retireOdds =
+      p.status.type === "retired" ? 1 : p.age >= 38 ? 0.7 : p.age >= 34 ? 0.5 : p.age >= 31 ? 0.2 : p.age >= 27 ? 0.045 : 0.012;
     if (chance(retireOdds)) {
       retiring.push(p);
       return;
