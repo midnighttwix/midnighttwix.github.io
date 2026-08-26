@@ -897,12 +897,8 @@ table.tbl tr.me td { background: rgba(53, 240, 160, 0.1); color: var(--neon); }
 }
 .gd-row .stat { min-width: 58px; font-size: 1.3rem; }
 .gd-row.flash {
-  background: rgba(53, 240, 160, 0.1);
-  animation: flashpop 0.6s ease;
-}
-@keyframes flashpop {
-  from { background: rgba(53, 240, 160, 0.22); }
-  to { background: rgba(53, 240, 160, 0.1); }
+  background: rgba(53, 240, 160, 0.14);
+  box-shadow: inset 3px 0 0 var(--neon);
 }
 .owner-tag {
   font-family: "Press Start 2P", monospace;
