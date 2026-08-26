@@ -1,11 +1,11 @@
 /* Road Trip - guess the distance between two US cities. */
 
-const TOLERANCE_MI = 25; // how close a guess has to be to count
+const TOLERANCE_MI = 100; // how close a guess has to be to count
 const PENALTY_SECONDS = 20; // detour timer after a miss
 const CHECKPOINTS_TO_WIN = 3;
 
-/* Pairs are kept in this band so a round is challenging but still winnable at
-   +/-25 miles - coast-to-coast pairs would need ~1% accuracy. */
+/* Pairs are kept in this band so a round is challenging but still winnable -
+   coast-to-coast pairs would need implausible precision. */
 const MIN_PAIR_MI = 150;
 const MAX_PAIR_MI = 1200;
 
