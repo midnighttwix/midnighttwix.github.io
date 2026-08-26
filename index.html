@@ -286,6 +286,20 @@
         background-size: 100% 100%, 118% auto;
         border: 3px solid #41603a;
       }
+      /* Lock & Klefki: the matching board itself - coloured tiles on a dark grid */
+      .card-lockandklefki {
+        background-color: #2a2d31;
+        background-image:
+          linear-gradient(#d94141, #d94141),
+          linear-gradient(#3f77d1, #3f77d1),
+          linear-gradient(#3fa45c, #3fa45c),
+          linear-gradient(#d7bd2b, #d7bd2b),
+          repeating-linear-gradient(45deg, #33363b 0 8px, #2a2d31 8px 16px);
+        background-repeat: no-repeat;
+        background-size: 30% 24%, 30% 24%, 30% 24%, 30% 24%, 100% 100%;
+        background-position: 16% 12%, 84% 12%, 16% 58%, 84% 58%, 0 0;
+        border: 3px solid #4a4d52;
+      }
     </style>
   </head>
   <body>
@@ -352,6 +366,10 @@
         <a class="card card-roadtrip" href="roadtrip/">
           <p class="card-title">Road Trip</p>
           <p class="card-desc">Guess the miles between two cities</p>
+        </a>
+        <a class="card card-lockandklefki" href="lockandklefki/">
+          <p class="card-title">Lock &amp; Klefki</p>
+          <p class="card-desc">Match every Klefki to its lock</p>
         </a>
       </div>
     </main>

@@ -1,0 +1,292 @@
+/* Lock & Klefki - colour matching memory game. */
+
+:root {
+  --bg: #1d1e20;
+  --panel: #262729;
+  --line: #3a3c40;
+  --text: #f2efe9;
+  --muted: #a7abb2;
+  --accent: #4a90d9;
+  --back: #33363b;
+  --back-2: #2a2d31;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Baloo 2", "Trebuchet MS", "Segoe UI", sans-serif;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.shell {
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------- masthead */
+
+.back-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.back-link:hover {
+  color: var(--text);
+}
+.masthead h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  margin: 0.3rem 0 0.15rem;
+}
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------ dashboard */
+
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0.8rem;
+}
+.gauge {
+  flex: 1 1 110px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+}
+.gauge-wide {
+  flex: 2 1 180px;
+}
+.gauge-label {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 800;
+}
+.gauge-value {
+  margin: 0.1rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+.status-ok {
+  color: #6fcf97;
+}
+.status-bad {
+  color: #eb8c7e;
+}
+
+/* ---------------------------------------------------------- board */
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+}
+
+.card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  perspective: 700px;
+  font: inherit;
+}
+.card:disabled {
+  cursor: default;
+}
+
+.card-inner {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.35s ease;
+}
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  backface-visibility: hidden;
+  border: 2px solid var(--line);
+  overflow: hidden;
+}
+
+.face-back {
+  background: repeating-linear-gradient(45deg, var(--back) 0 8px, var(--back-2) 8px 16px);
+  color: var(--muted);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.face-front {
+  transform: rotateY(180deg);
+  background: #f4f2ec;
+  border-color: currentColor;
+  border-width: 4px;
+}
+.face-front .art {
+  width: 74%;
+  height: 74%;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+/* Colour plate behind the Klefki sprite so both halves of a pair read as the
+   same colour even though one is a photo-ish sprite and one is vector. */
+.face-front.klefki {
+  background: radial-gradient(circle at 50% 45%, currentColor 0 46%, #f4f2ec 47%);
+}
+
+/* Dim the face, never .card-inner: opacity < 1 forces its preserve-3d to
+   flatten, which breaks backface-visibility and shows the card back. */
+.card.matched .face-front {
+  box-shadow: 0 0 0 3px #6fcf97 inset;
+  opacity: 0.8;
+}
+.card.wrong .face-front {
+  box-shadow: 0 0 0 3px #eb8c7e inset;
+}
+
+.board.locked .card {
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------- penalty */
+
+.penalty {
+  text-align: center;
+  margin: 0.8rem auto 0;
+  max-width: 320px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem;
+}
+.penalty-label {
+  margin: 0;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+.penalty-count {
+  margin: 0.1rem 0 0;
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ------------------------------------------------------------- win */
+
+.win-screen {
+  text-align: center;
+  margin-top: 0.9rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+}
+.win-screen h2 {
+  margin: 0 0 0.3rem;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #6fcf97;
+}
+.win-note {
+  margin: 0 0 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.win-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn:hover {
+  filter: brightness(1.08);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------- mobile */
+
+@media (max-width: 560px) {
+  body {
+    padding: 0.8rem 0.5rem 2rem;
+  }
+  .board {
+    gap: 0.4rem;
+  }
+  .dashboard {
+    gap: 0.35rem;
+    margin: 0.7rem 0 0.6rem;
+  }
+  .gauge,
+  .gauge-wide {
+    flex: 1 1 0;
+    padding: 0.3rem 0.25rem;
+  }
+  .gauge-label {
+    font-size: 0.56rem;
+    letter-spacing: 0.05em;
+  }
+  .gauge-value {
+    font-size: 0.85rem;
+  }
+  .face-back {
+    font-size: 1.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-inner {
+    transition: none;
+  }
+}

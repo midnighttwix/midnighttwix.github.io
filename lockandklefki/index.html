@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lock &amp; Klefki</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+        <h1>Lock &amp; Klefki</h1>
+        <p class="tagline">Flip two cards. Match every Klefki to the lock of the same colour.</p>
+      </header>
+
+      <div class="dashboard">
+        <div class="gauge">
+          <p class="gauge-label">Pairs</p>
+          <p id="pairs-display" class="gauge-value">0 / 8</p>
+        </div>
+        <div class="gauge">
+          <p class="gauge-label">Flips</p>
+          <p id="flips-display" class="gauge-value">0</p>
+        </div>
+        <div class="gauge gauge-wide">
+          <p class="gauge-label">Status</p>
+          <p id="status-display" class="gauge-value status-ok">Pick a card</p>
+        </div>
+      </div>
+
+      <div id="board" class="board" aria-label="Matching board"></div>
+
+      <div id="penalty" class="penalty hidden">
+        <p class="penalty-label">Two misses in a row &mdash; locked out for</p>
+        <p id="penalty-count" class="penalty-count">20</p>
+      </div>
+
+      <div id="win-screen" class="win-screen hidden">
+        <h2>Congrats!</h2>
+        <p id="win-note" class="win-note"></p>
+        <div class="win-actions">
+          <button id="play-again" class="btn" type="button">Play Again</button>
+          <a class="btn btn-ghost" href="../">Back To Games</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
