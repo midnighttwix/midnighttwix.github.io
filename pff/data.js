@@ -1055,3 +1055,86 @@ const CPU_DECISION_FLAVOR = [
   "followed a hunch from film study",
   "just wung it",
 ];
+
+/* ------------------------------------------------- conferences & divisions */
+
+const CONFERENCES = [
+  { key: "aqua", name: "Aqua", c1: "#2f7fd8", c2: "#0b2d55" },
+  { key: "magma", name: "Magma", c1: "#d8452f", c2: "#4a1108" },
+];
+
+const DIVISION_COMPASS = ["North", "South", "East", "West"];
+const TEAMS_PER_DIVISION = 4;
+const DIVISION_COUNT = CONFERENCES.length * DIVISION_COMPASS.length;
+
+/* Division index 0-7: conference = idx >> 2, compass point = idx % 4. */
+function divisionMeta(idx) {
+  const conf = CONFERENCES[Math.floor(idx / DIVISION_COMPASS.length)];
+  const compass = DIVISION_COMPASS[idx % DIVISION_COMPASS.length];
+  return { idx, conf, compass, name: `${conf.name} ${compass}`, short: `${conf.name.slice(0, 1)}-${compass.slice(0, 1)}` };
+}
+
+/* --------------------------------------------------------- trophy badges */
+
+/* 8x8 pixel art grids. '.' = transparent, 1 = outline, 2 = body, 3 = shine. */
+const BADGE_ART = {
+  flame: ["...11...", "..1221..", ".122221.", ".122321.", "1223321.", "1233321.", ".123321.", "..1221.."],
+  drop: ["...11...", "..1221..", "..1221..", ".122221.", "1232221.", "1232221.", ".122221.", "..1221.."],
+  leaf: ["......11", "....1221", "..122321", ".1223321", ".1233221", "12232211", "1222111.", ".111...."],
+  bolt: [".....11.", "....121.", "...1221.", "..12221.", "..122211", "...1221.", "..1221..", ".121...."],
+  star: ["...11...", "..1221..", "..1221..", "11122111", ".122221.", "..1221..", ".12..21.", ".11..11."],
+  crown: ["1..11..1", "11122111", "12222221", "12322321", "12222221", "12222221", "11111111", "........"],
+  gear: [".1.11.1.", "11122111", "12222221", "12211221", "12211221", "12222221", "11122111", ".1.11.1."],
+  shield: ["11111111", "12222221", "12333221", "12233221", "12222221", ".122221.", "..1221..", "...11..."],
+  skull: ["..1111..", ".122221.", "12111121", "12111121", "12222221", ".121121.", ".122221.", "..1111.."],
+  ball: ["..1111..", ".122221.", "12222221", "11122111", "13311331", "13311331", ".133331.", "..1111.."],
+};
+
+/* palette: [outline, body, shine] */
+const BADGE_PALETTES = {
+  fire: ["#4a1108", "#ff6b2c", "#ffd23f"],
+  water: ["#0b2d55", "#3aa6ff", "#c9f0ff"],
+  grass: ["#123d1c", "#4fc85a", "#c8ff9e"],
+  electric: ["#4a3a05", "#ffd23f", "#fff9c4"],
+  psychic: ["#4a0b3a", "#ff2fa6", "#ffd0ec"],
+  gold: ["#4a3a05", "#ffcf40", "#fff4c2"],
+  steel: ["#20313f", "#9fb4c4", "#e8f3ff"],
+  ghost: ["#2b1447", "#9a6bd8", "#ded0ff"],
+  ice: ["#123a4a", "#7fe6ff", "#eaffff"],
+  dark: ["#0d0d12", "#5a5a72", "#b6b6d4"],
+};
+
+/*
+ * Trophy room objectives. `scope` decides when the check runs:
+ *   week   - after any completed week (regular or playoff)
+ *   season - once the regular season wraps
+ *   final  - once a champion is crowned
+ * `repeatable: false` means it only ever unlocks once per manager.
+ */
+const BADGES = [
+  { id: "blowout", name: "Boulder Badge", art: "shield", palette: "steel", scope: "week", desc: "Win a week by more than 60 points." },
+  { id: "nailbiter", name: "Cascade Badge", art: "drop", palette: "water", scope: "week", desc: "Win a week by less than a single point." },
+  { id: "suspended_win", name: "Thunder Badge", art: "bolt", palette: "electric", scope: "week", desc: "Win a week while starting a suspended or sidelined player." },
+  { id: "perfect_week", name: "Rainbow Badge", art: "star", palette: "psychic", scope: "week", desc: "Start a flawless lineup - no benched player outscores a starter." },
+  { id: "streak3", name: "Soul Badge", art: "flame", palette: "fire", scope: "week", desc: "Win 3 weeks in a row." },
+  { id: "streak6", name: "Marsh Badge", art: "flame", palette: "psychic", scope: "week", desc: "Win 6 weeks in a row." },
+  { id: "monster_game", name: "Volcano Badge", art: "flame", palette: "fire", scope: "week", desc: "Roster a starter who drops 50+ points in one week." },
+  { id: "zero_hero", name: "Earth Badge", art: "leaf", palette: "grass", scope: "week", desc: "Win a week with a starter who scored a flat 0.0." },
+  { id: "buck_fifty", name: "Zephyr Badge", art: "bolt", palette: "ice", scope: "week", desc: "Put up 150+ points in a single week." },
+  { id: "ugly_win", name: "Hive Badge", art: "gear", palette: "grass", scope: "week", desc: "Win a week scoring under 80 points. A win's a win." },
+  { id: "bench_regret", name: "Plain Badge", art: "skull", palette: "dark", scope: "week", desc: "Leave 40+ points rotting on your bench in one week." },
+  { id: "sweep_week", name: "Fog Badge", art: "ball", palette: "ghost", scope: "week", desc: "Every single starter scores 10+ in the same week." },
+  { id: "stacked", name: "Coal Badge", art: "gear", palette: "dark", scope: "week", desc: "Win a week while starting 3+ players from the same Poke-NFL team." },
+  { id: "fossil_fuel", name: "Rain Badge", art: "drop", palette: "steel", scope: "week", desc: "Win a week with a 34-and-older QB under center." },
+  { id: "shutout_side", name: "Beacon Badge", art: "shield", palette: "gold", scope: "week", desc: "Hold an opponent under 60 points while winning." },
+  { id: "undefeated", name: "Mineral Badge", art: "shield", palette: "ice", scope: "season", desc: "Go undefeated through the regular season." },
+  { id: "points_king", name: "Glacier Badge", art: "crown", palette: "ice", scope: "season", desc: "Lead the whole league in points for across a season." },
+  { id: "heartbreak", name: "Relic Badge", art: "skull", palette: "ghost", scope: "season", desc: "Lead the league in scoring and STILL miss the playoffs." },
+  { id: "trade_shark", name: "Balance Badge", art: "gear", palette: "steel", scope: "season", desc: "Pull off 3 or more trades in one season." },
+  { id: "wire_wizard", name: "Heat Badge", art: "flame", palette: "gold", scope: "season", desc: "Add 8 or more free agents in one season." },
+  { id: "champion", name: "Storm Badge", art: "crown", palette: "gold", scope: "final", desc: "Win the championship." },
+  { id: "underdog", name: "Mind Badge", art: "star", palette: "ghost", scope: "final", desc: "Win the title after finishing outside the top two seeds." },
+  { id: "back2back", name: "Rising Badge", art: "crown", palette: "fire", scope: "final", desc: "Win championships in back-to-back seasons." },
+  { id: "three_peat", name: "Feather Badge", art: "crown", palette: "psychic", scope: "final", desc: "Win three championships in one franchise." },
+  { id: "draft_steal", name: "Knuckle Badge", art: "ball", palette: "grass", scope: "final", desc: "Finish the year with a top-5 scorer you drafted in round 8 or later." },
+];

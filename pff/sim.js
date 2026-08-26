@@ -162,6 +162,10 @@ function createPlayerPool(L) {
 }
 
 function assignAdp(L) {
+  L.playerIds.forEach((pid) => {
+    const p = L.players[pid];
+    p.prevAdp = p.adp != null ? p.adp : null;
+  });
   const ranked = L.playerIds
     .map((pid) => L.players[pid])
     .map((p) => ({ p, v: draftValue(L, p) * (0.88 + Math.random() * 0.24) }))
@@ -179,7 +183,75 @@ function teamRoster(L, teamIdx, pos) {
 
 /* -------------------------------------------------------------- schedules */
 
+/*
+ * Splits all 32 Poke-NFL teams into 2 conferences x 4 divisions x 4 teams.
+ * Rolled once when the league is born and then frozen: teams only ever move
+ * divisions if you start a brand new season/franchise from the menu.
+ */
+function assignDivisions(L) {
+  const order = shuffle(NFL_TEAMS.map((_, i) => i));
+  L.divisions = {};
+  L.divisionTeams = [];
+  for (let d = 0; d < DIVISION_COUNT; d++) {
+    const members = order.slice(d * TEAMS_PER_DIVISION, (d + 1) * TEAMS_PER_DIVISION);
+    L.divisionTeams.push(members);
+    members.forEach((teamIdx) => {
+      L.divisions[teamIdx] = d;
+    });
+  }
+}
+
+function divisionOf(L, teamIdx) {
+  return L.divisions ? L.divisions[teamIdx] : 0;
+}
+
+function conferenceOf(L, teamIdx) {
+  return Math.floor(divisionOf(L, teamIdx) / DIVISION_COMPASS.length);
+}
+
+/* Backfills structures added after a save was first written. */
+function ensureLeagueStructures(L) {
+  if (!L.divisions || Object.keys(L.divisions).length !== NFL_TEAMS.length) assignDivisions(L);
+  if (!L.badges) L.badges = {};
+  L.managers.forEach((m) => {
+    if (!m.tally) m.tally = { trades: 0, adds: 0, winStreak: 0, bestStreak: 0 };
+    if (!L.badges[m.id]) L.badges[m.id] = {};
+  });
+}
+
+/*
+ * Greedy weekly pairing. Division rivals who haven't met twice yet get first
+ * dibs, so every team ends up with roughly 6 divisional games without needing
+ * a full round-robin solver (and without any chance of looping forever).
+ */
+function pairWeekGames(L, playing, meetings) {
+  const remaining = shuffle(playing.slice());
+  const games = [];
+  const keyFor = (a, b) => (a < b ? `${a}|${b}` : `${b}|${a}`);
+  while (remaining.length > 1) {
+    const a = remaining.shift();
+    let bestIdx = 0;
+    let bestScore = -Infinity;
+    remaining.forEach((b, i) => {
+      const met = meetings[keyFor(a, b)] || 0;
+      const sameDiv = divisionOf(L, a) === divisionOf(L, b);
+      const sameConf = conferenceOf(L, a) === conferenceOf(L, b);
+      let score = sameDiv ? (met < 2 ? 12 - met * 4 : -10) : sameConf ? 3 - met * 6 : 1 - met * 6;
+      score += Math.random();
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = i;
+      }
+    });
+    const b = remaining.splice(bestIdx, 1)[0];
+    meetings[keyFor(a, b)] = (meetings[keyFor(a, b)] || 0) + 1;
+    games.push(chance(0.5) ? { home: a, away: b } : { home: b, away: a });
+  }
+  return games;
+}
+
 function makeNflSchedule(L) {
+  if (!L.divisions) assignDivisions(L);
   const byes = {};
   const teams = shuffle(NFL_TEAMS.map((_, i) => i));
   const perWeek = teams.length / BYE_WEEKS.length;
@@ -194,14 +266,11 @@ function makeNflSchedule(L) {
   });
 
   L.nflSchedule = {};
+  const meetings = {};
   for (let week = 1; week <= NFL_WEEKS; week++) {
     const onBye = byes[week] || [];
-    const playing = shuffle(NFL_TEAMS.map((_, i) => i).filter((i) => !onBye.includes(i)));
-    const games = [];
-    for (let i = 0; i < playing.length; i += 2) {
-      games.push({ home: playing[i], away: playing[i + 1] });
-    }
-    L.nflSchedule[week] = games;
+    const playing = NFL_TEAMS.map((_, i) => i).filter((i) => !onBye.includes(i));
+    L.nflSchedule[week] = pairWeekGames(L, playing, meetings);
   }
 }
 
@@ -1032,6 +1101,7 @@ function finalizeWeek(L, games, wire, playerPts) {
     phase: L.phase,
   };
   L.wire = wire.concat(L.wire).slice(0, 400);
+  evaluateWeekBadges(L, week);
   return L.results[week];
 }
 
@@ -1189,9 +1259,43 @@ function aiRosterMoves(L) {
 
 /* -------------------------------------------------------------- drafting */
 
+/*
+ * Weighted points-per-game across a player's last 3 recorded seasons (most
+ * recent counts most). Returns null for rookies and anyone without a real
+ * sample, so they fall back to pure scouting projection.
+ */
+function productionPpg(p) {
+  const log = (p.seasonLog || []).filter((s) => s.games >= 4).slice(-3);
+  if (!log.length) return null;
+  const weights = [0.2, 0.35, 1];
+  let sum = 0;
+  let wsum = 0;
+  log.forEach((s, i) => {
+    const w = weights[weights.length - log.length + i];
+    sum += (s.pts / s.games) * w;
+    wsum += w;
+  });
+  return wsum ? sum / wsum : null;
+}
+
+/*
+ * Draft stock = what the scouts project blended with what the player actually
+ * did. In multi-season modes this makes last year's breakouts climb the board
+ * and last year's busts slide, instead of ADP being pure skill rating.
+ */
 function draftValue(L, p) {
   const posMult = { QB: 0.9, RB: 1.12, WR: 1.08, TE: 0.98, K: 0.3, DEF: 0.36 }[p.pos];
-  return projectPPG(p) * posMult;
+  const proj = projectPPG(p);
+  const actual = productionPpg(p);
+  let ppg = proj;
+  if (actual != null) {
+    // Older players are trusted more on tape, young risers more on projection.
+    const trust = p.age >= 30 ? 0.62 : p.age <= 24 ? 0.38 : 0.5;
+    ppg = proj * (1 - trust) + actual * trust;
+  } else if (p.rookie) {
+    ppg *= 0.88; // rookie uncertainty discount
+  }
+  return ppg * posMult;
 }
 
 function rosterNeeds(L, manager) {
@@ -1244,9 +1348,11 @@ function createLeague(settings) {
     seasonHistory: [],
     nflRecords: {},
     keeperSelections: {},
+    badges: {},
   };
 
   createPlayerPool(L);
+  assignDivisions(L);
   makeNflSchedule(L);
 
   const aiNames = shuffle(AI_MANAGER_NAMES);
@@ -1269,6 +1375,7 @@ function createLeague(settings) {
       pointsAgainst: 0,
       titles: 0,
       history: [],
+      tally: { trades: 0, adds: 0, winStreak: 0, bestStreak: 0 },
     });
   }
   L.activeManagerId = 0;
@@ -1425,6 +1532,159 @@ function availablePlayers(L) {
   return pool;
 }
 
+/* ------------------------------------------------------------- trophies */
+
+const BADGE_BY_ID = BADGES.reduce((acc, b) => {
+  acc[b.id] = b;
+  return acc;
+}, {});
+
+/* Records a badge for a manager. No-op if they already own it. */
+function awardBadge(L, managerId, badgeId, note) {
+  if (!L.badges) L.badges = {};
+  if (!L.badges[managerId]) L.badges[managerId] = {};
+  if (L.badges[managerId][badgeId]) return false;
+  L.badges[managerId][badgeId] = { season: L.season, week: L.week, note: note || "" };
+  L.pendingBadges = (L.pendingBadges || []).concat({ managerId, badgeId, season: L.season, week: L.week, note: note || "" });
+  return true;
+}
+
+function badgeCount(L, managerId) {
+  return Object.keys((L.badges && L.badges[managerId]) || {}).length;
+}
+
+/* Pulls together everything the week-scoped objectives need to look at. */
+function weekBadgeContext(L, manager, week) {
+  const result = L.results[week];
+  if (!result) return null;
+  const scored = result.managerScores[manager.id];
+  if (!scored) return null;
+  const matchup = (result.matchups || []).find((mu) => mu.a === manager.id || mu.b === manager.id);
+  if (!matchup) return null;
+  const mine = matchup.a === manager.id ? matchup.aScore : matchup.bScore;
+  const theirs = matchup.a === manager.id ? matchup.bScore : matchup.aScore;
+  const starters = scored.detail.filter((d) => d.pid);
+  const starterIds = new Set(starters.map((d) => d.pid));
+  const bench = manager.roster
+    .filter((pid) => !starterIds.has(pid))
+    .map((pid) => L.players[pid])
+    .filter((p) => p && p.weeks[week] && p.weeks[week].pts != null)
+    .map((p) => p.weeks[week].pts);
+  const optimal = bestBallLineup(L, manager, week);
+  const optimalTotal = round1(
+    Object.values(optimal).reduce((sum, pid) => {
+      const p = pid ? L.players[pid] : null;
+      return sum + (p && p.weeks[week] && p.weeks[week].pts != null ? p.weeks[week].pts : 0);
+    }, 0)
+  );
+  return {
+    week,
+    won: mine > theirs,
+    margin: mine - theirs,
+    mine,
+    theirs,
+    starters,
+    bench,
+    optimalTotal,
+    left_on_bench: round1(optimalTotal - mine),
+  };
+}
+
+function evaluateWeekBadges(L, week) {
+  L.managers.forEach((manager) => {
+    if (!manager.human) return;
+    if (!manager.tally) manager.tally = { trades: 0, adds: 0, winStreak: 0, bestStreak: 0 };
+    const ctx = weekBadgeContext(L, manager, week);
+    if (!ctx) return;
+
+    if (L.results[week].phase === "regular") {
+      manager.tally.winStreak = ctx.won ? manager.tally.winStreak + 1 : 0;
+      manager.tally.bestStreak = Math.max(manager.tally.bestStreak || 0, manager.tally.winStreak);
+    }
+
+    const players = ctx.starters.map((d) => ({ ...d, p: L.players[d.pid] })).filter((d) => d.p);
+    const topScore = players.reduce((max, d) => Math.max(max, d.pts), 0);
+    const worstStarter = players.length ? Math.min(...players.map((d) => d.pts)) : 0;
+    const bestBench = ctx.bench.length ? Math.max(...ctx.bench) : 0;
+    const teamCounts = {};
+    players.forEach((d) => {
+      teamCounts[d.p.team] = (teamCounts[d.p.team] || 0) + 1;
+    });
+    const sidelined = (p) =>
+      p.status && (p.status.type === "out" || p.status.type === "questionable" || (p.status.type === "injured" && p.status.weeks > 0));
+
+    if (ctx.won && ctx.margin > 60) awardBadge(L, manager.id, "blowout", `Won by ${ctx.margin.toFixed(1)} in week ${week}.`);
+    if (ctx.won && ctx.margin < 1) awardBadge(L, manager.id, "nailbiter", `Survived by ${ctx.margin.toFixed(2)} in week ${week}.`);
+    if (ctx.won && players.some((d) => sidelined(d.p))) awardBadge(L, manager.id, "suspended_win", `Won week ${week} shorthanded.`);
+    if (ctx.won && ctx.theirs < 60) awardBadge(L, manager.id, "shutout_side", `Held them to ${ctx.theirs.toFixed(1)} in week ${week}.`);
+    if (ctx.won && worstStarter === 0) awardBadge(L, manager.id, "zero_hero", `Won week ${week} with a goose egg in the lineup.`);
+    if (ctx.won && ctx.mine < 80) awardBadge(L, manager.id, "ugly_win", `Won week ${week} with just ${ctx.mine.toFixed(1)}.`);
+    if (ctx.won && Object.values(teamCounts).some((n) => n >= 3)) awardBadge(L, manager.id, "stacked", `Stacked up and won week ${week}.`);
+    if (ctx.won && players.some((d) => d.slot === "QB" && d.p.age >= 34)) awardBadge(L, manager.id, "fossil_fuel", `Old arm, week ${week} win.`);
+    if (ctx.bench.length && bestBench <= worstStarter) awardBadge(L, manager.id, "perfect_week", `Flawless week ${week} lineup.`);
+    if (topScore >= 50) awardBadge(L, manager.id, "monster_game", `${topScore.toFixed(1)} from one player in week ${week}.`);
+    if (ctx.mine >= 150) awardBadge(L, manager.id, "buck_fifty", `${ctx.mine.toFixed(1)} points in week ${week}.`);
+    if (ctx.left_on_bench >= 40) awardBadge(L, manager.id, "bench_regret", `Benched ${ctx.left_on_bench.toFixed(1)} points in week ${week}.`);
+    if (players.length === ROSTER_SLOTS.length && players.every((d) => d.pts >= 10)) awardBadge(L, manager.id, "sweep_week", `Every starter hit double digits in week ${week}.`);
+    if (manager.tally.winStreak >= 3) awardBadge(L, manager.id, "streak3", `Three straight, season ${L.season}.`);
+    if (manager.tally.winStreak >= 6) awardBadge(L, manager.id, "streak6", `Six straight, season ${L.season}.`);
+  });
+}
+
+/* Objectives judged once the regular season books are closed. */
+function evaluateSeasonBadges(L) {
+  const table = standings(L);
+  const playoffSpots = playoffCount(L.managers.length);
+  const madePlayoffs = new Set(table.slice(0, playoffSpots).map((m) => m.id));
+  const pfLeader = L.managers.slice().sort((a, b) => b.pointsFor - a.pointsFor)[0];
+
+  L.managers.forEach((manager) => {
+    if (!manager.human) return;
+    const tally = manager.tally || {};
+    if (manager.losses === 0 && manager.ties === 0 && manager.wins > 0) {
+      awardBadge(L, manager.id, "undefeated", `${manager.wins}-0 in season ${L.season}.`);
+    }
+    if (pfLeader && pfLeader.id === manager.id) {
+      awardBadge(L, manager.id, "points_king", `${manager.pointsFor.toFixed(1)} points in season ${L.season}.`);
+      if (!madePlayoffs.has(manager.id)) awardBadge(L, manager.id, "heartbreak", `Most points, no playoffs, season ${L.season}.`);
+    }
+    if ((tally.trades || 0) >= 3) awardBadge(L, manager.id, "trade_shark", `${tally.trades} trades in season ${L.season}.`);
+    if ((tally.adds || 0) >= 8) awardBadge(L, manager.id, "wire_wizard", `${tally.adds} pickups in season ${L.season}.`);
+  });
+}
+
+/* Objectives judged the moment a champion is crowned. */
+function evaluateFinalBadges(L) {
+  const champId = L.champions[L.champions.length - 1];
+  const champ = L.managers.find((m) => m.id === champId);
+  if (!champ || !champ.human) return;
+
+  awardBadge(L, champ.id, "champion", `Champion of season ${L.season}.`);
+
+  const seedIdx = standings(L).findIndex((m) => m.id === champ.id);
+  if (seedIdx > 1) awardBadge(L, champ.id, "underdog", `Won it all from the ${seedIdx + 1} seed.`);
+
+  const titles = L.champions.filter((id) => id === champ.id).length;
+  if (titles >= 3) awardBadge(L, champ.id, "three_peat", `${titles} titles and counting.`);
+  const last = L.champions.slice(-2);
+  if (last.length === 2 && last[0] === champ.id && last[1] === champ.id) {
+    awardBadge(L, champ.id, "back2back", `Repeat champion, season ${L.season}.`);
+  }
+
+  const top5 = L.playerIds
+    .map((pid) => L.players[pid])
+    .sort((a, b) => b.seasonPts - a.seasonPts)
+    .slice(0, 5)
+    .map((p) => p.id);
+  const lateSteal = (L.draft && L.draft.picksMade ? L.draft.picksMade : []).find(
+    (pick) => pick.managerId === champ.id && top5.includes(pick.playerId) && (L.players[pick.playerId] || {}).draftedRound >= 8
+  );
+  if (lateSteal) {
+    const p = L.players[lateSteal.playerId];
+    awardBadge(L, champ.id, "draft_steal", `${displayName(p)} in round ${p.draftedRound}.`);
+  }
+}
+
 /* --------------------------------------------------------- next season */
 
 function nextSeason(L) {
@@ -1464,6 +1724,7 @@ function nextSeason(L) {
     m.ties = 0;
     m.pointsFor = 0;
     m.pointsAgainst = 0;
+    m.tally = { trades: 0, adds: 0, winStreak: 0, bestStreak: 0 };
     if (!keepRoster) {
       m.roster = [];
       m.ir = [];
@@ -1477,6 +1738,10 @@ function nextSeason(L) {
     const p = L.players[pid];
     usedDex.add(p.dexId);
     p.lastSeasonPts = p.seasonPts;
+    p.lastSeasonGames = p.gamesPlayed;
+    p.seasonLog = (p.seasonLog || [])
+      .concat({ season: L.season, pts: round1(p.seasonPts), games: p.gamesPlayed })
+      .slice(-5);
     p.careerSeasons++;
     p.seasonPts = 0;
     p.gamesPlayed = 0;

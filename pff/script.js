@@ -571,6 +571,7 @@ function initSetup() {
         L.managers.forEach((m) => {
           if (m.human == null) m.human = !!m.isUser;
         });
+        ensureLeagueStructures(L);
         render();
       }
       return;
@@ -1021,6 +1022,7 @@ function renderSeason() {
     trade: renderTradeTab,
     wire: renderWireTab,
     league: renderLeagueTab,
+    trophies: renderTrophiesTab,
   };
   renderers[activeTab]();
 }
@@ -1724,32 +1726,48 @@ function renderStandingsTab() {
     <div class="panel">
       <p class="panel-title">POK&Eacute;-NFL STANDINGS</p>
       <div class="scroll" style="max-height:420px">
-        <table class="tbl">
-          <tr><th>#</th><th>Team</th><th class="num">REC</th><th class="num">PF</th><th class="num">PA</th></tr>
-          ${nflStandingsRows()}
-        </table>
+        ${nflStandingsHtml()}
       </div>
     </div>`;
 }
 
-function nflStandingsRows() {
-  const records = NFL_TEAMS.map((t, i) => ({
-    team: t,
-    idx: i,
-    ...(L.nflRecords && L.nflRecords[i] ? L.nflRecords[i] : { wins: 0, losses: 0, ties: 0, pointsFor: 0, pointsAgainst: 0 }),
-  }));
-  records.sort((a, b) => b.wins - a.wins || a.losses - b.losses || b.pointsFor - a.pointsFor);
-  return records
-    .map(
-      (r, i) => `<tr>
-        <td>${i + 1}</td>
-        <td><span class="chip" style="background:${r.team.c1}">${r.team.abbr}</span> ${esc(r.team.city)} ${esc(r.team.nick)}</td>
-        <td class="num">${r.wins}-${r.losses}${r.ties ? `-${r.ties}` : ""}</td>
-        <td class="num">${r.pointsFor}</td>
-        <td class="num">${r.pointsAgainst}</td>
-      </tr>`
-    )
-    .join("");
+function nflTeamRecord(idx) {
+  return (L.nflRecords && L.nflRecords[idx]) || { wins: 0, losses: 0, ties: 0, pointsFor: 0, pointsAgainst: 0 };
+}
+
+function sortNflTeams(indices) {
+  return indices
+    .map((idx) => ({ idx, team: NFL_TEAMS[idx], ...nflTeamRecord(idx) }))
+    .sort((a, b) => b.wins - a.wins || a.losses - b.losses || b.pointsFor - a.pointsFor);
+}
+
+function nflTeamRow(r, rank, leader) {
+  return `<tr>
+    <td>${rank}${leader ? ' <span class="tag tag-hot">y</span>' : ""}</td>
+    <td><span class="chip" style="background:${r.team.c1}">${r.team.abbr}</span> ${esc(r.team.city)} ${esc(r.team.nick)}</td>
+    <td class="num">${r.wins}-${r.losses}${r.ties ? `-${r.ties}` : ""}</td>
+    <td class="num">${r.pointsFor}</td>
+    <td class="num">${r.pointsAgainst}</td>
+  </tr>`;
+}
+
+/* Standings grouped into the frozen Aqua/Magma conference + division layout. */
+function nflStandingsHtml() {
+  ensureLeagueStructures(L);
+  return CONFERENCES.map((conf, ci) => {
+    const divisions = DIVISION_COMPASS.map((_, di) => {
+      const meta = divisionMeta(ci * DIVISION_COMPASS.length + di);
+      const rows = sortNflTeams(L.divisionTeams[meta.idx] || []);
+      return `<div class="division-block">
+        <p class="division-title" style="border-color:${meta.conf.c1}">${esc(meta.name)}</p>
+        <table class="tbl">
+          <tr><th>#</th><th>Team</th><th class="num">REC</th><th class="num">PF</th><th class="num">PA</th></tr>
+          ${rows.map((r, i) => nflTeamRow(r, i + 1, i === 0 && r.wins + r.losses + r.ties > 0)).join("")}
+        </table>
+      </div>`;
+    }).join("");
+    return `<p class="conf-title" style="color:${conf.c1}">TEAM ${conf.name.toUpperCase()} CONFERENCE</p><div class="division-grid">${divisions}</div>`;
+  }).join("");
 }
 
 /* ------------------------------------------------------ player stats */
@@ -1886,8 +1904,10 @@ function renderPlayersTab() {
 
 function addFreeAgent(pid) {
   const you = activeManager();
+  if (!you.tally) you.tally = { trades: 0, adds: 0, winStreak: 0, bestStreak: 0 };
   if (you.roster.length < ROSTER_SIZE) {
     you.roster.push(pid);
+    you.tally.adds++;
     save();
     renderSeason();
     return;
@@ -1917,6 +1937,7 @@ function addFreeAgent(pid) {
     const cutId = Number(btn.dataset.cut);
     you.roster = you.roster.filter((x) => x !== cutId);
     you.roster.push(pid);
+    you.tally.adds++;
     Object.values(you.lineups).forEach((lu) => {
       Object.keys(lu).forEach((k) => {
         if (lu[k] === cutId) lu[k] = null;
@@ -2011,6 +2032,10 @@ function renderTradeTab() {
 function executeTrade(you, partner, give, get) {
   you.roster = you.roster.filter((pid) => !give.includes(pid)).concat(get);
   partner.roster = partner.roster.filter((pid) => !get.includes(pid)).concat(give);
+  [you, partner].forEach((m) => {
+    if (!m.tally) m.tally = { trades: 0, adds: 0, winStreak: 0, bestStreak: 0 };
+    m.tally.trades++;
+  });
   [you, partner].forEach((m) =>
     Object.values(m.lineups).forEach((lu) =>
       Object.keys(lu).forEach((k) => {
@@ -2137,12 +2162,109 @@ function renderWireTab() {
     </div>`;
 }
 
+/* ------------------------------------------------------ trophy room */
+
+/* Renders a badge's 8x8 grid as crisp-edged SVG rects so it scales without blurring. */
+function badgeArtHtml(badge, px) {
+  const grid = BADGE_ART[badge.art] || [];
+  const palette = BADGE_PALETTES[badge.palette] || ["#000", "#888", "#fff"];
+  const rects = [];
+  grid.forEach((row, y) => {
+    row.split("").forEach((ch, x) => {
+      if (ch === ".") return;
+      const fill = palette[Number(ch) - 1];
+      if (!fill) return;
+      rects.push(`<rect x="${x}" y="${y}" width="1" height="1" fill="${fill}" />`);
+    });
+  });
+  return `<svg class="badge-art" width="${px}" height="${px}" viewBox="0 0 8 8" shape-rendering="crispEdges" aria-hidden="true">${rects.join("")}</svg>`;
+}
+
+function badgeTileHtml(badge, earned, size) {
+  const when = earned ? `S${earned.season}${earned.week ? ` &middot; W${earned.week}` : ""}` : "LOCKED";
+  return `<div class="badge-tile ${earned ? "earned" : "locked"}" title="${esc(badge.desc)}">
+    <div class="badge-medal">${badgeArtHtml(badge, size || 48)}</div>
+    <p class="badge-name">${esc(badge.name)}</p>
+    <p class="badge-desc">${esc(badge.desc)}</p>
+    <p class="badge-when">${when}${earned && earned.note ? `<br />${esc(earned.note)}` : ""}</p>
+  </div>`;
+}
+
+function renderTrophiesTab() {
+  ensureLeagueStructures(L);
+  const humans = humanManagers();
+  const you = activeManager();
+  const owned = L.badges[you.id] || {};
+  const earnedCount = Object.keys(owned).length;
+  const groups = [
+    { key: "week", label: "WEEKLY OBJECTIVES" },
+    { key: "season", label: "SEASON-LONG OBJECTIVES" },
+    { key: "final", label: "CHAMPIONSHIP OBJECTIVES" },
+  ];
+
+  const caseHtml = groups
+    .map((g) => {
+      const tiles = BADGES.filter((b) => b.scope === g.key)
+        .map((b) => badgeTileHtml(b, owned[b.id]))
+        .join("");
+      return `<p class="panel-title" style="margin-top:0.7rem">${g.label}</p><div class="badge-grid">${tiles}</div>`;
+    })
+    .join("");
+
+  const raceHtml =
+    humans.length > 1
+      ? `<div class="panel"><p class="panel-title">BADGE RACE</p><table class="tbl"><tr><th>Manager</th><th class="num">Badges</th></tr>${humans
+          .slice()
+          .sort((a, b) => badgeCount(L, b.id) - badgeCount(L, a.id))
+          .map(
+            (m) =>
+              `<tr class="${m.id === you.id ? "me" : ""}"><td>${esc(m.name)}</td><td class="num">${badgeCount(L, m.id)} / ${BADGES.length}</td></tr>`
+          )
+          .join("")}</table></div>`
+      : "";
+
+  const pct = Math.round((earnedCount / BADGES.length) * 100);
+  $("tab-trophies").innerHTML = `
+    <div class="panel">
+      <div class="rowbar">
+        <p class="panel-title" style="margin:0;flex:1">${esc(you.name)} &middot; TROPHY ROOM</p>
+        <span class="chip" style="background:var(--gold);color:#241a00">${earnedCount} / ${BADGES.length}</span>
+      </div>
+      <div class="badge-progress"><span style="width:${pct}%"></span></div>
+      <p class="note">Badges stick with this save forever &mdash; keep the franchise rolling and chip away at the long ones.</p>
+    </div>
+    ${raceHtml}
+    <div class="panel">${caseHtml}</div>`;
+}
+
+/* Celebration popup for anything unlocked since the last render. */
+function showNewBadges() {
+  const pending = (L.pendingBadges || []).filter((b) => {
+    const m = managerById(b.managerId);
+    return m && m.human;
+  });
+  L.pendingBadges = [];
+  if (!pending.length) return;
+  if (modalRoot.innerHTML) return;
+  modalRoot.innerHTML = `<div class="modal-back"><div class="modal">
+    <p class="panel-title" style="color:var(--gold)">NEW BADGE${pending.length > 1 ? "S" : ""} EARNED</p>
+    <div class="badge-grid">${pending
+      .map((b) => badgeTileHtml(BADGE_BY_ID[b.badgeId], b, 56))
+      .join("")}</div>
+    <p class="note">${pending.map((b) => esc(managerById(b.managerId).name)).filter((v, i, a) => a.indexOf(v) === i).join(", ")} &mdash; check the Trophies tab for the full case.</p>
+    <button class="btn btn-green btn-sm" id="badges-close" type="button">Nice</button>
+  </div></div>`;
+  $("badges-close").addEventListener("click", () => (modalRoot.innerHTML = ""));
+}
+
 /* ------------------------------------------------------- league tab */
 
 let leagueTeamIdx = 0;
 
 function renderLeagueTab() {
+  ensureLeagueStructures(L);
   const t = NFL_TEAMS[leagueTeamIdx];
+  const meta = divisionMeta(divisionOf(L, leagueTeamIdx));
   const roster = teamRoster(L, leagueTeamIdx).sort(
     (a, b) => POSITIONS.indexOf(a.pos) - POSITIONS.indexOf(b.pos) || b.skill - a.skill
   );
@@ -2161,6 +2283,7 @@ function renderLeagueTab() {
         </select>
         ${teamEmblem(leagueTeamIdx, "sprite sprite-sm")}
         <span class="chip" style="background:${t.c1}">${t.abbr}</span>
+        <span class="chip" style="background:${meta.conf.c1}">${esc(meta.name)}</span>
         <span class="note">Bye week ${L.byeWeeks[leagueTeamIdx]}</span>
       </div>
       <div class="scroll">
@@ -2187,6 +2310,7 @@ function buildTimeline(games) {
 }
 
 function startGameday() {
+  gdDom = null;
   const { week, wire } = prepareWeek(L);
   L.managers.forEach((m) => ensureLineup(m, week));
   const games = runWeekGames(L, week);
@@ -2553,12 +2677,18 @@ function endGameday() {
   renderLeagueTicker();
   if (GD.alerts.length) {
     modalRoot.innerHTML = `<div class="modal-back"><div class="modal"><p class="panel-title">GAME HEALTH REPORT</p>${GD.alerts.map((alert) => `<div class="wire-item injury">${alert.playerId ? avatarHtml(L.players[alert.playerId], "sprite sprite-sm") : ""}<span><b>${esc(alert.title)}</b><br />${esc(alert.text)}</span></div>`).join("")}<button class="btn btn-blue btn-sm" id="alerts-close" type="button">Continue</button></div></div>`;
-    $("alerts-close").addEventListener("click", () => { modalRoot.innerHTML = ""; });
+    $("alerts-close").addEventListener("click", () => {
+      modalRoot.innerHTML = "";
+      showNewBadges();
+    });
+  } else {
+    showNewBadges();
   }
 }
 
 function finishWeekButton() {
   GD = null;
+  gdDom = null;
   advanceAfterWeek();
 }
 
@@ -2593,95 +2723,170 @@ function renderGameday() {
   renderGamedayLive();
 }
 
+/*
+ * The live view repaints ~3x a second. Rebuilding innerHTML every tick forced
+ * every sprite to re-decode, which read as a full-list strobe on phones. The
+ * structure is now built once per lineup/matchup change and each tick only
+ * writes changed numbers and toggles classes.
+ */
+let gdDom = null;
+
+function currentGdMatchups() {
+  return L.phase === "playoffs" && L.bracket
+    ? L.bracket.rounds[L.bracket.current].filter((mu) => mu.a != null && mu.b != null && mu.winner == null)
+    : L.schedule[GD.week] || [];
+}
+
+function gdLineupManagers() {
+  return GD.focus === "all" ? humanManagers() : [managerById(GD.focus)].filter(Boolean);
+}
+
+function gdLiveTag(p, slot) {
+  const playing = GD.played.has(p.id);
+  const mod = GD.mods[p.id];
+  if (GD.sat[p.id]) return `<span class="tag tag-out">OUT</span>`;
+  if (!playing) return `<span class="tag tag-bye">BYE</span>`;
+  if (mod && mod > 1.05) return `<span class="tag tag-hot">&#9650;</span>`;
+  if (mod && mod < 0.95) return `<span class="tag tag-cold">&#9660;</span>`;
+  return "";
+}
+
+function buildGdStructure(matchups, lineupManagers) {
+  $("gd-matchups").innerHTML = matchups
+    .map(
+      (mu) => `<div class="matchup-board live" data-mu-a="${mu.a}" data-mu-b="${mu.b}">
+        <div class="mb-side" data-side="a"><div class="mb-name">${esc(managerById(mu.a).name)}</div><div class="mb-score">0.0</div></div>
+        <div class="mb-vs">VS</div>
+        <div class="mb-side" data-side="b"><div class="mb-name">${esc(managerById(mu.b).name)}</div><div class="mb-score">0.0</div></div>
+      </div>`
+    )
+    .join("");
+
+  $("gd-lineup").innerHTML = lineupManagers
+    .map(
+      (manager) => `<div class="live-manager-block"><p class="panel-title">${esc(manager.name)}</p>${startersOf(manager)
+        .map(({ slot, pid }) => {
+          const p = L.players[pid];
+          if (!p) return "";
+          return `<div class="gd-row" data-gd-row="${manager.id}:${pid}">
+            <span class="pos-badge pos-${slot}">${slot}</span>
+            ${avatarHtml(p, "sprite sprite-sm")}
+            <span class="pname"><span class="nm">${esc(displayName(p))}</span><span class="sub">${p.pos} &middot; ${
+            teamOf(p).abbr
+          }</span></span>
+            <span class="gd-tag"></span>
+            <span class="stat">0.0</span>
+          </div>`;
+        })
+        .join("")}</div>`
+    )
+    .join("");
+
+  const boards = [...$("gd-matchups").querySelectorAll(".matchup-board")].map((node, i) => ({
+    node,
+    mu: matchups[i],
+    aScore: node.querySelector('[data-side="a"] .mb-score'),
+    bScore: node.querySelector('[data-side="b"] .mb-score'),
+    aSide: node.querySelector('[data-side="a"]'),
+    bSide: node.querySelector('[data-side="b"]'),
+  }));
+
+  const rows = [...$("gd-lineup").querySelectorAll(".gd-row")].map((node) => ({
+    node,
+    pid: Number(node.dataset.gdRow.split(":")[1]),
+    slot: node.querySelector(".pos-badge").textContent,
+    stat: node.querySelector(".stat"),
+    tag: node.querySelector(".gd-tag"),
+    lastTag: "",
+    flashing: false,
+  }));
+
+  return { boards, rows, feedLen: -1 };
+}
+
 function renderGamedayLive() {
   if (!GD) return;
   const progress = GD.idx / Math.max(1, GD.timeline.length);
   $("gd-bar").style.width = `${Math.round(progress * 100)}%`;
   $("gd-quarter").textContent = GD.stage;
 
-  const matchups =
-    L.phase === "playoffs" && L.bracket
-      ? L.bracket.rounds[L.bracket.current].filter((mu) => mu.a != null && mu.b != null && mu.winner == null)
-      : L.schedule[GD.week] || [];
+  const matchups = currentGdMatchups();
+  const lineupManagers = gdLineupManagers();
+  const signature = JSON.stringify([
+    matchups.map((mu) => [mu.a, mu.b]),
+    lineupManagers.map((m) => [m.id, startersOf(m).map((s) => s.pid)]),
+  ]);
+  if (!gdDom || gdDom.signature !== signature) {
+    gdDom = buildGdStructure(matchups, lineupManagers);
+    gdDom.signature = signature;
+  }
 
-  const avg =
-    L.managers.reduce((s, m) => s + liveScore(m), 0) / Math.max(1, L.managers.length);
+  $("gd-lineup-title").textContent =
+    GD.focus === "all" || !lineupManagers.length
+      ? "ALL HUMAN TEAMS · LIVE STARTERS"
+      : `${lineupManagers[0].name.toUpperCase()} · LIVE STARTERS`;
 
-  $("gd-matchups").innerHTML = matchups
-    .map((mu) => {
-      const a = managerById(mu.a);
-      const b = managerById(mu.b);
-      const as = mu.a === -1 ? round1(avg) : liveScore(a);
-      const bs = mu.b === -1 ? round1(avg) : liveScore(b);
-      const focused = GD.focus === "all" || mu.a === GD.focus || mu.b === GD.focus;
-      return `<div class="matchup-board live ${focused ? "focus" : ""}" data-mu-a="${mu.a}" data-mu-b="${mu.b}">
-        <div class="mb-side ${as >= bs ? "win" : ""}"><div class="mb-name">${esc(
-        a.name
-      )}</div><div class="mb-score">${as.toFixed(1)}</div></div>
-        <div class="mb-vs">VS</div>
-        <div class="mb-side ${bs > as ? "win" : ""}"><div class="mb-name">${esc(
-        b.name
-      )}</div><div class="mb-score">${bs.toFixed(1)}</div></div>
-      </div>`;
-    })
-    .join("");
+  const avg = L.managers.reduce((s, m) => s + liveScore(m), 0) / Math.max(1, L.managers.length);
+  gdDom.boards.forEach((b) => {
+    const as = b.mu.a === -1 ? round1(avg) : liveScore(managerById(b.mu.a));
+    const bs = b.mu.b === -1 ? round1(avg) : liveScore(managerById(b.mu.b));
+    b.aScore.textContent = as.toFixed(1);
+    b.bScore.textContent = bs.toFixed(1);
+    b.aSide.classList.toggle("win", as >= bs);
+    b.bSide.classList.toggle("win", bs > as);
+    b.node.classList.toggle("focus", GD.focus === "all" || b.mu.a === GD.focus || b.mu.b === GD.focus);
+  });
 
-  const lineupManagers = GD.focus === "all" ? humans : [managerById(GD.focus)];
-  $("gd-lineup-title").textContent = GD.focus === "all" ? "ALL HUMAN TEAMS · LIVE STARTERS" : `${lineupManagers[0].name.toUpperCase()} · LIVE STARTERS`;
   const now = Date.now();
-  $("gd-lineup").innerHTML = lineupManagers.map((manager) => `<div class="live-manager-block"><p class="panel-title">${esc(manager.name)}</p>${startersOf(manager).map(({ slot, pid }) => {
-      const p = L.players[pid];
-      if (!p) return "";
-      const playing = GD.played.has(p.id);
-      const pts = GD.totals[p.id] != null ? GD.totals[p.id] : 0;
-      const hot = GD.flash[p.id] && now - GD.flash[p.id] < 1200;
-      const mod = GD.mods[p.id];
-      const tag = GD.sat[p.id]
-        ? `<span class="tag tag-out">OUT</span>`
-        : !playing
-        ? `<span class="tag tag-bye">BYE/INACTIVE</span>`
-        : mod && mod > 1.05
-        ? `<span class="tag tag-hot">&#9650;</span>`
-        : mod && mod < 0.95
-        ? `<span class="tag tag-cold">&#9660;</span>`
-        : "";
-      return `<div class="gd-row ${hot ? "flash" : ""}">
-        <span class="pos-badge pos-${slot}">${slot}</span>
-        ${avatarHtml(p, "sprite sprite-sm")}
-        <span class="pname"><span class="nm">${esc(displayName(p))} ${tag}</span><span class="sub">${p.pos} &middot; ${
-        teamOf(p).abbr
-      }</span></span>
-        <span class="stat">${pts.toFixed(1)}</span>
-      </div>`;
-    }).join("")}</div>`).join("");
+  gdDom.rows.forEach((r) => {
+    const p = L.players[r.pid];
+    if (!p) return;
+    r.stat.textContent = (GD.totals[r.pid] != null ? GD.totals[r.pid] : 0).toFixed(1);
+    const tag = gdLiveTag(p, r.slot);
+    if (tag !== r.lastTag) {
+      r.tag.innerHTML = tag;
+      r.lastTag = tag;
+    }
+    const hot = !!GD.flash[r.pid] && now - GD.flash[r.pid] < 1200;
+    if (hot !== r.flashing) {
+      r.node.classList.toggle("flash", hot);
+      r.flashing = hot;
+    }
+  });
 
-  const feedIds = focusedFeedManagerIds();
-  $("gd-feed").innerHTML = GD.feed
-    .filter((f) => {
-      if (!f.playerId) return false;
-      const owner = ownerOfPlayer(f.playerId);
-      return owner && feedIds.has(owner.id);
-    })
-    .map(
-      (f) =>
-        `<div class="wire-item ${f.cls}">${
-          f.playerId && L.players[f.playerId] ? avatarHtml(L.players[f.playerId], "sprite sprite-sm") : ""
-        }<span>${f.text}</span></div>`
-    )
-    .join("");
+  if (gdDom.feedLen !== GD.feed.length) {
+    gdDom.feedLen = GD.feed.length;
+    const feedIds = focusedFeedManagerIds();
+    $("gd-feed").innerHTML = GD.feed
+      .filter((f) => {
+        if (!f.playerId) return false;
+        const owner = ownerOfPlayer(f.playerId);
+        return owner && feedIds.has(owner.id);
+      })
+      .map(
+        (f) =>
+          `<div class="wire-item ${f.cls}">${
+            f.playerId && L.players[f.playerId] ? avatarHtml(L.players[f.playerId], "sprite sprite-sm") : ""
+          }<span>${f.text}</span></div>`
+      )
+      .join("");
+  }
 }
 
 /* --------------------------------------------------------- sim flow */
 
 function advanceAfterWeek() {
   if (L.phase === "regular") {
-    if (L.week >= REG_SEASON_WEEKS) startPlayoffs(L);
-    else L.week++;
+    if (L.week >= REG_SEASON_WEEKS) {
+      evaluateSeasonBadges(L);
+      startPlayoffs(L);
+    } else L.week++;
   } else if (L.phase === "playoffs") {
     const isFinal = L.bracket.current >= L.bracket.totalRounds - 1;
     if (isFinal) {
       L.champions.push(L.bracket.rounds[L.bracket.current][0].winner);
       L.phase = "done";
+      evaluateFinalBadges(L);
     } else {
       advanceBracket(L);
       L.week = NFL_WEEKS - (L.bracket.totalRounds - L.bracket.current) + 1;
@@ -2692,6 +2897,7 @@ function advanceAfterWeek() {
   save();
   render();
   if (L.phase === "done") showChampionModal();
+  else showNewBadges();
 }
 
 function playWeek(live) {
@@ -2742,7 +2948,10 @@ function showChampionModal() {
         </div>
       </div>
     </div>`;
-  $("champ-close").addEventListener("click", () => (modalRoot.innerHTML = ""));
+  $("champ-close").addEventListener("click", () => {
+    modalRoot.innerHTML = "";
+    showNewBadges();
+  });
   if ($("champ-next")) $("champ-next").addEventListener("click", () => {
     modalRoot.innerHTML = "";
     playWeek(false);
