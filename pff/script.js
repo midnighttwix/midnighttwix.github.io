@@ -2611,7 +2611,7 @@ function renderGamedayLive() {
       const as = mu.a === -1 ? round1(avg) : liveScore(a);
       const bs = mu.b === -1 ? round1(avg) : liveScore(b);
       const focused = GD.focus === "all" || mu.a === GD.focus || mu.b === GD.focus;
-      return `<div class="matchup-board live ${focused ? "focus" : ""}">
+      return `<div class="matchup-board live ${focused ? "focus" : ""}" data-mu-a="${mu.a}" data-mu-b="${mu.b}">
         <div class="mb-side ${as >= bs ? "win" : ""}"><div class="mb-name">${esc(
         a.name
       )}</div><div class="mb-score">${as.toFixed(1)}</div></div>
@@ -3022,6 +3022,16 @@ function bindGameday() {
   );
   $("gd-skip").addEventListener("click", skipToEnd);
   $("gd-done").addEventListener("click", finishWeekButton);
+  $("gd-matchups").addEventListener("click", (e) => {
+    const card = e.target.closest("[data-mu-a]");
+    if (!card) return;
+    const a = Number(card.dataset.muA);
+    const b = Number(card.dataset.muB);
+    const ma = a !== -1 ? managerById(a) : null;
+    const mb = b !== -1 ? managerById(b) : null;
+    GD.focus = ma && ma.human ? a : mb && mb.human ? b : a !== -1 ? a : b;
+    renderGameday();
+  });
 }
 
 document.addEventListener("click", (e) => {

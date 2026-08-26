@@ -882,7 +882,8 @@ table.tbl tr.me td { background: rgba(53, 240, 160, 0.1); color: var(--neon); }
   background: repeating-linear-gradient(90deg, var(--neon) 0 8px, #17a76a 8px 16px);
   transition: width 0.2s linear;
 }
-.matchup-board.live { padding: 0.4rem; margin-bottom: 0.35rem; }
+.matchup-board.live { padding: 0.4rem; margin-bottom: 0.35rem; cursor: pointer; }
+.matchup-board.live:hover { border-color: var(--neon); }
 .matchup-board.focus {
   border-color: var(--neon);
   box-shadow: 0 0 14px rgba(53, 240, 160, 0.25);
