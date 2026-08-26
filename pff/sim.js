@@ -1580,6 +1580,8 @@ function weekBadgeContext(L, manager, week) {
   return {
     week,
     won: mine > theirs,
+    tied: mine === theirs && matchup.b !== -1,
+    oppId: matchup.a === manager.id ? matchup.b : matchup.a,
     margin: mine - theirs,
     mine,
     theirs,
@@ -1588,6 +1590,19 @@ function weekBadgeContext(L, manager, week) {
     optimalTotal,
     left_on_bench: round1(optimalTotal - mine),
   };
+}
+
+/* Which Poke-NFL teams won in a given week, for lineup-flavour objectives. */
+function nflWinnersForWeek(L, week) {
+  const winners = new Set();
+  const played = new Set();
+  ((L.results[week] || {}).games || []).forEach((g) => {
+    played.add(g.home);
+    played.add(g.away);
+    if (g.homeScore > g.awayScore) winners.add(g.home);
+    else if (g.awayScore > g.homeScore) winners.add(g.away);
+  });
+  return { winners, played };
 }
 
 function evaluateWeekBadges(L, week) {
@@ -1599,6 +1614,7 @@ function evaluateWeekBadges(L, week) {
 
     if (L.results[week].phase === "regular") {
       manager.tally.winStreak = ctx.won ? manager.tally.winStreak + 1 : 0;
+      manager.tally.loseStreak = !ctx.won && !ctx.tied ? (manager.tally.loseStreak || 0) + 1 : 0;
       manager.tally.bestStreak = Math.max(manager.tally.bestStreak || 0, manager.tally.winStreak);
     }
 
@@ -1620,7 +1636,7 @@ function evaluateWeekBadges(L, week) {
     if (ctx.won && worstStarter === 0) awardBadge(L, manager.id, "zero_hero", `Won week ${week} with a goose egg in the lineup.`);
     if (ctx.won && ctx.mine < 80) awardBadge(L, manager.id, "ugly_win", `Won week ${week} with just ${ctx.mine.toFixed(1)}.`);
     if (ctx.won && Object.values(teamCounts).some((n) => n >= 3)) awardBadge(L, manager.id, "stacked", `Stacked up and won week ${week}.`);
-    if (ctx.won && players.some((d) => d.slot === "QB" && d.p.age >= 34)) awardBadge(L, manager.id, "fossil_fuel", `Old arm, week ${week} win.`);
+    if (ctx.won && players.some((d) => d.slot === "QB" && d.p.age >= 32)) awardBadge(L, manager.id, "fossil_fuel", `Old arm, week ${week} win.`);
     if (ctx.bench.length && bestBench <= worstStarter) awardBadge(L, manager.id, "perfect_week", `Flawless week ${week} lineup.`);
     if (topScore >= 50) awardBadge(L, manager.id, "monster_game", `${topScore.toFixed(1)} from one player in week ${week}.`);
     if (ctx.mine >= 150) awardBadge(L, manager.id, "buck_fifty", `${ctx.mine.toFixed(1)} points in week ${week}.`);
@@ -1628,6 +1644,81 @@ function evaluateWeekBadges(L, week) {
     if (players.length === ROSTER_SLOTS.length && players.every((d) => d.pts >= 10)) awardBadge(L, manager.id, "sweep_week", `Every starter hit double digits in week ${week}.`);
     if (manager.tally.winStreak >= 3) awardBadge(L, manager.id, "streak3", `Three straight, season ${L.season}.`);
     if (manager.tally.winStreak >= 6) awardBadge(L, manager.id, "streak6", `Six straight, season ${L.season}.`);
+    if (manager.tally.winStreak >= 9) awardBadge(L, manager.id, "streak9", `Nine straight, season ${L.season}.`);
+    if ((manager.tally.loseStreak || 0) >= 3) awardBadge(L, manager.id, "skid3", `Three straight losses, season ${L.season}.`);
+
+    /* ---- type / dex flavour ---- */
+    const typeCounts = {};
+    players.forEach((d) => (d.p.types || []).forEach((t) => (typeCounts[t] = (typeCounts[t] || 0) + 1)));
+    const typed = players.filter((d) => (d.p.types || []).length);
+    const primaries = new Set(typed.map((d) => d.p.types[0]));
+    const gens = new Set(players.map((d) => dexGeneration(d.p.dexId)).filter(Boolean));
+    const has = (t, n) => (typeCounts[t] || 0) >= n;
+
+    if (ctx.won && has("fire", 3)) awardBadge(L, manager.id, "type_fire", `Three Fire types, week ${week}.`);
+    if (ctx.won && has("water", 3)) awardBadge(L, manager.id, "type_water", `Three Water types, week ${week}.`);
+    if (ctx.won && has("grass", 3)) awardBadge(L, manager.id, "type_grass", `Three Grass types, week ${week}.`);
+    if (ctx.won && has("electric", 2)) awardBadge(L, manager.id, "type_electric", `Electric crew, week ${week}.`);
+    if (ctx.won && has("psychic", 3)) awardBadge(L, manager.id, "type_psychic", `Three Psychic types, week ${week}.`);
+    if (ctx.won && has("dragon", 2)) awardBadge(L, manager.id, "type_dragon", `Dragons in week ${week}.`);
+    if (ctx.won && has("ghost", 2)) awardBadge(L, manager.id, "type_ghost", `Ghosts in week ${week}.`);
+    if (Object.values(typeCounts).some((n) => n >= 5)) awardBadge(L, manager.id, "mono_type", `Five of a kind, week ${week}.`);
+    if (typed.length >= 8 && primaries.size >= 8) awardBadge(L, manager.id, "type_spread", `Eight types, week ${week}.`);
+    if (players.filter((d) => d.p.dexId && d.p.dexId <= 151).length >= 5) awardBadge(L, manager.id, "kanto", `Kanto crew, week ${week}.`);
+    if (gens.size >= 4) awardBadge(L, manager.id, "gen_tour", `Four generations, week ${week}.`);
+    if (ctx.won && players.some((d) => LEGENDARY_DEX.has(d.p.dexId))) awardBadge(L, manager.id, "legendary", `Legendary win, week ${week}.`);
+    if (manager.roster.some((pid) => (L.players[pid] || {}).species === "Magikarp")) awardBadge(L, manager.id, "magikarp", "Splash!");
+
+    /* ---- scorelines ---- */
+    if (ctx.won && ctx.theirs > 0 && ctx.mine >= ctx.theirs * 2) awardBadge(L, manager.id, "double_up", `Doubled them up in week ${week}.`);
+    if (ctx.won && ctx.theirs > 0 && ctx.mine >= ctx.theirs * 3) awardBadge(L, manager.id, "triple_up", `Tripled them up in week ${week}.`);
+    if (ctx.mine >= 175) awardBadge(L, manager.id, "two_hundred", `${ctx.mine.toFixed(1)} in week ${week}.`);
+    if (ctx.mine < 50) awardBadge(L, manager.id, "sub_fifty", `Only ${ctx.mine.toFixed(1)} in week ${week}.`);
+    if (!ctx.won && !ctx.tied && ctx.mine >= 120) awardBadge(L, manager.id, "lose_big_score", `Lost with ${ctx.mine.toFixed(1)} in week ${week}.`);
+    if (ctx.tied) awardBadge(L, manager.id, "tie_game", `Dead even in week ${week}.`);
+    const topScorer = L.managers.slice().sort((a, b) => b.pointsFor - a.pointsFor)[0];
+    if (ctx.won && topScorer && topScorer.id === ctx.oppId) awardBadge(L, manager.id, "giant_slayer", `Took down ${topScorer.name} in week ${week}.`);
+
+    /* ---- individual lines ---- */
+    const bySlot = (slot) => players.filter((d) => d.slot === slot);
+    const byPos = (pos) => players.filter((d) => d.p.pos === pos);
+    if (bySlot("QB").some((d) => d.pts >= 40)) awardBadge(L, manager.id, "qb_forty", `QB went off in week ${week}.`);
+    if (byPos("RB").some((d) => d.pts >= 35)) awardBadge(L, manager.id, "rb_thirty", `Monster RB game, week ${week}.`);
+    if (byPos("WR").some((d) => d.pts >= 35)) awardBadge(L, manager.id, "wr_thirty", `Monster WR game, week ${week}.`);
+    if (byPos("TE").some((d) => d.pts >= 25)) awardBadge(L, manager.id, "te_twenty", `Big TE day, week ${week}.`);
+    if (byPos("K").some((d) => d.pts >= 20)) awardBadge(L, manager.id, "k_twenty", `The kicker won it, week ${week}.`);
+    if (byPos("DEF").some((d) => d.pts >= 25)) awardBadge(L, manager.id, "def_twenty", `Defense feasted, week ${week}.`);
+    if (players.some((d) => d.p.rookie && d.pts >= 25)) awardBadge(L, manager.id, "rookie_star", `Rookie exploded, week ${week}.`);
+    if (players.some((d) => d.p.age >= 33 && d.pts >= 25)) awardBadge(L, manager.id, "old_timer", `The old guy delivered, week ${week}.`);
+    if (players.filter((d) => d.pts >= 20).length >= 4) awardBadge(L, manager.id, "four_twenties", `Four 20-point starters, week ${week}.`);
+    if (ctx.mine > 0 && topScore >= ctx.mine * 0.4) awardBadge(L, manager.id, "one_man_army", `Carried in week ${week}.`);
+    if (players.length === ROSTER_SLOTS.length && players.every((d) => d.pts >= 8 && d.pts <= 20)) {
+      awardBadge(L, manager.id, "balanced", `Perfectly even week ${week}.`);
+    }
+
+    /* ---- roster construction ---- */
+    const onBye = players.filter((d) => L.byeWeeks[d.p.team] === week).length;
+    if (ctx.won && onBye >= 2) awardBadge(L, manager.id, "bye_crew", `Won week ${week} down two byes.`);
+    if (players.length >= 9 && new Set(players.map((d) => d.p.team)).size >= 9) {
+      awardBadge(L, manager.id, "spread_out", `Nine teams, nine starters, week ${week}.`);
+    }
+    const myPicks = new Set((L.draft && L.draft.picksMade ? L.draft.picksMade : []).filter((p) => p.managerId === manager.id).map((p) => p.playerId));
+    if (ctx.won && players.length && players.every((d) => myPicks.has(d.pid))) {
+      awardBadge(L, manager.id, "homegrown", `All my own picks, week ${week}.`);
+    }
+    if (players.some((d) => d.p.adp > 100 && d.pts >= 25)) awardBadge(L, manager.id, "adp_bargain", `Late-round hero, week ${week}.`);
+    if (players.some((d) => d.p.adp <= 10 && d.pts < 5)) awardBadge(L, manager.id, "adp_bust", `First-rounder no-showed in week ${week}.`);
+    if (players.some((d) => d.p.pickedUp && d.pts >= 25)) awardBadge(L, manager.id, "waiver_gem", `Wire pickup went nuts, week ${week}.`);
+    if (players.some((d) => d.p.nickname && d.pts >= 30)) awardBadge(L, manager.id, "nickname_hero", `The nickname guy delivered, week ${week}.`);
+    if (ctx.won && players.some((d) => d.p.customName)) awardBadge(L, manager.id, "renamed", `Your guy, your name, week ${week}.`);
+    const nfl = nflWinnersForWeek(L, week);
+    if (players.length && players.every((d) => nfl.winners.has(d.p.team))) {
+      awardBadge(L, manager.id, "all_teams_won", `Every starter's team won in week ${week}.`);
+    }
+
+    const total = badgeCount(L, manager.id);
+    if (total >= 25) awardBadge(L, manager.id, "collector", `${total} badges and counting.`);
+    if (total >= 50) awardBadge(L, manager.id, "curator", `${total} badges. Absurd.`);
   });
 }
 
@@ -1637,6 +1728,8 @@ function evaluateSeasonBadges(L) {
   const playoffSpots = playoffCount(L.managers.length);
   const madePlayoffs = new Set(table.slice(0, playoffSpots).map((m) => m.id));
   const pfLeader = L.managers.slice().sort((a, b) => b.pointsFor - a.pointsFor)[0];
+  const pfRank = L.managers.slice().sort((a, b) => b.pointsFor - a.pointsFor).map((m) => m.id);
+  const leagueMvp = L.playerIds.map((pid) => L.players[pid]).sort((a, b) => b.seasonPts - a.seasonPts)[0];
 
   L.managers.forEach((manager) => {
     if (!manager.human) return;
@@ -1650,12 +1743,33 @@ function evaluateSeasonBadges(L) {
     }
     if ((tally.trades || 0) >= 3) awardBadge(L, manager.id, "trade_shark", `${tally.trades} trades in season ${L.season}.`);
     if ((tally.adds || 0) >= 8) awardBadge(L, manager.id, "wire_wizard", `${tally.adds} pickups in season ${L.season}.`);
+
+    if (manager.wins >= 10) awardBadge(L, manager.id, "win_ten", `${manager.wins} wins in season ${L.season}.`);
+    if (manager.pointsFor >= 1500) awardBadge(L, manager.id, "season_1500", `${manager.pointsFor.toFixed(1)} points in season ${L.season}.`);
+    if ((tally.trades || 0) === 0 && (tally.adds || 0) === 0) awardBadge(L, manager.id, "lone_wolf", `Untouched roster, season ${L.season}.`);
+    if (leagueMvp && manager.roster.includes(leagueMvp.id)) {
+      awardBadge(L, manager.id, "rostered_mvp", `${displayName(leagueMvp)} was the league's top scorer.`);
+    }
+    if (madePlayoffs.has(manager.id) && pfRank.indexOf(manager.id) >= Math.ceil(L.managers.length / 2)) {
+      awardBadge(L, manager.id, "grinder", `Snuck in on wins, not points, season ${L.season}.`);
+    }
+    const careerWins = (manager.history || []).reduce((sum, h) => sum + (h.wins || 0), 0) + manager.wins;
+    if (careerWins >= 50) awardBadge(L, manager.id, "career_wins", `${careerWins} career wins.`);
+    if (L.season >= 10) awardBadge(L, manager.id, "tenured", `Ten seasons deep.`);
   });
 }
 
 /* Objectives judged the moment a champion is crowned. */
 function evaluateFinalBadges(L) {
   const champId = L.champions[L.champions.length - 1];
+
+  const finalGame = L.bracket && L.bracket.rounds[L.bracket.current] ? L.bracket.rounds[L.bracket.current][0] : null;
+  if (finalGame) {
+    const loserId = finalGame.winner === finalGame.a ? finalGame.b : finalGame.a;
+    const loser = L.managers.find((m) => m.id === loserId);
+    if (loser && loser.human) awardBadge(L, loser.id, "runner_up", `Lost the season ${L.season} final.`);
+  }
+
   const champ = L.managers.find((m) => m.id === champId);
   if (!champ || !champ.human) return;
 
@@ -1666,10 +1780,17 @@ function evaluateFinalBadges(L) {
 
   const titles = L.champions.filter((id) => id === champ.id).length;
   if (titles >= 3) awardBadge(L, champ.id, "three_peat", `${titles} titles and counting.`);
+  if (titles >= 5) awardBadge(L, champ.id, "five_titles", `${titles} titles. A dynasty.`);
   const last = L.champions.slice(-2);
   if (last.length === 2 && last[0] === champ.id && last[1] === champ.id) {
     awardBadge(L, champ.id, "back2back", `Repeat champion, season ${L.season}.`);
   }
+
+  if (champ.losses === 0 && champ.ties === 0 && champ.wins > 0) {
+    awardBadge(L, champ.id, "perfect_season", `${champ.wins}-0 and a ring.`);
+  }
+  const pfLeader = L.managers.slice().sort((a, b) => b.pointsFor - a.pointsFor)[0];
+  if (pfLeader && pfLeader.id === champ.id) awardBadge(L, champ.id, "wire_to_wire", `Most points and the title, season ${L.season}.`);
 
   const top5 = L.playerIds
     .map((pid) => L.players[pid])

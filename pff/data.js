@@ -1125,7 +1125,7 @@ const BADGES = [
   { id: "bench_regret", name: "Plain Badge", art: "skull", palette: "dark", scope: "week", desc: "Leave 40+ points rotting on your bench in one week." },
   { id: "sweep_week", name: "Fog Badge", art: "ball", palette: "ghost", scope: "week", desc: "Every single starter scores 10+ in the same week." },
   { id: "stacked", name: "Coal Badge", art: "gear", palette: "dark", scope: "week", desc: "Win a week while starting 3+ players from the same Poke-NFL team." },
-  { id: "fossil_fuel", name: "Rain Badge", art: "drop", palette: "steel", scope: "week", desc: "Win a week with a 34-and-older QB under center." },
+  { id: "fossil_fuel", name: "Rain Badge", art: "drop", palette: "steel", scope: "week", desc: "Win a week with a 32-and-older QB under center." },
   { id: "shutout_side", name: "Beacon Badge", art: "shield", palette: "gold", scope: "week", desc: "Hold an opponent under 60 points while winning." },
   { id: "undefeated", name: "Mineral Badge", art: "shield", palette: "ice", scope: "season", desc: "Go undefeated through the regular season." },
   { id: "points_king", name: "Glacier Badge", art: "crown", palette: "ice", scope: "season", desc: "Lead the whole league in points for across a season." },
@@ -1137,4 +1137,91 @@ const BADGES = [
   { id: "back2back", name: "Rising Badge", art: "crown", palette: "fire", scope: "final", desc: "Win championships in back-to-back seasons." },
   { id: "three_peat", name: "Feather Badge", art: "crown", palette: "psychic", scope: "final", desc: "Win three championships in one franchise." },
   { id: "draft_steal", name: "Knuckle Badge", art: "ball", palette: "grass", scope: "final", desc: "Finish the year with a top-5 scorer you drafted in round 8 or later." },
+
+  /* --- type collectors --- */
+  { id: "type_fire", name: "Ember Badge", art: "flame", palette: "fire", scope: "week", desc: "Win a week starting 3+ Fire types." },
+  { id: "type_water", name: "Tide Badge", art: "drop", palette: "water", scope: "week", desc: "Win a week starting 3+ Water types." },
+  { id: "type_grass", name: "Bloom Badge", art: "leaf", palette: "grass", scope: "week", desc: "Win a week starting 3+ Grass types." },
+  { id: "type_electric", name: "Volt Badge", art: "bolt", palette: "electric", scope: "week", desc: "Win a week starting 2+ Electric types." },
+  { id: "type_psychic", name: "Aura Badge", art: "star", palette: "psychic", scope: "week", desc: "Win a week starting 3+ Psychic types." },
+  { id: "type_dragon", name: "Wyrm Badge", art: "skull", palette: "ghost", scope: "week", desc: "Win a week starting 2+ Dragon types." },
+  { id: "type_ghost", name: "Phantom Badge", art: "skull", palette: "ghost", scope: "week", desc: "Win a week starting 2+ Ghost types." },
+  { id: "mono_type", name: "Purist Badge", art: "shield", palette: "psychic", scope: "week", desc: "Start 5 players who all share a single type." },
+  { id: "type_spread", name: "Naturalist Badge", art: "leaf", palette: "ice", scope: "week", desc: "Start 8 players with 8 completely different primary types." },
+  { id: "kanto", name: "Kanto Badge", art: "ball", palette: "fire", scope: "week", desc: "Start 5+ players from the original 151." },
+  { id: "gen_tour", name: "World Tour Badge", art: "ball", palette: "ice", scope: "week", desc: "Start players spanning 4+ Pokemon generations." },
+  { id: "legendary", name: "Mythic Badge", art: "crown", palette: "psychic", scope: "week", desc: "Win a week with a legendary Pokemon in your lineup." },
+  { id: "magikarp", name: "Splash Badge", art: "drop", palette: "gold", scope: "week", desc: "Roster a Magikarp. Believe in him." },
+
+  /* --- margins & scorelines --- */
+  { id: "double_up", name: "Double Badge", art: "bolt", palette: "gold", scope: "week", desc: "Score at least twice what your opponent scored." },
+  { id: "triple_up", name: "Triple Badge", art: "bolt", palette: "fire", scope: "week", desc: "Score at least three times what your opponent scored." },
+  { id: "two_hundred", name: "Titan Badge", art: "crown", palette: "steel", scope: "week", desc: "Put up 175+ points in a single week." },
+  { id: "sub_fifty", name: "Rock Bottom Badge", art: "skull", palette: "dark", scope: "week", desc: "Score under 50 points in a week. Woof." },
+  { id: "lose_big_score", name: "Cruel Fate Badge", art: "skull", palette: "fire", scope: "week", desc: "Lose a week despite scoring 120+." },
+  { id: "tie_game", name: "Deadlock Badge", art: "gear", palette: "ice", scope: "week", desc: "Tie a matchup down to the decimal." },
+  { id: "streak9", name: "Iron Badge", art: "shield", palette: "steel", scope: "week", desc: "Win 9 weeks in a row." },
+  { id: "skid3", name: "Slump Badge", art: "skull", palette: "steel", scope: "week", desc: "Lose 3 weeks in a row. It happens." },
+  { id: "giant_slayer", name: "Slayer Badge", art: "star", palette: "fire", scope: "week", desc: "Beat the highest-scoring team in the league." },
+
+  /* --- individual performances --- */
+  { id: "qb_forty", name: "Gunslinger Badge", art: "bolt", palette: "gold", scope: "week", desc: "Get 40+ from your starting QB." },
+  { id: "rb_thirty", name: "Bulldozer Badge", art: "gear", palette: "fire", scope: "week", desc: "Get 35+ from a starting RB." },
+  { id: "wr_thirty", name: "Burner Badge", art: "bolt", palette: "electric", scope: "week", desc: "Get 35+ from a starting WR." },
+  { id: "te_twenty", name: "Safety Valve Badge", art: "shield", palette: "grass", scope: "week", desc: "Get 25+ from your starting TE." },
+  { id: "k_twenty", name: "Golden Foot Badge", art: "star", palette: "gold", scope: "week", desc: "Get 20+ from your kicker. Genuinely rare." },
+  { id: "def_twenty", name: "Bulwark Badge", art: "shield", palette: "dark", scope: "week", desc: "Get 25+ from your defense." },
+  { id: "rookie_star", name: "Freshman Badge", art: "leaf", palette: "grass", scope: "week", desc: "Get 25+ from a rookie starter." },
+  { id: "old_timer", name: "Elder Badge", art: "crown", palette: "steel", scope: "week", desc: "Get 25+ from a starter aged 33 or older." },
+  { id: "four_twenties", name: "Quartet Badge", art: "star", palette: "electric", scope: "week", desc: "Have four starters score 20+ in the same week." },
+  { id: "one_man_army", name: "Solo Badge", art: "flame", palette: "dark", scope: "week", desc: "Get 40% of your weekly total from one player." },
+  { id: "balanced", name: "Harmony Badge", art: "gear", palette: "grass", scope: "week", desc: "Every starter scores between 8 and 20. Perfectly average." },
+
+  /* --- roster construction --- */
+  { id: "bye_crew", name: "Skeleton Crew Badge", art: "skull", palette: "ice", scope: "week", desc: "Win a week with 2+ starters stuck on a bye." },
+  { id: "spread_out", name: "Scout Badge", art: "ball", palette: "steel", scope: "week", desc: "Start nine players from nine different Poke-NFL teams." },
+  { id: "homegrown", name: "Homegrown Badge", art: "leaf", palette: "gold", scope: "week", desc: "Win a week with a lineup made entirely of your own draft picks." },
+  { id: "adp_bargain", name: "Bargain Badge", art: "ball", palette: "gold", scope: "week", desc: "Get 25+ from a starter drafted outside the top 100 of ADP." },
+  { id: "adp_bust", name: "Lemon Badge", art: "skull", palette: "gold", scope: "week", desc: "Start a top-10 ADP player who scores under 5." },
+  { id: "waiver_gem", name: "Scrapheap Badge", art: "gear", palette: "electric", scope: "week", desc: "Get 25+ from a player you picked up off the wire." },
+  { id: "nickname_hero", name: "Alias Badge", art: "star", palette: "water", scope: "week", desc: "Get 30+ from a player with a nickname." },
+  { id: "renamed", name: "Signature Badge", art: "crown", palette: "water", scope: "week", desc: "Win a week starting a player you renamed yourself." },
+  { id: "all_teams_won", name: "Bandwagon Badge", art: "shield", palette: "fire", scope: "week", desc: "Every starter's Poke-NFL team won that week." },
+
+  /* --- season long --- */
+  { id: "win_ten", name: "Decade Badge", art: "crown", palette: "grass", scope: "season", desc: "Win 10 or more games in a regular season." },
+  { id: "season_1500", name: "Marathon Badge", art: "flame", palette: "ice", scope: "season", desc: "Score 1500+ points in a regular season." },
+  { id: "lone_wolf", name: "Hermit Badge", art: "skull", palette: "psychic", scope: "season", desc: "Finish a season with zero trades and zero pickups." },
+  { id: "rostered_mvp", name: "Kingmaker Badge", art: "crown", palette: "electric", scope: "season", desc: "End the regular season rostering the league's top scorer." },
+  { id: "grinder", name: "Grinder Badge", art: "gear", palette: "dark", scope: "season", desc: "Make the playoffs with a bottom-half points total." },
+
+  /* --- championship --- */
+  { id: "perfect_season", name: "Flawless Badge", art: "crown", palette: "ice", scope: "final", desc: "Win the title after an undefeated regular season." },
+  { id: "wire_to_wire", name: "Wire-To-Wire Badge", art: "star", palette: "gold", scope: "final", desc: "Lead the league in points AND win the championship." },
+  { id: "runner_up", name: "Silver Badge", art: "shield", palette: "steel", scope: "final", desc: "Lose in the championship game. So close." },
+  { id: "five_titles", name: "Legend Badge", art: "crown", palette: "gold", scope: "final", desc: "Win five championships in one franchise." },
+
+  /* --- career / meta --- */
+  { id: "career_wins", name: "Centurion Badge", art: "shield", palette: "psychic", scope: "season", desc: "Reach 50 career regular-season wins." },
+  { id: "tenured", name: "Tenure Badge", art: "gear", palette: "gold", scope: "season", desc: "Play ten seasons in a single franchise." },
+  { id: "collector", name: "Collector Badge", art: "ball", palette: "psychic", scope: "week", desc: "Earn 25 badges." },
+  { id: "curator", name: "Curator Badge", art: "ball", palette: "gold", scope: "week", desc: "Earn 50 badges." },
 ];
+
+/* dexIds <= 649 that count as legendary/mythical for the Mythic Badge. */
+const LEGENDARY_DEX = new Set([
+  144, 145, 146, 150, 151,
+  243, 244, 245, 249, 250, 251,
+  377, 378, 379, 380, 381, 382, 383, 384, 385, 386,
+  480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493,
+  638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649,
+]);
+
+function dexGeneration(dexId) {
+  if (!dexId) return 0;
+  if (dexId <= 151) return 1;
+  if (dexId <= 251) return 2;
+  if (dexId <= 386) return 3;
+  if (dexId <= 493) return 4;
+  return 5;
+}

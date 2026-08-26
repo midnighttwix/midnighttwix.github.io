@@ -1908,6 +1908,7 @@ function addFreeAgent(pid) {
   if (you.roster.length < ROSTER_SIZE) {
     you.roster.push(pid);
     you.tally.adds++;
+    if (L.players[pid]) L.players[pid].pickedUp = true;
     save();
     renderSeason();
     return;
@@ -1938,6 +1939,7 @@ function addFreeAgent(pid) {
     you.roster = you.roster.filter((x) => x !== cutId);
     you.roster.push(pid);
     you.tally.adds++;
+    if (L.players[pid]) L.players[pid].pickedUp = true;
     Object.values(you.lineups).forEach((lu) => {
       Object.keys(lu).forEach((k) => {
         if (lu[k] === cutId) lu[k] = null;
