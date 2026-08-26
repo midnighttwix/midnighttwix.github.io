@@ -1004,3 +1004,77 @@ table.tbl tr.me td { background: rgba(53, 240, 160, 0.1); color: var(--neon); }
   .league-ticker-label { display: none; }
 }
 
+/* -------------------------------------------------------- trend cards */
+.trend-strip {
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.3rem;
+}
+.trend-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #0d1a2b;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  flex: 0 0 auto;
+  min-width: 190px;
+}
+.trend-add {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  background: transparent;
+  color: var(--gold);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.trend-add:hover { background: var(--gold); color: #06210f; }
+.trend-info { cursor: pointer; }
+.trend-name {
+  display: block;
+  font-weight: bold;
+  color: var(--ink);
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+.trend-sub {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--dim);
+  white-space: nowrap;
+}
+.trend-pos { font-weight: bold; }
+.trend-pos.tpos-QB { color: #ff9f45; }
+.trend-pos.tpos-RB { color: #6ee7a0; }
+.trend-pos.tpos-WR { color: #79d0ff; }
+.trend-pos.tpos-TE { color: #d3a7ff; }
+.trend-pos.tpos-K { color: #ffe066; }
+.trend-pos.tpos-DEF { color: #ff8fb1; }
+
+.clickable-card { cursor: pointer; }
+.clickable-card:hover .nm,
+.clickable-card:hover.nm { color: var(--gold); }
+td.clickable-card:hover { color: var(--gold); }
+
+/* --------------------------------------------------------- save slots */
+.save-slots { margin-top: 0.6rem; }
+.save-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: #0d1a2b;
+  border: 2px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.4rem;
+}
+.save-slot-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.save-slot-actions { display: flex; align-items: center; gap: 0.35rem; flex: none; }
+

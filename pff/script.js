@@ -1,6 +1,5 @@
 /* Pokemon Fantasy Football - UI layer. */
 
-const SAVE_KEY = "pff.save.v1";
 const SPRITE_BASE =
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white";
 
@@ -124,8 +123,8 @@ function playerRow(p, opts = {}) {
   return `
     <div class="prow pos-tint-${p.pos} ${opts.rowClass || ""}" ${opts.dataAttr || ""}>
       <span class="pos-badge pos-${badge}">${badge}</span>
-      ${avatarHtml(p)}
-      <span class="pname">
+      <span class="clickable-card" data-card="${p.id}">${avatarHtml(p)}</span>
+      <span class="pname clickable-card" data-card="${p.id}">
         <span class="nm">${esc(displayName(p))} ${statusTag(p, week)}</span>
         <span class="sub">${sub}</span>
       </span>
@@ -183,6 +182,70 @@ function openRenameModal(pid) {
   }
 }
 
+/* Player card: season total, last season's total, and a week-by-week fantasy points log. */
+function openPlayerCard(pid) {
+  const p = L.players[pid];
+  if (!p) return;
+  const t = teamOf(p);
+  const owner = ownerOfPlayer(p.id);
+  const ppg = p.gamesPlayed ? round1(p.seasonPts / p.gamesPlayed) : 0;
+
+  const weekRows = [];
+  for (let wk = 1; wk <= L.week; wk++) {
+    const w = p.weeks[wk];
+    weekRows.push(
+      `<tr><td>WK ${wk}</td><td class="num">${
+        w && w.pts != null ? w.pts.toFixed(1) : `<span class="note">${wk === L.week ? "-" : "DNP"}</span>`
+      }</td></tr>`
+    );
+  }
+
+  modalRoot.innerHTML = `
+    <div class="modal-back">
+      <div class="modal" style="max-width:480px">
+        <div class="modal-head">
+          ${avatarHtml(p, "sprite sprite-lg")}
+          <div style="flex:1">
+            <p class="panel-title" style="margin:0">${esc(displayName(p))}</p>
+            <p class="note" style="margin:0.15rem 0 0">
+              ${p.customName ? `born ${esc(p.name)} &middot; ` : ""}${p.pos} &middot; ${esc(t.city)} ${esc(t.nick)} &middot; BYE ${
+    L.byeWeeks[p.team]
+  }${owner ? ` &middot; ${esc(owner.name)}` : ` &middot; <span class="note">Free Agent</span>`}
+            </p>
+          </div>
+          <button class="btn btn-red btn-sm" id="pc-close" type="button">Close</button>
+        </div>
+        <div class="grid-2">
+          <div class="panel">
+            <p class="panel-title">THIS SEASON</p>
+            <div class="matchup-board" style="grid-template-columns:1fr 1fr">
+              <div class="mb-side"><div class="mb-name">TOTAL</div><div class="mb-score">${p.seasonPts.toFixed(1)}</div></div>
+              <div class="mb-side"><div class="mb-name">PPG</div><div class="mb-score">${ppg.toFixed(1)}</div></div>
+            </div>
+            <p class="note">${p.gamesPlayed} game${p.gamesPlayed === 1 ? "" : "s"} played this season.</p>
+          </div>
+          <div class="panel">
+            <p class="panel-title">PAST SEASONS</p>
+            ${
+              p.lastSeasonPts != null
+                ? `<p class="note">Last season: <b style="color:var(--gold)">${p.lastSeasonPts.toFixed(1)} pts</b></p>`
+                : `<p class="note">No prior season on record yet.</p>`
+            }
+            <p class="note">${p.careerSeasons || 0} season${p.careerSeasons === 1 ? "" : "s"} in the league.</p>
+          </div>
+        </div>
+        <p class="panel-title" style="margin-top:0.6rem">WEEK BY WEEK</p>
+        <div class="scroll" style="max-height:280px">
+          <table class="tbl"><tr><th>Week</th><th class="num">FPTS</th></tr>${weekRows.join("")}</table>
+        </div>
+      </div>
+    </div>`;
+
+  $("pc-close").addEventListener("click", () => {
+    modalRoot.innerHTML = "";
+  });
+}
+
 function statSummary(line) {
   if (!line) return "did not play";
   const bits = [];
@@ -211,6 +274,10 @@ function lineOf(p, wk) {
 
 /* ------------------------------------------------------ persistence */
 
+const SAVE_INDEX_KEY = "pff.saves.index";
+const SAVE_PREFIX = "pff.save.";
+const LEGACY_SAVE_KEY = "pff.save.v1";
+
 function pruneOldHighlights() {
   Object.values(L.results).forEach((r) => {
     if (r.week !== L.lastPlayedWeek) {
@@ -222,21 +289,92 @@ function pruneOldHighlights() {
   });
 }
 
-function save() {
+function loadSaveIndex() {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(L));
+    const raw = localStorage.getItem(SAVE_INDEX_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function writeSaveIndex(idx) {
+  try {
+    localStorage.setItem(SAVE_INDEX_KEY, JSON.stringify(idx));
+  } catch (e) {
+    console.warn("Save index failed", e);
+  }
+}
+
+function slotMetaFor(league) {
+  return {
+    id: league.saveId,
+    name: league.saveName || (league.settings && league.settings.leagueName) || "Untitled League",
+    updatedAt: Date.now(),
+    season: league.season,
+    week: league.week,
+    phase: league.phase,
+  };
+}
+
+/* Named, multi-slot local saves: index lives at SAVE_INDEX_KEY, each league body at SAVE_PREFIX+id. */
+function save() {
+  if (!L) return;
+  if (!L.saveId) L.saveId = `s${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  try {
+    localStorage.setItem(SAVE_PREFIX + L.saveId, JSON.stringify(L));
+    const idx = loadSaveIndex().filter((s) => s.id !== L.saveId);
+    idx.push(slotMetaFor(L));
+    writeSaveIndex(idx);
   } catch (e) {
     console.warn("Save failed", e);
   }
 }
 
-function loadSave() {
+function loadSlot(id) {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
+    const raw = localStorage.getItem(SAVE_PREFIX + id);
+    return raw ? JSON.parse(raw) : null;
   } catch (e) {
     return null;
+  }
+}
+
+function deleteSlot(id) {
+  localStorage.removeItem(SAVE_PREFIX + id);
+  writeSaveIndex(loadSaveIndex().filter((s) => s.id !== id));
+}
+
+function renameSlot(id, name) {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  const idx = loadSaveIndex();
+  const entry = idx.find((s) => s.id === id);
+  if (entry) {
+    entry.name = trimmed;
+    writeSaveIndex(idx);
+  }
+  if (L && L.saveId === id) {
+    L.saveName = trimmed;
+    save();
+  }
+}
+
+/* One-time upgrade from the old single-slot save into the named multi-slot system. */
+function migrateLegacySave() {
+  try {
+    const raw = localStorage.getItem(LEGACY_SAVE_KEY);
+    if (!raw) return;
+    const legacy = JSON.parse(raw);
+    legacy.saveId = legacy.saveId || `legacy${Date.now()}`;
+    legacy.saveName = legacy.saveName || (legacy.settings && legacy.settings.leagueName) || "My League";
+    localStorage.setItem(SAVE_PREFIX + legacy.saveId, JSON.stringify(legacy));
+    const idx = loadSaveIndex();
+    idx.push(slotMetaFor(legacy));
+    writeSaveIndex(idx);
+    localStorage.removeItem(LEGACY_SAVE_KEY);
+  } catch (e) {
+    console.warn("Legacy save migration failed", e);
   }
 }
 
@@ -261,11 +399,8 @@ function initSetup() {
   });
   rebuildHumanOptions();
 
-  const existing = loadSave();
-  if (existing) {
-    $("btn-continue").classList.remove("hidden");
-    $("btn-wipe").classList.remove("hidden");
-  }
+  migrateLegacySave();
+  renderSaveSlots();
 
   $("btn-create").addEventListener("click", () => {
     const humanCount = Number($("input-humans").value);
@@ -274,8 +409,9 @@ function initSetup() {
       const el = $(`human-name-${i}`);
       humanNames.push((el && el.value.trim()) || `Team ${i + 1}`);
     }
+    const leagueName = $("input-league").value.trim() || "The Poke Bowl";
     const settings = {
-      leagueName: $("input-league").value.trim() || "The Poke Bowl",
+      leagueName,
       teamName: humanNames[0],
       humanNames,
       managerCount: Number($("input-managers").value),
@@ -285,25 +421,93 @@ function initSetup() {
     };
     L = createLeague(settings);
     L.lastPlayedWeek = 0;
+    L.saveId = `s${Date.now()}${Math.floor(Math.random() * 1000)}`;
+    L.saveName = leagueName;
     save();
     render();
   });
 
-  $("btn-continue").addEventListener("click", () => {
-    L = loadSave();
-    if (L) {
-      if (L.activeManagerId == null) L.activeManagerId = 0;
-      L.managers.forEach((m) => {
-        if (m.human == null) m.human = !!m.isUser;
-      });
-      render();
+  $("save-slots").addEventListener("click", (e) => {
+    const loadBtn = e.target.closest("[data-slot-load]");
+    if (loadBtn) {
+      L = loadSlot(loadBtn.dataset.slotLoad);
+      if (L) {
+        if (L.activeManagerId == null) L.activeManagerId = 0;
+        L.managers.forEach((m) => {
+          if (m.human == null) m.human = !!m.isUser;
+        });
+        render();
+      }
+      return;
+    }
+    const renameBtn = e.target.closest("[data-slot-rename]");
+    if (renameBtn) {
+      openRenameSaveModal(renameBtn.dataset.slotRename);
+      return;
+    }
+    const delBtn = e.target.closest("[data-slot-del]");
+    if (delBtn) {
+      deleteSlot(delBtn.dataset.slotDel);
+      renderSaveSlots();
     }
   });
+}
 
-  $("btn-wipe").addEventListener("click", () => {
-    localStorage.removeItem(SAVE_KEY);
-    $("btn-continue").classList.add("hidden");
-    $("btn-wipe").classList.add("hidden");
+function renderSaveSlots() {
+  const wrap = $("save-slots");
+  const idx = loadSaveIndex().sort((a, b) => b.updatedAt - a.updatedAt);
+  if (!idx.length) {
+    wrap.innerHTML = `<p class="note">No saved leagues yet &mdash; start one above.</p>`;
+    return;
+  }
+  wrap.innerHTML =
+    `<p class="panel-title" style="margin:0.6rem 0 0.4rem">SAVED LEAGUES</p>` +
+    idx
+      .map(
+        (s) => `
+    <div class="save-slot">
+      <div class="save-slot-info">
+        <b>${esc(s.name)}</b>
+        <span class="note">Season ${s.season || 1} &middot; Week ${s.week || 1} &middot; ${esc((s.phase || "").toUpperCase())}</span>
+      </div>
+      <div class="save-slot-actions">
+        <button class="btn btn-blue btn-sm" data-slot-load="${s.id}" type="button">Load</button>
+        <button class="btn-rename" data-slot-rename="${s.id}" type="button" title="Rename">&#9998;</button>
+        <button class="btn btn-red btn-sm" data-slot-del="${s.id}" type="button">Delete</button>
+      </div>
+    </div>`
+      )
+      .join("");
+}
+
+function openRenameSaveModal(id) {
+  const idx = loadSaveIndex();
+  const entry = idx.find((s) => s.id === id);
+  if (!entry) return;
+  modalRoot.innerHTML = `
+    <div class="modal-back">
+      <div class="modal" style="max-width:420px">
+        <div class="modal-head">
+          <p class="panel-title" style="margin:0;flex:1">RENAME SAVE</p>
+          <button class="btn btn-red btn-sm" id="rn-close" type="button">Close</button>
+        </div>
+        <input id="rn-input" type="text" maxlength="40" value="${esc(entry.name)}" class="rn-input" />
+        <div class="rowbar">
+          <button class="btn btn-green btn-sm" id="rn-save" type="button">Save</button>
+          <span class="spacer"></span>
+          <button class="btn btn-red btn-sm" id="rn-cancel" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>`;
+  const close = () => {
+    modalRoot.innerHTML = "";
+  };
+  $("rn-close").addEventListener("click", close);
+  $("rn-cancel").addEventListener("click", close);
+  $("rn-save").addEventListener("click", () => {
+    renameSlot(id, $("rn-input").value);
+    close();
+    renderSaveSlots();
   });
 }
 
@@ -844,7 +1048,7 @@ function lineupPreview(m, week) {
     const played = p.weeks[week] && p.weeks[week].pts != null;
     const val = played ? p.weeks[week].pts : Math.max(0, weeklyProjection(L, p, week));
     proj += val;
-    return `<tr><td><span class="pos-badge pos-${slot}">${slot}</span></td><td>${esc(displayName(p))} <span class="note">${
+    return `<tr><td><span class="pos-badge pos-${slot}">${slot}</span></td><td class="clickable-card" data-card="${p.id}">${esc(displayName(p))} <span class="note">${
       p.pos
     } ${teamOf(p).abbr}</span> ${statusTag(p, week)}</td><td class="num" style="color:var(--gold)">${val.toFixed(
       1
@@ -1039,7 +1243,7 @@ function topPerformers(wk) {
     .slice(0, 8)
     .map(
       (p) =>
-        `<div class="wire-item">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> (${p.pos}, ${
+        `<div class="wire-item clickable-card" data-card="${p.id}">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> (${p.pos}, ${
           teamOf(p).abbr
         }) <span style="color:var(--gold)">${p.weeks[wk].pts.toFixed(1)}</span><br /><span class="note">${statSummary(
           lineOf(p, wk)
@@ -1251,7 +1455,7 @@ function gameLeaders(g) {
   return entries
     .map(
       (e) =>
-        `<div class="wire-item">${avatarHtml(e.p, "sprite sprite-sm")}<span><b>${esc(displayName(e.p))}</b> (${e.p.pos}, ${
+        `<div class="wire-item clickable-card" data-card="${e.p.id}">${avatarHtml(e.p, "sprite sprite-sm")}<span><b>${esc(displayName(e.p))}</b> (${e.p.pos}, ${
           teamOf(e.p).abbr
         }) <span style="color:var(--gold)">${e.pts.toFixed(1)} fpts</span><br /><span class="note">${statSummary(
           e.line
@@ -1331,7 +1535,36 @@ function renderStandingsTab() {
         }
         ${L.seasonHistory && L.seasonHistory.length ? `<p class="panel-title" style="margin-top:0.8rem">FRANCHISE RECAPS</p>${L.seasonHistory.slice().reverse().map((h) => { const close = h.closest; const wide = h.widest; const nfl = h.nflWinner != null ? NFL_TEAMS[h.nflWinner] : null; const mvps = Object.entries(h.managerMvp || {}).map(([mid, pid]) => { const mvp = L.players[pid]; return mvp ? `${esc(managerById(Number(mid)).name)}: ${esc(displayName(mvp))}` : ""; }).filter(Boolean).join(" · "); return `<div class="wire-item"><span><b>Season ${h.season}</b> &middot; Champion: ${esc(managerById(h.champion).name)}<br /><span class="note">Poké-NFL champion: ${nfl ? `${esc(nfl.city)} ${esc(nfl.nick)}` : "n/a"} &middot; Closest: ${close ? `${esc(managerById(close.a).name)} ${close.aScore.toFixed(1)} - ${close.bScore.toFixed(1)} ${esc(managerById(close.b).name)}` : "n/a"} &middot; Widest: ${wide ? `${Math.abs(wide.aScore - wide.bScore).toFixed(1)} point margin` : "n/a"}<br />Team MVPs: ${mvps || "n/a"}</span></span></div>`; }).join("")}` : ""}
       </div>
+    </div>
+    <div class="panel">
+      <p class="panel-title">POK&Eacute;-NFL STANDINGS</p>
+      <div class="scroll" style="max-height:420px">
+        <table class="tbl">
+          <tr><th>#</th><th>Team</th><th class="num">REC</th><th class="num">PF</th><th class="num">PA</th></tr>
+          ${nflStandingsRows()}
+        </table>
+      </div>
     </div>`;
+}
+
+function nflStandingsRows() {
+  const records = NFL_TEAMS.map((t, i) => ({
+    team: t,
+    idx: i,
+    ...(L.nflRecords && L.nflRecords[i] ? L.nflRecords[i] : { wins: 0, losses: 0, ties: 0, pointsFor: 0, pointsAgainst: 0 }),
+  }));
+  records.sort((a, b) => b.wins - a.wins || a.losses - b.losses || b.pointsFor - a.pointsFor);
+  return records
+    .map(
+      (r, i) => `<tr>
+        <td>${i + 1}</td>
+        <td><span class="chip" style="background:${r.team.c1}">${r.team.abbr}</span> ${esc(r.team.city)} ${esc(r.team.nick)}</td>
+        <td class="num">${r.wins}-${r.losses}${r.ties ? `-${r.ties}` : ""}</td>
+        <td class="num">${r.pointsFor}</td>
+        <td class="num">${r.pointsAgainst}</td>
+      </tr>`
+    )
+    .join("");
 }
 
 /* ------------------------------------------------------ player stats */
@@ -1350,7 +1583,7 @@ function renderStatsTab() {
   const leaders = POSITIONS.map((pos) => {
     const p = allPlayers.filter((x) => x.pos === pos).sort((a, b) => b.seasonPts - a.seasonPts)[0];
     const owner = p && fantasyOwner(p.id);
-    return p ? `<tr><td><span class="pos-badge pos-${pos}">${pos}</span></td><td>${esc(displayName(p))}</td><td>${owner ? esc(owner.name) : "<span class=\"note\">Free Agent</span>"}</td><td class="num">${p.seasonPts.toFixed(1)}</td></tr>` : "";
+    return p ? `<tr><td><span class="pos-badge pos-${pos}">${pos}</span></td><td class="clickable-card" data-card="${p.id}">${esc(displayName(p))}</td><td>${owner ? esc(owner.name) : "<span class=\"note\">Free Agent</span>"}</td><td class="num">${p.seasonPts.toFixed(1)}</td></tr>` : "";
   }).join("");
   const rows = players.slice(0, 160).map((p, i) => {
     const stats = p.seasonStats || {};
@@ -1359,7 +1592,7 @@ function renderStatsTab() {
     const action = owner
       ? esc(owner.name)
       : `<span class="note">Free Agent</span> <button class="btn btn-green btn-sm" data-add="${p.id}" type="button">Add</button>`;
-    return `<tr><td>${positionRank}</td><td>${esc(displayName(p))} ${statusTag(p, L.week)}</td><td>${p.pos}</td><td>${action}</td><td class="num">${p.seasonPts.toFixed(1)}</td><td class="num">${p.gamesPlayed}</td><td class="num">${stats.passYds || 0}</td><td class="num">${stats.passTd || 0}</td><td class="num">${stats.passInt || 0}</td><td class="num">${stats.rushYds || 0}</td><td class="num">${stats.rushTd || 0}</td><td class="num">${stats.recYds || 0}</td><td class="num">${stats.rec || 0}</td><td class="num">${stats.recTd || 0}</td></tr>`;
+    return `<tr><td>${positionRank}</td><td class="clickable-card" data-card="${p.id}">${esc(displayName(p))} ${statusTag(p, L.week)}</td><td>${p.pos}</td><td>${action}</td><td class="num">${p.seasonPts.toFixed(1)}</td><td class="num">${p.gamesPlayed}</td><td class="num">${stats.passYds || 0}</td><td class="num">${stats.passTd || 0}</td><td class="num">${stats.passInt || 0}</td><td class="num">${stats.rushYds || 0}</td><td class="num">${stats.rushTd || 0}</td><td class="num">${stats.recYds || 0}</td><td class="num">${stats.rec || 0}</td><td class="num">${stats.recTd || 0}</td></tr>`;
   }).join("");
   $("tab-stats").innerHTML = `<div class="grid-2"><div class="panel"><p class="panel-title">LEAGUE LEADERS BY POSITION</p><table class="tbl"><tr><th>POS</th><th>PLAYER</th><th>FANTASY TEAM</th><th class="num">PTS</th></tr>${leaders}</table></div><div class="panel"><p class="panel-title">PLAYER SEARCH</p><div class="rowbar"><select id="stats-filter">${["ALL", ...POSITIONS].map((p) => `<option value="${p}" ${p === statsFilter ? "selected" : ""}>${p === "ALL" ? "All Positions" : p}</option>`).join("")}</select><input id="stats-search" type="text" placeholder="search name..." value="${esc(statsSearch)}" /></div><p class="note">Rank is within the selected position. Season totals include every completed game. Free agents can be added to ${esc(you.name)} straight from the table below.</p></div></div><div class="panel"><p class="panel-title">SEASON PLAYER TOTALS</p><div class="scroll"><table class="tbl"><tr><th>#</th><th>PLAYER</th><th>POS</th><th>FANTASY TEAM</th><th class="num">PTS</th><th class="num">GP</th><th class="num">PASS YDS</th><th class="num">PASS TD</th><th class="num">INT</th><th class="num">RUSH YDS</th><th class="num">RUSH TD</th><th class="num">REC YDS</th><th class="num">REC</th><th class="num">REC TD</th></tr>${rows || `<tr><td colspan="14">No player stats yet. Play a week.</td></tr>`}</table></div></div>`;
   $("stats-filter").addEventListener("change", (e) => { statsFilter = e.target.value; renderStatsTab(); });
@@ -1407,20 +1640,25 @@ function renderPlayersTab() {
   $("tab-players").innerHTML = `
     <div class="panel">
       <p class="panel-title">&#128293; HOT PICKUPS</p>
-      ${
-        hot.length
-          ? hot
-              .map(({ p, lastPts, boosted }) =>
-                playerRow(p, {
-                  week: L.week,
-                  rightMain: lastPts != null ? lastPts.toFixed(1) : undefined,
-                  rightSub: lastPts != null ? "LAST WK" : boosted ? "TRENDING" : undefined,
-                  action: `<button class="btn btn-green btn-sm" data-add="${p.id}" type="button">Add</button>`,
+      <div class="trend-strip">
+        ${
+          hot.length
+            ? hot
+                .map(({ p, lastPts, boosted }) => {
+                  const t = teamOf(p);
+                  const reason = lastPts != null ? `${lastPts.toFixed(1)} PTS` : boosted ? "TRENDING" : "";
+                  return `<div class="trend-card">
+                    <button class="trend-add" data-add="${p.id}" type="button" title="Add ${esc(displayName(p))}">+</button>
+                    <span class="trend-info clickable-card" data-card="${p.id}">
+                      <span class="trend-name">${esc(displayName(p))}</span>
+                      <span class="trend-sub"><span class="trend-pos tpos-${p.pos}">${p.pos}</span> &middot; ${t.abbr} &middot; ${reason}</span>
+                    </span>
+                  </div>`;
                 })
-              )
-              .join("")
-          : `<p class="note">No standout free agents right now &mdash; check back after the next games.</p>`
-      }
+                .join("")
+            : `<p class="note">No standout free agents right now &mdash; check back after the next games.</p>`
+        }
+      </div>
     </div>
     <div class="panel">
       <p class="panel-title">FREE AGENTS &middot; ${esc(you.name.toUpperCase())} ROSTER ${you.roster.length}/${ROSTER_SIZE}</p>
@@ -2459,12 +2697,14 @@ function bindSeason() {
     $("btn-save").textContent = "Saved!";
     setTimeout(() => ($("btn-save").textContent = "Save"), 900);
   });
+  $("btn-rename-save").addEventListener("click", () => {
+    if (L && L.saveId) openRenameSaveModal(L.saveId);
+  });
   $("btn-quit").addEventListener("click", () => {
     save();
     L = null;
     GD = null;
-    $("btn-continue").classList.remove("hidden");
-    $("btn-wipe").classList.remove("hidden");
+    renderSaveSlots();
     render();
   });
 }
@@ -2485,8 +2725,13 @@ function bindGameday() {
 }
 
 document.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-rename]");
-  if (btn) openRenameModal(Number(btn.dataset.rename));
+  const rename = e.target.closest("[data-rename]");
+  if (rename) {
+    openRenameModal(Number(rename.dataset.rename));
+    return;
+  }
+  const card = e.target.closest("[data-card]");
+  if (card) openPlayerCard(Number(card.dataset.card));
 });
 
 $("league-ticker-toggle").addEventListener("click", () => {
