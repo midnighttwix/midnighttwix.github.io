@@ -382,6 +382,7 @@ select {
 .tag-bye { background: rgba(143, 168, 196, 0.2); color: #cfe0f2; }
 .tag-hot { background: rgba(53, 240, 160, 0.18); color: var(--neon); }
 .tag-cold { background: rgba(121, 208, 255, 0.15); color: #9fdcff; }
+.tag-clear { background: rgba(255, 210, 63, 0.22); color: var(--gold); }
 .tag-rk { background: rgba(255, 210, 63, 0.2); color: var(--gold); }
 .tag-rookie { background: rgba(53, 240, 160, 0.22); color: var(--neon); font-family: "Press Start 2P", monospace; font-size: 0.55rem; padding: 0.1rem 0.3rem; }
 

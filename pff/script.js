@@ -94,6 +94,9 @@ function shortName(p) {
 function statusTag(p, week) {
   if (p.status.type === "retired") return `<span class="tag tag-out">RET</span>`;
   if (p.status.type === "questionable") return `<span class="tag tag-out" title="${esc(p.status.note)}">QST</span>`;
+  if (p.status.weeks === 1 && (p.status.type === "injured" || p.status.type === "out")) {
+    return `<span class="tag tag-clear" title="Recovered - cleared to play this week">CLR</span>`;
+  }
   if (p.status.weeks > 0) {
     const label = p.status.type === "injured" ? `OUT ${p.status.weeks}` : `SUS ${p.status.weeks}`;
     return `<span class="tag tag-out" title="${esc(p.status.note)}">${label}</span>`;
