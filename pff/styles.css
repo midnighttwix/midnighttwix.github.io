@@ -474,6 +474,20 @@ select {
   border-radius: 4px;
   color: #fff;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.chip-dark {
+  color: #0b1420;
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.35);
+}
+/* Chips sitting inline in a VT323 sub-line need to ride the text baseline. */
+.sub .chip,
+.trend-sub .chip,
+td .chip {
+  position: relative;
+  top: -1px;
 }
 
 /* --------------------------------------------------------- reel */
@@ -1125,6 +1139,8 @@ td.clickable-card:hover { color: var(--gold); }
   .prow .sprite { width: 34px; height: 34px; }
   .prow .pname { flex: 1 1 120px; }
   .prow .stat { min-width: 0; }
+  .prow .sub { font-size: 0.82rem; }
+  .prow .sub .chip { font-size: 0.34rem; padding: 0.22rem 0.26rem; }
 
   .field {
     flex-wrap: wrap;
@@ -1310,6 +1326,8 @@ td.clickable-card:hover { color: var(--gold); }
 
   .division-grid { grid-template-columns: 1fr; }
   .conf-title { font-size: 0.48rem; }
+  /* The chip already says which team it is, so the city is dead weight here. */
+  .team-city { display: none; }
 
   .modal-back { padding: 0.5rem; }
   .modal { width: 100%; max-width: 100%; max-height: 86vh; overflow-y: auto; }

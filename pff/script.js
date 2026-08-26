@@ -66,6 +66,20 @@ function teamOf(p) {
   return NFL_TEAMS[p.team];
 }
 
+/* Plain white burns out on the lighter team colors (NO's tan, DAL's silver). */
+function chipInk(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const lum = (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+  return lum > 0.6 ? "dark" : "light";
+}
+
+/* The colored abbreviation box used everywhere a team needs naming compactly. */
+function teamChip(team) {
+  const t = typeof team === "number" ? NFL_TEAMS[team] : team;
+  if (!t) return "";
+  return `<span class="chip chip-${chipInk(t.c1)}" style="background:${t.c1}">${t.abbr}</span>`;
+}
+
 /* Custom names stick to the player object itself, so they survive trades, drops and re-signs. */
 function displayName(p) {
   if (!p) return "";
@@ -122,8 +136,8 @@ function playerRow(p, opts = {}) {
     .join("");
   const sub =
     p.pos === "DEF"
-      ? `D/ST &middot; ${t.abbr} &middot; BYE ${bye}${flavorBits}`
-      : `${p.pos} &middot; ${t.abbr} ${esc(t.nick)} &middot; BYE ${bye}${ageBit}${flavorBits}`;
+      ? `D/ST &middot; ${teamChip(t)} &middot; BYE ${bye}${flavorBits}`
+      : `${p.pos} &middot; ${teamChip(t)} &middot; BYE ${bye}${ageBit}${flavorBits}`;
   return `
     <div class="prow pos-tint-${p.pos} ${opts.rowClass || ""}" ${opts.dataAttr || ""}>
       <span class="pos-badge pos-${badge}">${badge}</span>
@@ -1237,7 +1251,7 @@ function lineupPreview(m, week) {
     proj += val;
     return `<tr><td><span class="pos-badge pos-${slot}">${slot}</span></td><td class="clickable-card" data-card="${p.id}">${esc(displayName(p))} <span class="note">${
       p.pos
-    } ${teamOf(p).abbr}</span> ${statusTag(p, week)}</td><td class="num" style="color:var(--gold)">${val.toFixed(
+    }</span> ${teamChip(teamOf(p))} ${statusTag(p, week)}</td><td class="num" style="color:var(--gold)">${val.toFixed(
       1
     )}</td></tr>`;
   }).join("");
@@ -1430,9 +1444,9 @@ function topPerformers(wk) {
     .slice(0, 8)
     .map(
       (p) =>
-        `<div class="wire-item clickable-card" data-card="${p.id}">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> (${p.pos}, ${
-          teamOf(p).abbr
-        }) <span style="color:var(--gold)">${p.weeks[wk].pts.toFixed(1)}</span><br /><span class="note">${statSummary(
+        `<div class="wire-item clickable-card" data-card="${p.id}">${avatarHtml(p, "sprite sprite-sm")}<span><b>${esc(displayName(p))}</b> <span class="note">${p.pos}</span> ${teamChip(
+          teamOf(p)
+        )} <span style="color:var(--gold)">${p.weeks[wk].pts.toFixed(1)}</span><br /><span class="note">${statSummary(
           lineOf(p, wk)
         )}</span></span></div>`
     )
@@ -1744,7 +1758,7 @@ function sortNflTeams(indices) {
 function nflTeamRow(r, rank, leader) {
   return `<tr>
     <td>${rank}${leader ? ' <span class="tag tag-hot">y</span>' : ""}</td>
-    <td><span class="chip" style="background:${r.team.c1}">${r.team.abbr}</span> ${esc(r.team.city)} ${esc(r.team.nick)}</td>
+    <td>${teamChip(r.team)} <span class="team-city">${esc(r.team.city)}</span> ${esc(r.team.nick)}</td>
     <td class="num">${r.wins}-${r.losses}${r.ties ? `-${r.ties}` : ""}</td>
     <td class="num">${r.pointsFor}</td>
     <td class="num">${r.pointsAgainst}</td>
@@ -1854,7 +1868,7 @@ function renderPlayersTab() {
                     <button class="trend-add" data-add="${p.id}" type="button" title="Add ${esc(displayName(p))}">+</button>
                     <span class="trend-info clickable-card" data-card="${p.id}">
                       <span class="trend-name">${esc(displayName(p))}</span>
-                      <span class="trend-sub"><span class="trend-pos tpos-${p.pos}">${p.pos}</span> &middot; ${t.abbr} &middot; ${reason}</span>
+                      <span class="trend-sub"><span class="trend-pos tpos-${p.pos}">${p.pos}</span> &middot; ${teamChip(t)} &middot; ${reason}</span>
                     </span>
                   </div>`;
                 })
@@ -1978,9 +1992,9 @@ function renderTradeTab() {
             return `<label class="pick-row ${set.has(pid) ? "sel" : ""}">
               <input type="checkbox" ${attr}="${pid}" ${set.has(pid) ? "checked" : ""} />
               ${avatarHtml(p, "sprite sprite-sm")}
-              <span class="pname"><span class="nm">${esc(displayName(p))}</span><span class="sub">${p.pos} &middot; ${
-              teamOf(p).abbr
-            } &middot; val ${tradeValue(L, p).toFixed(0)}</span></span>
+              <span class="pname"><span class="nm">${esc(displayName(p))}</span><span class="sub">${p.pos} &middot; ${teamChip(
+              teamOf(p)
+            )} &middot; val ${tradeValue(L, p).toFixed(0)}</span></span>
             </label>`;
           })
           .join("")}
@@ -2284,7 +2298,7 @@ function renderLeagueTab() {
           ).join("")}
         </select>
         ${teamEmblem(leagueTeamIdx, "sprite sprite-sm")}
-        <span class="chip" style="background:${t.c1}">${t.abbr}</span>
+        ${teamChip(t)}
         <span class="chip" style="background:${meta.conf.c1}">${esc(meta.name)}</span>
         <span class="note">Bye week ${L.byeWeeks[leagueTeamIdx]}</span>
       </div>
@@ -2773,9 +2787,9 @@ function buildGdStructure(matchups, lineupManagers) {
           return `<div class="gd-row" data-gd-row="${manager.id}:${pid}">
             <span class="pos-badge pos-${slot}">${slot}</span>
             ${avatarHtml(p, "sprite sprite-sm")}
-            <span class="pname"><span class="nm">${esc(displayName(p))}</span><span class="sub">${p.pos} &middot; ${
-            teamOf(p).abbr
-          }</span></span>
+            <span class="pname"><span class="nm">${esc(displayName(p))}</span><span class="sub">${p.pos} &middot; ${teamChip(
+            teamOf(p)
+          )}</span></span>
             <span class="gd-tag"></span>
             <span class="stat">0.0</span>
           </div>`;
