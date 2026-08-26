@@ -945,3 +945,56 @@ table.tbl tr.me td { background: rgba(53, 240, 160, 0.1); color: var(--neon); }
 }
 .decision-opts .btn { flex: 1 1 200px; }
 
+/* ---------------------------------------------------- league ticker */
+.league-ticker {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: stretch;
+  background: linear-gradient(180deg, #0d1a2b, #050d16);
+  border-top: 3px solid var(--gold);
+  box-shadow: 0 -6px 18px rgba(0, 0, 0, 0.5);
+}
+.league-ticker-label {
+  flex: none;
+  display: flex;
+  align-items: center;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.5rem;
+  color: #06210f;
+  background: var(--gold);
+  padding: 0.4rem 0.6rem;
+  white-space: nowrap;
+}
+.league-ticker-viewport {
+  flex: 1 1 auto;
+  overflow: hidden;
+  position: relative;
+}
+.league-ticker-track {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  padding: 0.4rem 0;
+  animation: ticker-scroll 55s linear infinite;
+}
+.ticker-item {
+  font-size: 1.05rem;
+  color: var(--ink);
+  padding: 0 0.6rem;
+}
+.ticker-dot {
+  color: var(--gold);
+  font-size: 0.5rem;
+}
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (max-width: 640px) {
+  .league-ticker-label { display: none; }
+}
+

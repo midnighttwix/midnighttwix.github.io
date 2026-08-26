@@ -136,7 +136,13 @@ const FIRST_NAMES = [
   "Meatball", "Thad", "Zane", "Peter", "Sketch", "Cush", "Duggy", "Dunky", "Bam Bam", "Big Boy",
   "Stubby", "Porkchop", "Schweppo", "T-Bone", "Steaknife", "Bonesaw", "Floridaman", "Tubby", "Jahmyr", "D'Andre",
   "Jimbo", "2 Toes", "Sackman", "Whole Hog", "Boost Juice", "Hankjohn", "Herbert", "Jerry", "JerryJim", "JAA'M", "Chumbo",
-  "Moff",
+  "Moff", "Bruce", "Rudy", "The Ghost of", "Gooby",
+  "Waffle Iron", "Toaster Strudel", "Biscuit Gravy", "Meat Sweats", "Gravy Train Jr.", "Sizzle Steak", "Sir Loin", "Chuck Roast", "Prime Rib", "Baby Back",
+  "Rack of Ribs", "Turkey Leg", "Drumstick Jr.", "Wing Man", "Nugget King", "Tender Loin", "Sloppy Joe", "Chili Cheese", "Nacho Supreme", "Taco Tuesday",
+  "Burrito Bandito", "Quesadilla Kid", "Enchilada Man", "Fajita Frank", "Guac Daddy", "Salsa Steve", "Queso Boy", "Churro Chuck", "Flan Man", "Tres Leches",
+  "Pico de Gallo", "Sir Nacho", "Cheese Curd", "Poutine Pete", "Maple Syrup", "Bacon Bits", "Hash Brown", "Sausage Link", "Grits McGee", "Butterbean",
+  "Okra Joe", "Collard Green", "Sweet Tea", "Moon Pie", "RC Cola", "Cheerwine Charlie", "Boiled Peanut", "Fried Green", "Pecan Pie", "Sweet Potato",
+  "Casserole King", "Deviled Egg", "Pimento Cheese", "Hush Puppy Jr.", "Fish Fry Frank", "Crawfish Boil", "Gumbo Pot", "Etouffee Eddie", "Beignet Boy", "Jambalaya Jr.",
 ];
 
 const NICKNAMES = [
@@ -154,7 +160,16 @@ const NICKNAMES = [
   "The Human Turnstile", "Sir Hands of Stone", "The Practice Squad Prodigy", "Mr. Popcorn Time",
   "The Injury Report Regular", "Captain Overtime", "The Locker Room Poet", "Mr. Highlight Tape",
   "The Undrafted Legend", "Sir Blocks-a-Lot", "The Fourth and Inches King", "Baby Thunder", "The Boy With 60-Year-Old Knees",
-  "The Walking Traffic Violation", "King of Just Dance", "The Buck Bumble Baddy", "Mr. Always Gotta Piss",
+  "The Walking Traffic Violation", "King of Just Dance", "The Buck Bumble Baddy", "Mr. Always Gotta Piss", "Bubble Gut",
+  "The Smallest Person EVER", "The Youngest Person EVER", 
+  "The Human Victory Formation", "Sir Eats-a-Lot", "The Fantasy Killer", "Mr. Monday Night Special",
+  "The Waiver Wire Whale", "Captain Hot Read", "The Human Kneel Down", "Lil' Snack Pack",
+  "The Turf Monster", "Mr. Never Fumbles", "The Sunday Ticket Legend", "Captain Obvious Route",
+  "The Human Cheat Code", "Sir Scores-a-Lot", "The Backyard Legend", "Mr. Fantasy Bust",
+  "The Human Victory Lap", "Lil' Stat Padder", "The Podcast Darling", "Mr. Always Open",
+  "The Human Highlight Machine", "Captain Comeback", "The Waterboy's Nightmare", "Sir Catches-a-Lot",
+  "The Trade Bait King", "Mr. Locker Room Legend", "The Human Snack Table", "Lil' Playoff Push",
+  "The Bench Warmer's Dream", "Mr. Two-A-Days",
 ];
 
 const SUFFIXES = ["", "", "", "", "", "", " Jr.", " III", " Sr.", " II", " IV"];
@@ -178,6 +193,14 @@ const AI_MANAGER_NAMES = [
   "The Grimmsnarl Gauntlet", "Dragapult Demolition", "The Hatterene Hitmen", "Cinderace Circuit",
   "The Rillaboom Rowdies", "Inteleon Inc.", "The Wobuffet Wannabees", "The Punky Pidoves",
   "The Perserrker Pirates",
+  "The Snorlax Snoozefest", "Weezing Out The Competition", "Slowbro's Slow Cookers", "Magcargo's Molten Misfits",
+  "The Ditto Copycats", "Muk's Toxic Waste Management", "Grimer's Garbage Squad", "The Voltorb Volatility",
+  "Electrode's Explosive Ending", "Koffing Around", "Jigglypuff's Lullaby Legion", "The Exeggutor Eggheads",
+  "Farfetch'd's Last Stand", "The Slowpoke Tail Draft", "Gastly's Ghost Writers", "The Haunter Hauntdown",
+  "Mimikyu's Disguise Crew", "The Wailord Whale Watchers", "Gyarados's Rage Quitters", "The Metapod Harden Squad",
+  "Kakuna's Cocoon Crew", "The Magikarp Millionaires", "Zubat's Cave Dwellers", "The Ekans Charmers",
+  "Weedle's Sting Operation", "Rattata's Run It Back", "The Spearow Squadron", "Pidgey's Flock",
+  "The Diglett's Dig Deep", "Sandshrew's Sandstorm Squad",
 ];
 
 const FRIEND_NAMES = [
@@ -367,6 +390,7 @@ const RETIRE_EVENTS = [
   "quit to open a very niche antique spoon store",
   "retired to finally learn the accordion",
   "walked away to become a weather balloon enthusiast",
+  "bought a boat. nuff said"
 ];
 
 const HIGHLIGHT_VERBS = {

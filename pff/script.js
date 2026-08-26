@@ -348,6 +348,7 @@ function updateSetupSummary() {
 /* ------------------------------------------------------------ router */
 
 function render() {
+  renderLeagueTicker();
   [setupView, draftView, seasonView, gamedayView, offseasonView].forEach((v) => v.classList.add("hidden"));
   if (!L) {
     setupView.classList.remove("hidden");
@@ -603,6 +604,7 @@ function renderManagerBar() {
 function renderSeason() {
   const you = activeManager();
   renderManagerBar();
+  renderLeagueTicker();
   $("hud-season").textContent = L.season;
   $("hud-week").textContent = L.week;
   $("hud-record").textContent = `${you.wins}-${you.losses}${you.ties ? `-${you.ties}` : ""}`;
@@ -1374,6 +1376,21 @@ function renderStatsTab() {
 let faFilter = "ALL";
 let faSearch = "";
 
+/* Unowned players worth grabbing right now: on a heater, or lit up the box score last week. */
+function hotFreeAgents() {
+  const wk = L.lastPlayedWeek;
+  return freeAgents(L)
+    .map((p) => {
+      const lastPts = wk && p.weeks[wk] ? p.weeks[wk].pts : null;
+      const boosted = !!(p.form && p.form.mult > 1);
+      const score = (boosted ? 50 : 0) + (lastPts || 0);
+      return { p, lastPts, boosted, score };
+    })
+    .filter((e) => e.boosted || (e.lastPts != null && e.lastPts >= 10))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 6);
+}
+
 function renderPlayersTab() {
   const you = activeManager();
   const fas = freeAgents(L)
@@ -1385,7 +1402,26 @@ function renderPlayersTab() {
     .sort((a, b) => tradeValue(L, b) - tradeValue(L, a))
     .slice(0, 100);
 
+  const hot = hotFreeAgents();
+
   $("tab-players").innerHTML = `
+    <div class="panel">
+      <p class="panel-title">&#128293; HOT PICKUPS</p>
+      ${
+        hot.length
+          ? hot
+              .map(({ p, lastPts, boosted }) =>
+                playerRow(p, {
+                  week: L.week,
+                  rightMain: lastPts != null ? lastPts.toFixed(1) : undefined,
+                  rightSub: lastPts != null ? "LAST WK" : boosted ? "TRENDING" : undefined,
+                  action: `<button class="btn btn-green btn-sm" data-add="${p.id}" type="button">Add</button>`,
+                })
+              )
+              .join("")
+          : `<p class="note">No standout free agents right now &mdash; check back after the next games.</p>`
+      }
+    </div>
     <div class="panel">
       <p class="panel-title">FREE AGENTS &middot; ${esc(you.name.toUpperCase())} ROSTER ${you.roster.length}/${ROSTER_SIZE}</p>
       <div class="rowbar">
@@ -2071,6 +2107,7 @@ function endGameday() {
   pruneOldHighlights();
   save();
   renderGameday();
+  renderLeagueTicker();
   if (GD.alerts.length) {
     modalRoot.innerHTML = `<div class="modal-back"><div class="modal"><p class="panel-title">GAME HEALTH REPORT</p>${GD.alerts.map((alert) => `<div class="wire-item injury">${alert.playerId ? avatarHtml(L.players[alert.playerId], "sprite sprite-sm") : ""}<span><b>${esc(alert.title)}</b><br />${esc(alert.text)}</span></div>`).join("")}<button class="btn btn-blue btn-sm" id="alerts-close" type="button">Continue</button></div></div>`;
     $("alerts-close").addEventListener("click", () => { modalRoot.innerHTML = ""; });
@@ -2294,6 +2331,81 @@ function renderOffseason() {
     save();
     render();
   });
+}
+
+/* --------------------------------------------------- league ticker */
+
+/* Builds a bottom-line-style scroll of NFL scores, fantasy leaders, and league storylines. */
+function buildTickerItems() {
+  if (!L || !L.players) return [];
+  const items = [];
+  const wk = L.lastPlayedWeek;
+
+  if (wk && L.results[wk]) {
+    L.results[wk].games.forEach((g) => {
+      const home = NFL_TEAMS[g.home];
+      const away = NFL_TEAMS[g.away];
+      items.push(`FINAL: ${away.abbr} ${g.awayScore} @ ${home.abbr} ${g.homeScore}`);
+    });
+  }
+
+  const allPlayers = L.playerIds.map((pid) => L.players[pid]);
+  POSITIONS.forEach((pos) => {
+    const best = allPlayers.filter((p) => p.pos === pos && p.seasonPts > 0).sort((a, b) => b.seasonPts - a.seasonPts)[0];
+    if (best) items.push(`${pos} LEADER: ${displayName(best)} (${teamOf(best).abbr}) &mdash; ${best.seasonPts.toFixed(1)} FPTS`);
+  });
+
+  if (wk) {
+    L.wire
+      .filter((w) => w.week === wk)
+      .slice(0, 10)
+      .forEach((w) => items.push(w.text));
+  }
+
+  if (wk && L.results[wk]) {
+    const weekly = allPlayers.filter((p) => p.weeks[wk] && p.weeks[wk].pts != null);
+    if (weekly.length) {
+      const owned = weekly.filter((p) => ownerOfPlayer(p.id));
+      const best = weekly.slice().sort((a, b) => b.weeks[wk].pts - a.weeks[wk].pts)[0];
+      if (best) items.push(`BREAKOUT: ${displayName(best)} exploded for ${best.weeks[wk].pts.toFixed(1)} FPTS in Week ${wk}!`);
+
+      const bust = owned.slice().sort((a, b) => a.weeks[wk].pts - b.weeks[wk].pts)[0];
+      if (bust && bust.weeks[wk].pts < 3)
+        items.push(`BUST ALERT: ${displayName(bust)} managed just ${bust.weeks[wk].pts.toFixed(1)} points, fantasy managers are fuming.`);
+
+      const fa = weekly.filter((p) => !ownerOfPlayer(p.id)).sort((a, b) => b.weeks[wk].pts - a.weeks[wk].pts)[0];
+      if (fa && fa.weeks[wk].pts >= 12)
+        items.push(`WAIVER GOLD: unowned ${displayName(fa)} quietly put up ${fa.weeks[wk].pts.toFixed(1)} points.`);
+
+      const benched = owned.filter((p) => {
+        const m = ownerOfPlayer(p.id);
+        const lu = m && m.lineups[wk];
+        return lu && !Object.values(lu).includes(p.id);
+      });
+      const stud = benched.slice().sort((a, b) => b.weeks[wk].pts - a.weeks[wk].pts)[0];
+      if (stud && stud.weeks[wk].pts >= 15) {
+        const m = ownerOfPlayer(stud.id);
+        items.push(`WOULDA COULDA: ${displayName(stud)} dropped ${stud.weeks[wk].pts.toFixed(1)} on ${esc(m.name)}'s bench.`);
+      }
+    }
+  }
+
+  return items.length ? items : ["Welcome to the league &mdash; play a week to get the wire rolling."];
+}
+
+function renderLeagueTicker() {
+  const bar = $("league-ticker");
+  if (!bar) return;
+  if (!L || L.phase === "draft" || L.phase === "offseason") {
+    bar.classList.add("hidden");
+    return;
+  }
+  bar.classList.remove("hidden");
+  const items = buildTickerItems();
+  const track = $("league-ticker-track");
+  const html = items.map((t) => `<span class="ticker-item">${t}</span>`).join(`<span class="ticker-dot">&#9679;</span>`);
+  // Duplicated so the CSS scroll loop has no visible seam.
+  track.innerHTML = html + `<span class="ticker-dot">&#9679;</span>` + html;
 }
 
 /* ------------------------------------------------------------- boot */
