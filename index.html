@@ -275,24 +275,16 @@
         box-shadow: 0 8px 0 rgba(42, 33, 86, 0.16), 0 0 0 3px #35f0a0 inset, 0 14px 26px rgba(42, 33, 86, 0.16);
       }
 
-      /* Road Trip: folded paper map with a single highway running through it */
+      /* Road Trip: the actual contiguous-US outline over water */
       .card-roadtrip {
-        background-color: #e4d3a8;
+        background-color: #7ba0bb;
         background-image:
-          radial-gradient(circle at 20% 40%, #14603a 0 7px, transparent 8px),
-          radial-gradient(circle at 78% 20%, #b5442f 0 7px, transparent 8px),
-          linear-gradient(52deg, transparent 0 49.2%, rgba(255, 248, 226, 0.95) 49.2% 50.8%, transparent 50.8%),
-          linear-gradient(52deg, transparent 0 45%, #b5442f 45% 55%, transparent 55%),
-          repeating-linear-gradient(0deg, rgba(120, 90, 50, 0.1) 0 1px, transparent 1px 22px),
-          repeating-linear-gradient(90deg, rgba(120, 90, 50, 0.1) 0 1px, transparent 1px 22px),
-          linear-gradient(160deg, #f3e7cd, #ddc99b);
-        border: 3px solid #8a5a34;
-        box-shadow: 0 8px 0 rgba(42, 33, 86, 0.16), 0 0 0 3px #f3e7cd inset, 0 14px 26px rgba(42, 33, 86, 0.16);
-      }
-      .card-roadtrip .card-title,
-      .card-roadtrip .card-desc {
-        color: #3d2b18;
-        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 10px rgba(243, 231, 205, 0.95);
+          linear-gradient(180deg, rgba(15, 25, 35, 0) 45%, rgba(12, 22, 32, 0.8) 100%),
+          url("roadtrip/us-outline.svg");
+        background-repeat: no-repeat, no-repeat;
+        background-position: center, center 38%;
+        background-size: 100% 100%, 118% auto;
+        border: 3px solid #41603a;
       }
     </style>
   </head>

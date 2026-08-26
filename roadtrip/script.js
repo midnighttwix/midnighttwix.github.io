@@ -65,8 +65,8 @@ const svgEl = (tag, attrs) => {
 const TINY_STATES = new Set(["DE", "RI", "CT", "NJ", "MA", "NH", "VT", "MD"]);
 
 function drawStates() {
-  US_STATES.forEach((s, i) => {
-    const path = svgEl("path", { d: s.d, class: `state${i % 2 ? " alt" : ""}` });
+  US_STATES.forEach((s) => {
+    const path = svgEl("path", { d: s.d, class: "state" });
     path.appendChild(svgEl("title", {})).textContent = s.name;
     statesEl.appendChild(path);
   });
@@ -95,17 +95,29 @@ function randomPair() {
   return { a, b, miles: milesBetween(a, b) };
 }
 
+/* Standard teardrop map marker whose point sits exactly on the coordinate. */
+function pinPath(x, y, r, h) {
+  return (
+    `M${x},${y}` +
+    `C${x - r * 0.55},${y - h * 0.42} ${x - r},${y - h * 0.72} ${x - r},${y - h}` +
+    `a${r},${r} 0 1,1 ${r * 2},0` +
+    `c0,${h * 0.28} ${-r * 0.45},${h * 0.58} ${-r},${h}Z`
+  );
+}
+
 function drawPin(city, letter, isB, labelBelow) {
   const { x, y } = project(city.lat, city.lon);
-  pinsEl.appendChild(svgEl("circle", { cx: x, cy: y, r: 20, class: "pin-halo" }));
+  const r = 11;
+  const h = 26;
   pinsEl.appendChild(
-    svgEl("circle", { cx: x, cy: y, r: 12, class: `pin-body${isB ? " b" : ""}` })
+    svgEl("path", { d: pinPath(x, y, r, h), class: `pin pin-${isB ? "b" : "a"}` })
   );
-  const l = svgEl("text", { x, y: y + 5, class: "pin-letter" });
+  const l = svgEl("text", { x, y: y - h + 5, class: "pin-letter" });
   l.textContent = letter;
   pinsEl.appendChild(l);
 
-  const name = svgEl("text", { x, y: labelBelow ? y + 34 : y - 22, class: "pin-name" });
+  // Offset lives in CSS so it can grow with the larger phone font size.
+  const name = svgEl("text", { x, y, class: `pin-name ${labelBelow ? "below" : "above"}` });
   name.textContent = `${city.name}, ${city.state}`;
   pinsEl.appendChild(name);
 }
@@ -116,12 +128,12 @@ function newRound() {
   pinsEl.innerHTML = "";
 
   // Nearby cities would stack their labels on top of each other, so split them
-  // above/below; otherwise just keep labels off the top edge of the map.
+  // above/below; otherwise keep labels clear of the top edge of the map.
   const pa = project(pair.a.lat, pair.a.lon);
   const pb = project(pair.b.lat, pair.b.lon);
-  const crowded = Math.abs(pa.x - pb.x) < 230 && Math.abs(pa.y - pb.y) < 34;
-  const aBelow = crowded ? false : pa.y < 60;
-  const bBelow = crowded ? true : pb.y < 60;
+  const crowded = Math.abs(pa.x - pb.x) < 230 && Math.abs(pa.y - pb.y) < 60;
+  const aBelow = crowded ? false : pa.y < 70;
+  const bBelow = crowded ? true : pb.y < 70;
 
   drawPin(pair.a, "A", false, aBelow);
   drawPin(pair.b, "B", true, bBelow);
@@ -140,9 +152,9 @@ function newRound() {
 function revealRoute() {
   const a = project(pair.a.lat, pair.a.lon);
   const b = project(pair.b.lat, pair.b.lon);
-  const d = `M${a.x},${a.y} L${b.x},${b.y}`;
-  routeEl.appendChild(svgEl("path", { d, class: "route-shadow" }));
-  routeEl.appendChild(svgEl("path", { d, class: "route-line" }));
+  routeEl.appendChild(
+    svgEl("path", { d: `M${a.x},${a.y} L${b.x},${b.y}`, class: "route-line" })
+  );
 }
 
 function updateGauges() {

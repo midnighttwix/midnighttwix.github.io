@@ -6,29 +6,20 @@
     <title>Road Trip</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bungee&family=Baloo+2:wght@600;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css?v=1" />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=2" />
   </head>
   <body>
-    <div class="paper">
+    <div class="shell">
       <header class="masthead">
         <a class="back-link" href="../">&larr; Zane Games</a>
-        <div class="title-block">
-          <span class="shield">
-            <span class="shield-top">ROUTE</span>
-            <span class="shield-num">25</span>
-          </span>
-          <h1>Road Trip</h1>
-        </div>
-        <p class="tagline">Two towns. One guess. Get within <b>25 miles</b>.</p>
+        <h1>Road Trip</h1>
+        <p class="tagline">How many miles apart are A and B? Get within 25.</p>
       </header>
 
       <div class="dashboard">
         <div class="gauge">
-          <p class="gauge-label">Checkpoints</p>
+          <p class="gauge-label">Correct</p>
           <p id="score-display" class="gauge-value">0 / 3</p>
         </div>
         <div class="gauge">
@@ -37,13 +28,11 @@
         </div>
         <div class="gauge gauge-wide">
           <p class="gauge-label">Status</p>
-          <p id="status-display" class="gauge-value status-ok">Ready to roll</p>
+          <p id="status-display" class="gauge-value status-ok">Make your call</p>
         </div>
       </div>
 
       <div class="map-frame">
-        <div class="map-tape map-tape-tl"></div>
-        <div class="map-tape map-tape-br"></div>
         <svg
           id="map"
           viewBox="0 0 1000 620"
@@ -55,20 +44,15 @@
           <g id="route"></g>
           <g id="pins"></g>
         </svg>
-        <div class="compass" aria-hidden="true">
-          <span class="compass-n">N</span>
-          <span class="compass-needle"></span>
-        </div>
       </div>
 
       <div class="legend">
         <span class="legend-item"><span class="legend-dot dot-a">A</span><span id="city-a">&mdash;</span></span>
-        <span class="legend-dash" aria-hidden="true"></span>
         <span class="legend-item"><span class="legend-dot dot-b">B</span><span id="city-b">&mdash;</span></span>
       </div>
 
       <form id="guess-form" class="guess-bar" autocomplete="off">
-        <label class="guess-label" for="guess-input">How far apart?</label>
+        <label class="guess-label" for="guess-input">Distance</label>
         <div class="guess-input-wrap">
           <input
             id="guess-input"
@@ -81,28 +65,27 @@
           />
           <span class="unit">mi</span>
         </div>
-        <button id="guess-btn" class="btn btn-go" type="submit">Check It</button>
+        <button id="guess-btn" class="btn btn-go" type="submit">Check</button>
       </form>
 
       <p id="result" class="result" role="status" aria-live="polite"></p>
 
       <div id="penalty" class="penalty hidden">
-        <p class="penalty-label">Detour! Back on the road in</p>
+        <p class="penalty-label">Penalty &mdash; next pair in</p>
         <p id="penalty-count" class="penalty-count">20</p>
       </div>
 
       <div id="win-screen" class="win-screen hidden">
-        <p class="win-kicker">&#9733; &#9733; &#9733;</p>
-        <h2>You&rsquo;ve Arrived!</h2>
+        <h2>You Win</h2>
         <p id="win-note" class="win-note"></p>
         <div class="win-actions">
-          <button id="play-again" class="btn btn-go" type="button">Drive It Again</button>
+          <button id="play-again" class="btn btn-go" type="button">Play Again</button>
           <a class="btn btn-ghost" href="../">Back To Games</a>
         </div>
       </div>
     </div>
 
     <script src="mapdata.js?v=1"></script>
-    <script src="script.js?v=1"></script>
+    <script src="script.js?v=2"></script>
   </body>
 </html>
