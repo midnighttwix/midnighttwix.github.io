@@ -2164,6 +2164,26 @@ function pushFeed(text, cls, playerId) {
   if (GD.feed.length > 80) GD.feed.length = 80;
 }
 
+/* Manager ids relevant to the live feed: the focused team + its current opponent (or every human's own matchup if "ALL" is selected). */
+function focusedFeedManagerIds() {
+  const ids = new Set();
+  const addMatchup = (mid) => {
+    const mu = currentMatchupFor(mid);
+    if (mu) {
+      if (mu.a != null) ids.add(mu.a);
+      if (mu.b != null) ids.add(mu.b);
+    } else {
+      ids.add(mid);
+    }
+  };
+  if (GD.focus === "all") {
+    humanManagers().forEach((m) => addMatchup(m.id));
+  } else {
+    addMatchup(GD.focus);
+  }
+  return ids;
+}
+
 function showLiveHealthAlert(alert) {
   GD.paused = true;
   stopTicker();
@@ -2558,7 +2578,13 @@ function renderGamedayLive() {
       </div>`;
     }).join("")}</div>`).join("");
 
+  const feedIds = focusedFeedManagerIds();
   $("gd-feed").innerHTML = GD.feed
+    .filter((f) => {
+      if (!f.playerId) return false;
+      const owner = ownerOfPlayer(f.playerId);
+      return owner && feedIds.has(owner.id);
+    })
     .map(
       (f) =>
         `<div class="wire-item ${f.cls}">${
