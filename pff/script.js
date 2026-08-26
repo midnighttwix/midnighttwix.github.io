@@ -632,7 +632,7 @@ function renderDraftBoard() {
   const d = L.draft;
   const n = L.managers.length;
   const current = d.picksMade.length;
-  const header = d.order
+  const header = d.order.slice(0, n)
     .map((mid) => {
       const m = managerById(mid);
       return `<div class="bcell bhead ${m.human ? "bhuman" : ""}">${esc(m.name)}</div>`;
