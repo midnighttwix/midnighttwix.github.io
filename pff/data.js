@@ -135,7 +135,8 @@ const FIRST_NAMES = [
   "Pickle", "Waffles", "Buster", "Clyde", "Diesel", "Tank Jr.", "Kwame", "Ravioli", "Chauncy", "Bo",
   "Meatball", "Thad", "Zane", "Peter", "Sketch", "Cush", "Duggy", "Dunky", "Bam Bam", "Big Boy",
   "Stubby", "Porkchop", "Schweppo", "T-Bone", "Steaknife", "Bonesaw", "Floridaman", "Tubby", "Jahmyr", "D'Andre",
-  "Peebr", "Shannon", "DeliciousPeter", "Bacula", "Zumel", "Fish Stomper", "Rat Gumpus", "Cubone", "Uncle Chris", "Coach Sketch",
+  "Jimbo", "2 Toes", "Sackman", "Whole Hog", "Boost Juice", "Hankjohn", "Herbert", "Jerry", "JerryJim", "JAA'M", "Chumbo",
+  "Moff",
 ];
 
 const NICKNAMES = [
@@ -152,7 +153,8 @@ const NICKNAMES = [
   "The Locker Room DJ", "Mr. Two-Minute Drill", "The Concession Stand King", "Grandpa's Pride and Joy",
   "The Human Turnstile", "Sir Hands of Stone", "The Practice Squad Prodigy", "Mr. Popcorn Time",
   "The Injury Report Regular", "Captain Overtime", "The Locker Room Poet", "Mr. Highlight Tape",
-  "The Undrafted Legend", "Sir Blocks-a-Lot", "The Fourth and Inches King", "Baby Thunder",
+  "The Undrafted Legend", "Sir Blocks-a-Lot", "The Fourth and Inches King", "Baby Thunder", "The Boy With 60-Year-Old Knees",
+  "The Walking Traffic Violation", "King of Just Dance", "The Buck Bumble Baddy", "Mr. Always Gotta Piss",
 ];
 
 const SUFFIXES = ["", "", "", "", "", "", " Jr.", " III", " Sr.", " II", " IV"];
@@ -174,7 +176,8 @@ const AI_MANAGER_NAMES = [
   "The Alakazam Alliance", "Tyranitar Terror", "The Scizor Squadron", "Garchomp Gladiators",
   "The Salamence Slammers", "Zoroark's Zealots", "The Corviknight Crew", "Toxtricity Turbo",
   "The Grimmsnarl Gauntlet", "Dragapult Demolition", "The Hatterene Hitmen", "Cinderace Circuit",
-  "The Rillaboom Rowdies", "Inteleon Inc.",
+  "The Rillaboom Rowdies", "Inteleon Inc.", "The Wobuffet Wannabees", "The Punky Pidoves",
+  "The Perserrker Pirates",
 ];
 
 const FRIEND_NAMES = [
@@ -184,36 +187,34 @@ const FRIEND_NAMES = [
 
 /* Silly weekly events. {kind, text, mult, weeksOut} */
 const BOOST_EVENTS = [
-  "got asked to prom by their high school crush and is FLYING today",
-  "found $20 in an old jersey and is feeling unstoppable",
-  "watched a motivational squirrel video at 4am",
-  "is playing angry after being left off the cover of Poke Illustrated",
-  "finally beat the Elite Four last night. Confidence is peaking",
-  "ate an entire sheet cake at walkthroughs. Fueled",
-  "learned the opposing defense insulted their mom",
-  "got a new pair of cleats that light up",
-  "is in a contract year and it SHOWS",
-  "had a dream where they scored 4 touchdowns. Manifested",
-  "was told they were 'washed' by a podcast host",
-  "brought their grandma to the game",
-  "won a hot dog eating contest at the tailgate and feels invincible",
-  "got a good luck text from their mom right before kickoff",
+  "got asked to prom by their high school crush and is FLYING HIGH today",
+  "found a free $20 in some homeless person's cup and is feeling unstoppable",
+  "watched a motivational Dwayne The Rock Johnson video at 4am",
+  "is playing angry after being left out of the 'League Baddies' group chat",
+  "won a slam poetry contest at their local coffee shop last night",
+  "ate 10 Portillo's Chicago Style Hot Dogs at walkthroughs. Fueled!",
+  "learned the opposing defense insulted their mom's Toyota RAV4",
+  "got a new pair of cleats that light up and aren't cleats they're just Skechers but they feel like cleats",
+  "just bought 20 candles at Bath & Body Works half-off",
+  "had a dream where they scored 4 touchdowns butt booty naked. Time to do it for real",
+  "was called 'washed' on Joe Rogan's podcast",
+  "didn't get woken up by their cat at 3am last night",
   "just found their lucky socks after a two-week search",
   "watched game tape of their rookie season and got emotional",
   "beat their little cousin in Madden and rode the high all day",
   "got called 'the GOAT' by a stranger in the parking lot",
   "found a four-leaf clover in the end zone during warmups",
-  "heard their walk-up song and got instantly hyped",
+  "has been blasting 'Eye of the Tiger' on repeat all week",
   "got a standing ovation just for stretching",
   "finally figured out how to do the pregame handshake",
   "had their jersey retired in a dream and woke up motivated",
-  "got complimented on their cleats by a rival's mascot",
-  "is playing on their half-birthday and feels blessed",
+  "got complimented on their Spongebob cleats by Spongebob himself",
+  "just met the ghost homeless man on the top of the Polar Express and now believes in the spirit of Christmas",
   "just got approved for a really good credit card",
   "saw a shooting star during the national anthem",
   "got a shoutout from the stadium DJ",
-  "finally beat their sibling's high score in a phone game",
-  "was told by a psychic they'd have a big day",
+  "finally beat their sibling's high score in a Flappy Bird",
+  "was told by a psychic that there's is 'the biggest' on the team",
   "got extra syrup on their pregame pancakes",
   "found out their bobblehead is finally being made",
   "just got their braces off and can't stop smiling",
