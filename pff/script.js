@@ -2393,6 +2393,20 @@ function buildTickerItems() {
   return items.length ? items : ["Welcome to the league &mdash; play a week to get the wire rolling."];
 }
 
+const TICKER_KEY = "pff.ticker.enabled";
+
+function tickerEnabled() {
+  return localStorage.getItem(TICKER_KEY) !== "off";
+}
+
+function setTickerEnabled(on) {
+  try {
+    localStorage.setItem(TICKER_KEY, on ? "on" : "off");
+  } catch (e) {
+    console.warn("Couldn't save ticker preference", e);
+  }
+}
+
 function renderLeagueTicker() {
   const bar = $("league-ticker");
   if (!bar) return;
@@ -2401,11 +2415,18 @@ function renderLeagueTicker() {
     return;
   }
   bar.classList.remove("hidden");
+  const on = tickerEnabled();
+  bar.classList.toggle("off", !on);
+  $("league-ticker-toggle").textContent = on ? "LEAGUE WIRE \u25be ON" : "LEAGUE WIRE \u25b8 OFF";
+  if (!on) return;
+
   const items = buildTickerItems();
   const track = $("league-ticker-track");
   const html = items.map((t) => `<span class="ticker-item">${t}</span>`).join(`<span class="ticker-dot">&#9679;</span>`);
   // Duplicated so the CSS scroll loop has no visible seam.
   track.innerHTML = html + `<span class="ticker-dot">&#9679;</span>` + html;
+  // A few seconds per item so it stays readable no matter how much is queued up.
+  track.style.animationDuration = `${Math.max(70, items.length * 7)}s`;
 }
 
 /* ------------------------------------------------------------- boot */
@@ -2466,6 +2487,11 @@ function bindGameday() {
 document.addEventListener("click", (e) => {
   const btn = e.target.closest("[data-rename]");
   if (btn) openRenameModal(Number(btn.dataset.rename));
+});
+
+$("league-ticker-toggle").addEventListener("click", () => {
+  setTickerEnabled(!tickerEnabled());
+  renderLeagueTicker();
 });
 
 initSetup();

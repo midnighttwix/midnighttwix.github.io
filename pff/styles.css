@@ -968,7 +968,12 @@ table.tbl tr.me td { background: rgba(53, 240, 160, 0.1); color: var(--neon); }
   background: var(--gold);
   padding: 0.4rem 0.6rem;
   white-space: nowrap;
+  border: none;
+  cursor: pointer;
 }
+.league-ticker-label:hover { background: #fff2a8; }
+.league-ticker.off .league-ticker-label { background: var(--dim); }
+.league-ticker.off .league-ticker-viewport { display: none; }
 .league-ticker-viewport {
   flex: 1 1 auto;
   overflow: hidden;
@@ -979,8 +984,9 @@ table.tbl tr.me td { background: rgba(53, 240, 160, 0.1); color: var(--neon); }
   align-items: center;
   white-space: nowrap;
   padding: 0.4rem 0;
-  animation: ticker-scroll 55s linear infinite;
+  animation: ticker-scroll 150s linear infinite;
 }
+.league-ticker-viewport:hover .league-ticker-track { animation-play-state: paused; }
 .ticker-item {
   font-size: 1.05rem;
   color: var(--ink);
