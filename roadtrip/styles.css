@@ -1,0 +1,557 @@
+/* Road Trip - vintage folded-paper road map aesthetic. */
+
+:root {
+  --paper: #f3e7cd;
+  --paper-2: #eadcbc;
+  --land: #e4d3a8;
+  --land-alt: #dccb9d;
+  --ink: #3d2b18;
+  --ink-soft: #7a6244;
+  --road: #b5442f;
+  --road-dark: #8a2f20;
+  --sign: #14603a;
+  --sign-light: #1e7d4d;
+  --water: #bcd6cf;
+  --gold: #e8a628;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
+  color: var(--ink);
+  padding: 1.5rem 1rem 3rem;
+  background-color: #241c12;
+  background-image: radial-gradient(circle at 50% 0%, #3b2d1c 0%, #211a11 70%);
+}
+
+.paper {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  background-color: var(--paper);
+  /* faint newsprint grain + the creases of a map that lives in a glovebox */
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.07) 0 1px, transparent 1px 33.33%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0 1px, transparent 1px 50%),
+    radial-gradient(circle at 18% 22%, rgba(160, 130, 80, 0.18) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 64%, rgba(160, 130, 80, 0.14) 0 2px, transparent 3px);
+  background-size: 33.33% 100%, 100% 50%, 90px 90px, 130px 130px;
+  border-radius: 6px;
+  padding: 1.4rem 1.4rem 2rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 0 90px rgba(150, 118, 68, 0.25);
+}
+
+/* ------------------------------------------------------- masthead */
+
+.back-link {
+  font-weight: 800;
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+.back-link:hover {
+  color: var(--road);
+}
+
+.title-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+.masthead h1 {
+  font-family: "Bungee", "Baloo 2", sans-serif;
+  font-size: clamp(1.8rem, 6vw, 3.2rem);
+  margin: 0;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5), 4px 4px 0 rgba(120, 90, 50, 0.25);
+}
+
+.shield {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 62px;
+  background: var(--sign);
+  color: #fff;
+  border: 3px solid #0d3f26;
+  border-radius: 10px 10px 26px 26px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25);
+  flex: none;
+}
+.shield-top {
+  font-family: "Bungee", sans-serif;
+  font-size: 0.42rem;
+  letter-spacing: 0.14em;
+  opacity: 0.9;
+}
+.shield-num {
+  font-family: "Bungee", sans-serif;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.tagline {
+  text-align: center;
+  margin: 0.5rem 0 0;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------ dashboard */
+
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1.1rem 0 0.9rem;
+}
+.gauge {
+  flex: 1 1 120px;
+  background: rgba(255, 255, 255, 0.45);
+  border: 2px solid rgba(120, 90, 50, 0.35);
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+}
+.gauge-wide {
+  flex: 2 1 200px;
+}
+.gauge-label {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 800;
+}
+.gauge-value {
+  margin: 0.1rem 0 0;
+  font-family: "Bungee", sans-serif;
+  font-size: 1.15rem;
+  color: var(--ink);
+}
+.status-ok {
+  color: var(--sign);
+}
+.status-bad {
+  color: var(--road-dark);
+}
+
+/* ------------------------------------------------------------ map */
+
+.map-frame {
+  position: relative;
+  background: var(--water);
+  border: 3px solid rgba(90, 68, 38, 0.6);
+  border-radius: 8px;
+  padding: 0.4rem;
+  box-shadow: inset 0 0 40px rgba(60, 45, 25, 0.25);
+}
+.map-frame svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* keep the map and the guess bar on screen together */
+  max-height: 58vh;
+}
+
+.state {
+  fill: var(--land);
+  stroke: #9c7c4a;
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+.state.alt {
+  fill: var(--land-alt);
+}
+.state-label {
+  font-family: "Baloo 2", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  fill: rgba(90, 68, 38, 0.55);
+  text-anchor: middle;
+  pointer-events: none;
+  user-select: none;
+}
+
+.route-line {
+  stroke: var(--road);
+  stroke-width: 4;
+  stroke-dasharray: 11 8;
+  stroke-linecap: round;
+  fill: none;
+}
+.route-shadow {
+  stroke: rgba(0, 0, 0, 0.18);
+  stroke-width: 8;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.pin-halo {
+  fill: rgba(181, 68, 47, 0.22);
+}
+.pin-body {
+  fill: var(--road);
+  stroke: #5f2015;
+  stroke-width: 2;
+}
+.pin-body.b {
+  fill: var(--sign);
+  stroke: #0d3f26;
+}
+.pin-letter {
+  font-family: "Bungee", sans-serif;
+  font-size: 15px;
+  fill: #fff;
+  text-anchor: middle;
+}
+.pin-name {
+  font-family: "Baloo 2", sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  fill: var(--ink);
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(243, 231, 205, 0.95);
+  stroke-width: 4;
+  stroke-linejoin: round;
+}
+
+.compass {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  width: 44px;
+  height: 44px;
+  border: 2px solid rgba(90, 68, 38, 0.6);
+  border-radius: 50%;
+  background: rgba(243, 231, 205, 0.85);
+  display: grid;
+  place-items: center;
+}
+.compass-n {
+  position: absolute;
+  top: 1px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+.compass-needle {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 16px solid var(--road);
+  margin-top: 6px;
+}
+
+/* --------------------------------------------------------- legend */
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0.2rem;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.legend-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: #fff;
+  font-family: "Bungee", sans-serif;
+  font-size: 0.75rem;
+}
+.dot-a {
+  background: var(--road);
+}
+.dot-b {
+  background: var(--sign);
+}
+.legend-dash {
+  flex: 0 0 60px;
+  height: 0;
+  border-top: 4px dashed rgba(122, 98, 68, 0.7);
+}
+
+/* ------------------------------------------------------- guess bar */
+
+.guess-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.9rem 0 0.3rem;
+}
+.guess-label {
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+.guess-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+#guess-input {
+  font-family: "Bungee", sans-serif;
+  font-size: 1.3rem;
+  width: 150px;
+  padding: 0.45rem 2.6rem 0.45rem 0.7rem;
+  border: 3px solid var(--ink);
+  border-radius: 8px;
+  background: #fffdf6;
+  color: var(--ink);
+  text-align: center;
+}
+#guess-input:focus {
+  outline: 3px solid var(--gold);
+  outline-offset: 1px;
+}
+/* number spinners fight the fixed width and look wrong on a paper map */
+#guess-input::-webkit-outer-spin-button,
+#guess-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#guess-input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.unit {
+  position: absolute;
+  right: 0.7rem;
+  font-weight: 800;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.btn {
+  font-family: "Bungee", sans-serif;
+  font-size: 0.95rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 8px;
+  border: 3px solid #0d3f26;
+  background: var(--sign-light);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #0d3f26;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.btn:hover {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #0d3f26;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 0 4px 0 rgba(61, 43, 24, 0.5);
+}
+.btn-ghost:hover {
+  box-shadow: 0 2px 0 rgba(61, 43, 24, 0.5);
+}
+
+/* --------------------------------------------------------- results */
+
+.result {
+  text-align: center;
+  min-height: 1.8rem;
+  margin: 0.4rem 0 0;
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+.result .hit {
+  color: var(--sign);
+}
+.result .miss {
+  color: var(--road-dark);
+}
+
+.penalty {
+  text-align: center;
+  margin: 0.6rem auto 0;
+  max-width: 340px;
+  background: rgba(181, 68, 47, 0.14);
+  border: 3px dashed var(--road);
+  border-radius: 10px;
+  padding: 0.6rem;
+}
+.penalty-label {
+  margin: 0;
+  font-weight: 800;
+  color: var(--road-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.8rem;
+}
+.penalty-count {
+  margin: 0.1rem 0 0;
+  font-family: "Bungee", sans-serif;
+  font-size: 2.4rem;
+  color: var(--road-dark);
+  line-height: 1;
+}
+
+.win-screen {
+  text-align: center;
+  margin-top: 1rem;
+  background: rgba(20, 96, 58, 0.12);
+  border: 4px solid var(--sign);
+  border-radius: 12px;
+  padding: 1.2rem;
+}
+.win-kicker {
+  margin: 0;
+  color: var(--gold);
+  font-size: 1.4rem;
+  letter-spacing: 0.3em;
+}
+.win-screen h2 {
+  font-family: "Bungee", sans-serif;
+  margin: 0.2rem 0 0.4rem;
+  color: var(--sign);
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+}
+.win-note {
+  margin: 0 0 0.9rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+.win-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* tape holding the map to the page */
+.map-tape {
+  position: absolute;
+  width: 74px;
+  height: 22px;
+  background: rgba(255, 251, 224, 0.55);
+  border: 1px solid rgba(160, 140, 90, 0.35);
+  z-index: 2;
+}
+.map-tape-tl {
+  top: -11px;
+  left: -18px;
+  transform: rotate(-32deg);
+}
+.map-tape-br {
+  bottom: -11px;
+  right: -18px;
+  transform: rotate(-32deg);
+}
+
+/* ---------------------------------------------------------- mobile */
+
+@media (max-width: 620px) {
+  body {
+    padding: 0.8rem 0.5rem 2rem;
+  }
+  .paper {
+    padding: 0.9rem 0.6rem 1.4rem;
+  }
+  .shield {
+    width: 44px;
+    height: 48px;
+  }
+  .shield-num {
+    font-size: 1.15rem;
+  }
+  .title-block {
+    gap: 0.5rem;
+  }
+  .tagline {
+    font-size: 0.9rem;
+  }
+  .dashboard {
+    gap: 0.35rem;
+    margin: 0.7rem 0 0.6rem;
+  }
+  .gauge,
+  .gauge-wide {
+    flex: 1 1 0;
+    padding: 0.3rem 0.25rem;
+  }
+  .gauge-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+  }
+  .gauge-value {
+    font-size: 0.8rem;
+  }
+  /* SVG text scales with the viewBox, so these need to be much larger numbers
+     than their desktop equivalents to stay legible once shrunk to phone width. */
+  .state-label {
+    font-size: 24px;
+  }
+  .state-label.tiny {
+    display: none;
+  }
+  .pin-name {
+    font-size: 30px;
+    stroke-width: 6;
+  }
+  .pin-letter {
+    font-size: 24px;
+  }
+  .pin-body {
+    r: 18;
+  }
+  .guess-label {
+    flex: 1 0 100%;
+    text-align: center;
+  }
+  .compass {
+    width: 34px;
+    height: 34px;
+  }
+  .compass-needle {
+    border-bottom-width: 12px;
+    margin-top: 5px;
+  }
+  .map-tape {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}

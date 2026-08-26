@@ -1,6 +1,6 @@
 const CELL = 16; // internal grid cell size in px (canvas is scaled up via CSS for a chunky pixel look)
 const DISPLAY_SCALE = 2;
-const TOTAL_SECONDS = 10 * 60;
+const TOTAL_SECONDS = 15 * 60;
 const PENALTY_SECONDS = 30;
 const MAX_DEX_NUMBER = 1025;
 const ORTHWORM_ID = 968;
