@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pok&eacute;mon Fantasy Football</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=2" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="marquee">
+        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+        <span class="marquee-text">&#9733; POK&Eacute;MON FANTASY FOOTBALL &#9733;</span>
+        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+      </div>
+
+      <section class="screen">
+        <div class="scanlines"></div>
+
+        <!-- ============================ SETUP ============================ -->
+        <div id="setup-view">
+          <div class="setup">
+            <h2>NEW LEAGUE</h2>
+            <p class="helper">
+              32 fake NFL squads. Hundreds of Pok&eacute;mon with brand-new names, positions and teams.
+              Draft 'em, start 'em, sit 'em, and pray nobody gets suspended for tax evasion.
+            </p>
+            <div class="field">
+              <label for="input-league">League Name</label>
+              <input id="input-league" type="text" maxlength="26" value="The Poke Bowl" />
+            </div>
+            <div class="field">
+              <label for="input-managers">Total Managers</label>
+              <select id="input-managers"></select>
+            </div>
+            <div class="field">
+              <label for="input-humans">Human-Run Teams</label>
+              <select id="input-humans"></select>
+            </div>
+            <p class="helper" style="margin: 0.2rem 0 0.6rem">
+              Running more than one team? Everybody plays from this browser &mdash; your friends call out their
+              picks, lineups and coach decisions and you drive.
+            </p>
+            <div id="human-names"></div>
+            <div class="field">
+              <label for="input-ppr">Reception Scoring</label>
+              <select id="input-ppr">
+                <option value="0.5" selected>Half PPR (0.5)</option>
+                <option value="1">Full PPR (1.0)</option>
+                <option value="0">Standard (0)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="input-mode">League Format</label>
+              <select id="input-mode">
+                <option value="season" selected>One Season</option>
+                <option value="franchise">Franchise (keep playing)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="input-ir">IR Spots</label>
+              <select id="input-ir">
+                <option value="0" selected>0 (no IR)</option>
+                <option value="1">1 IR spot</option>
+                <option value="2">2 IR spots</option>
+              </select>
+            </div>
+            <p id="setup-summary" class="note"></p>
+            <p>
+              <button id="btn-create" class="btn btn-green" type="button">Start The Season</button>
+              <button id="btn-continue" class="btn btn-blue hidden" type="button">Continue Saved League</button>
+            </p>
+            <p><button id="btn-wipe" class="btn btn-red btn-sm hidden" type="button">Delete Save</button></p>
+          </div>
+        </div>
+
+        <!-- ============================ DRAFT ============================ -->
+        <div id="draft-view" class="hidden">
+          <div class="hud">
+            <div class="hud-cell">
+              <p class="hud-label">Round</p>
+              <p id="draft-round" class="hud-value">1</p>
+            </div>
+            <div class="hud-cell">
+              <p class="hud-label">Pick</p>
+              <p id="draft-pick" class="hud-value">1</p>
+            </div>
+            <div class="hud-cell">
+              <p class="hud-label">On The Clock</p>
+              <p id="draft-clock" class="hud-value" style="font-size: 1rem">--</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="rowbar">
+              <p class="panel-title" style="margin: 0; flex: 1">DRAFT BOARD</p>
+              <button id="btn-board-toggle" class="btn btn-blue btn-sm" type="button">Hide Board</button>
+            </div>
+            <div id="draft-board" class="board-scroll"></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="panel">
+              <p class="panel-title">BEST AVAILABLE</p>
+              <div class="rowbar">
+                <select id="draft-filter">
+                  <option value="ALL">All Positions</option>
+                  <option value="QB">QB</option>
+                  <option value="RB">RB</option>
+                  <option value="WR">WR</option>
+                  <option value="TE">TE</option>
+                  <option value="K">K</option>
+                  <option value="DEF">DEF</option>
+                </select>
+                <input id="draft-search" type="text" placeholder="search name..." />
+                <span class="spacer"></span>
+                <button id="btn-autopick" class="btn btn-blue btn-sm" type="button">Auto Pick</button>
+                <button id="btn-autodraft" class="btn btn-red btn-sm" type="button">Sim Rest Of Draft</button>
+              </div>
+              <div id="draft-pool" class="scroll"></div>
+            </div>
+            <div>
+              <div class="panel">
+                <p class="panel-title" id="draft-roster-title">ROSTER</p>
+                <div id="draft-needs" class="needs-row"></div>
+                <div id="draft-roster" class="scroll" style="max-height: 300px"></div>
+              </div>
+              <div class="panel">
+                <p class="panel-title">RECENT PICKS</p>
+                <div id="draft-log" class="scroll" style="max-height: 190px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================ SEASON ============================ -->
+        <div id="season-view" class="hidden">
+          <div id="manager-bar" class="manager-bar hidden"></div>
+
+          <div class="hud">
+            <div class="hud-cell">
+              <p class="hud-label">Season</p>
+              <p id="hud-season" class="hud-value">1</p>
+            </div>
+            <div class="hud-cell">
+              <p class="hud-label">Week</p>
+              <p id="hud-week" class="hud-value">1</p>
+            </div>
+            <div class="hud-cell">
+              <p class="hud-label">Record</p>
+              <p id="hud-record" class="hud-value">0-0</p>
+            </div>
+            <div class="hud-cell">
+              <p class="hud-label">Points For</p>
+              <p id="hud-pf" class="hud-value">0.0</p>
+            </div>
+            <div class="hud-cell">
+              <p class="hud-label">Phase</p>
+              <p id="hud-phase" class="hud-value" style="font-size: 0.9rem">REGULAR</p>
+            </div>
+          </div>
+
+          <div class="rowbar">
+            <button id="btn-sim" class="btn btn-green" type="button">Play Week</button>
+            <button id="btn-sim-fast" class="btn btn-blue btn-sm" type="button">Sim Instantly</button>
+            <span class="spacer"></span>
+            <button id="btn-save" class="btn btn-blue btn-sm" type="button">Save</button>
+            <button id="btn-quit" class="btn btn-red btn-sm" type="button">Quit To Menu</button>
+          </div>
+
+          <div class="tabs" id="tabs">
+            <button class="tab active" data-tab="team" type="button">My Team</button>
+            <button class="tab" data-tab="matchup" type="button">Matchup</button>
+            <button class="tab" data-tab="scores" type="button">Scores</button>
+            <button class="tab" data-tab="standings" type="button">Standings</button>
+            <button class="tab" data-tab="players" type="button">Free Agents</button>
+            <button class="tab" data-tab="stats" type="button">Player Stats</button>
+            <button class="tab" data-tab="trade" type="button">Trade</button>
+            <button class="tab" data-tab="wire" type="button">League Wire</button>
+            <button class="tab" data-tab="league" type="button">Pok&eacute;-NFL</button>
+          </div>
+
+          <div id="tab-team" class="tabpane"></div>
+          <div id="tab-matchup" class="tabpane hidden"></div>
+          <div id="tab-scores" class="tabpane hidden"></div>
+          <div id="tab-standings" class="tabpane hidden"></div>
+          <div id="tab-players" class="tabpane hidden"></div>
+          <div id="tab-stats" class="tabpane hidden"></div>
+          <div id="tab-trade" class="tabpane hidden"></div>
+          <div id="tab-wire" class="tabpane hidden"></div>
+          <div id="tab-league" class="tabpane hidden"></div>
+        </div>
+
+        <!-- =========================== GAMEDAY =========================== -->
+        <div id="gameday-view" class="hidden">
+          <div class="gd-header">
+            <p id="gd-title" class="panel-title" style="margin: 0">WEEK 1 &middot; GAMEDAY</p>
+            <span class="spacer"></span>
+            <span id="gd-quarter" class="gd-quarter">PREGAME</span>
+          </div>
+          <div class="gd-progress"><span id="gd-bar"></span></div>
+
+          <div class="rowbar">
+            <button id="gd-play" class="btn btn-green btn-sm" type="button">Pause</button>
+            <button class="btn btn-blue btn-sm gd-speed" data-speed="1" type="button">1x</button>
+            <button class="btn btn-blue btn-sm gd-speed" data-speed="2" type="button">2x</button>
+            <button class="btn btn-blue btn-sm gd-speed" data-speed="4" type="button">4x</button>
+            <span class="spacer"></span>
+            <span id="gd-manager-pick"></span>
+            <button id="gd-skip" class="btn btn-red btn-sm" type="button">Skip To Final</button>
+            <button id="gd-done" class="btn btn-green hidden" type="button">Finish Week</button>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <div class="panel">
+                <p class="panel-title">LIVE MATCHUPS</p>
+                <div id="gd-matchups"></div>
+              </div>
+              <div class="panel">
+                <p class="panel-title" id="gd-lineup-title">STARTERS</p>
+                <div id="gd-lineup"></div>
+              </div>
+            </div>
+            <div class="panel">
+              <p class="panel-title">LIVE FEED</p>
+              <div id="gd-feed" class="scroll" style="max-height: 620px"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================== OFFSEASON =========================== -->
+        <div id="offseason-view" class="hidden"></div>
+      </section>
+
+    </div>
+
+    <div id="modal-root"></div>
+
+    <script src="pokedata.js?v=1"></script>
+    <script src="data.js?v=3"></script>
+    <script src="sim.js?v=3"></script>
+    <script src="script.js?v=3"></script>
+  </body>
+</html>
