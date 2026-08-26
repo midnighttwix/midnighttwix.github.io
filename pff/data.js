@@ -434,6 +434,43 @@ const SPOTLIGHT_STEADY = [
   "{name} is what they are at this point: dependable, if unspectacular.",
 ];
 
+/* Analyst-style follow-up lines used to flesh out the player card scouting report. */
+const SURPRISE_GOOD_NOTES = [
+  "Nobody saw that one coming from {name} — a genuine surprise in the best way.",
+  "{name} wasn't projected for anything close to that, but here we are.",
+  "Even the coaching staff looked shocked at how well {name} played.",
+  "That's the kind of breakout line that gets a player a bigger role going forward.",
+];
+const SURPRISE_BAD_NOTES = [
+  "That's a stunner — nobody expected {name} to come up that empty.",
+  "{name} had a much rougher day than anyone anticipated.",
+  "A real head-scratcher of a performance from {name}.",
+  "Even the most pessimistic projections had {name} doing better than that.",
+];
+const INJURY_STEPUP_NOTES = [
+  "{name} stepped up big with {teammate} banged up, and made the most of the opportunity.",
+  "With {teammate} sidelined, {name} saw a bigger workload and cashed in.",
+  "{name} filled in admirably while {teammate} nurses an injury.",
+  "The extra snaps with {teammate} out clearly agreed with {name}.",
+];
+const BYE_OUTLOOK_NOTES = [
+  "{name} is on a bye next week, so pencil in someone else.",
+  "No game for {name} next week — bye week, plan accordingly.",
+  "{name} gets a breather next week on the bye.",
+];
+const MATCHUP_OUTLOOK_EASY = [
+  "{name} draws a leaky {team} defense next week and could keep it rolling.",
+  "The matchup sets up nicely for {name} against a {team} defense that's been an open door.",
+  "Analysts love this spot for {name} — {team} has struggled to slow anybody down.",
+  "{name} should have plenty of room to work against {team} next week.",
+];
+const MATCHUP_OUTLOOK_TOUGH = [
+  "{name} faces a stingy {team} defense next week — expect a tougher outing.",
+  "It won't be easy for {name} against a {team} unit that's been suffocating opponents.",
+  "Buyer beware: {name} draws one of the league's better defenses in {team} next week.",
+  "{name} will have to work for everything against a stout {team} defense.",
+];
+
 const RETIRE_EVENTS = [
   "retired at halftime after realizing football kind of sucks",
   "retired mid-drive to pursue competitive knitting",

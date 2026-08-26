@@ -235,6 +235,16 @@ function openPlayerCard(pid) {
     );
   }
 
+  const report = analystReport(p);
+  const lastLine = L.lastPlayedWeek ? lineOf(p, L.lastPlayedWeek) : null;
+  const scoutingBlock = report
+    ? `<div class="panel">
+        <p class="panel-title">SCOUTING REPORT &middot; WK ${L.lastPlayedWeek}</p>
+        <p class="note">${statSummary(lastLine)}</p>
+        ${report.map((line) => `<p class="spotlight-note" style="margin:0.35rem 0 0">${line}</p>`).join("")}
+      </div>`
+    : "";
+
   modalRoot.innerHTML = `
     <div class="modal-back">
       <div class="modal" style="max-width:480px">
@@ -269,6 +279,7 @@ function openPlayerCard(pid) {
             <p class="note">${p.careerSeasons || 0} season${p.careerSeasons === 1 ? "" : "s"} in the league.</p>
           </div>
         </div>
+        ${scoutingBlock}
         <p class="panel-title" style="margin-top:0.6rem">WEEK BY WEEK</p>
         <div class="scroll" style="max-height:280px">
           <table class="tbl"><tr><th>Week</th><th class="num">FPTS</th></tr>${weekRows.join("")}</table>
@@ -315,6 +326,69 @@ function spotlightNote(p, week) {
   const ratio = wk.pts / baseline;
   const pool = ratio >= 1.35 ? SPOTLIGHT_HOT : ratio <= 0.6 ? SPOTLIGHT_COLD : SPOTLIGHT_STEADY;
   return esc(pick(pool).replace(/\{name\}/g, displayName(p)));
+}
+
+/* Multi-line fake-analyst scouting report for the player card: last game recap, surprise factor,
+   whether an injured teammate opened up their workload, and an outlook for next week's matchup. */
+function analystReport(p) {
+  const lastWk = L.lastPlayedWeek;
+  if (!lastWk) return null;
+  const wk = p.weeks[lastWk];
+  if (!wk || wk.pts == null) return null;
+
+  const lines = [];
+  const spot = spotlightNote(p, lastWk);
+  if (spot) lines.push(spot);
+
+  const baseline = Math.max(3, p.gamesPlayed > 1 ? (p.seasonPts - wk.pts) / (p.gamesPlayed - 1) : projectPPG(p));
+  const ratio = wk.pts / baseline;
+  if (ratio >= 1.7) lines.push(esc(pick(SURPRISE_GOOD_NOTES).replace(/\{name\}/g, displayName(p))));
+  else if (ratio <= 0.35 && baseline >= 8) lines.push(esc(pick(SURPRISE_BAD_NOTES).replace(/\{name\}/g, displayName(p))));
+
+  if (p.pos !== "DEF") {
+    const hurtMate = teamRoster(L, p.team, p.pos).find(
+      (mate) => mate.id !== p.id && (mate.status.type === "injured" || mate.status.type === "out") && mate.status.weeks > 0
+    );
+    if (hurtMate && ratio >= 1.1) {
+      lines.push(
+        esc(
+          pick(INJURY_STEPUP_NOTES)
+            .replace(/\{name\}/g, displayName(p))
+            .replace(/\{teammate\}/g, displayName(hurtMate))
+        )
+      );
+    }
+  }
+
+  const nextWeek = lastWk + 1;
+  if (L.byeWeeks[p.team] === nextWeek) {
+    lines.push(esc(pick(BYE_OUTLOOK_NOTES).replace(/\{name\}/g, displayName(p))));
+  } else if (p.pos !== "DEF") {
+    const game = (L.nflSchedule[nextWeek] || []).find((g) => g.home === p.team || g.away === p.team);
+    if (game) {
+      const oppIdx = game.home === p.team ? game.away : game.home;
+      const oppDef = teamRoster(L, oppIdx, "DEF")[0];
+      if (oppDef && oppDef.skill <= 48) {
+        lines.push(
+          esc(
+            pick(MATCHUP_OUTLOOK_EASY)
+              .replace(/\{name\}/g, displayName(p))
+              .replace(/\{team\}/g, NFL_TEAMS[oppIdx].nick)
+          )
+        );
+      } else if (oppDef && oppDef.skill >= 63) {
+        lines.push(
+          esc(
+            pick(MATCHUP_OUTLOOK_TOUGH)
+              .replace(/\{name\}/g, displayName(p))
+              .replace(/\{team\}/g, NFL_TEAMS[oppIdx].nick)
+          )
+        );
+      }
+    }
+  }
+
+  return lines;
 }
 
 /* ------------------------------------------------------ persistence */
