@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pok&eacute;mon Crossword</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+        <p class="kicker">The Daily Dex</p>
+        <h1>Pok&eacute;mon Crossword</h1>
+        <p id="byline" class="byline">Five across, five down. Ninety seconds.</p>
+      </header>
+
+      <section id="start-view" class="paper">
+        <p class="blurb">
+          Every answer is a Pok&eacute;mon and every clue is a line from its Pok&eacute;dex entry.
+        </p>
+        <p class="blurb dim">
+          Solve the whole grid before the timer runs out. Miss it and you sit for 10 seconds before
+          a fresh puzzle.
+        </p>
+        <button id="start-btn" class="btn" type="button">Start The Clock</button>
+      </section>
+
+      <section id="game-view" class="paper hidden">
+        <div class="topbar">
+          <p id="timer" class="timer">1:30</p>
+          <button id="check-btn" class="btn btn-small" type="button">Check Grid</button>
+        </div>
+
+        <div id="grid-wrap" class="grid-wrap">
+          <div id="grid" class="grid"></div>
+        </div>
+
+        <p id="active-clue" class="active-clue"></p>
+
+        <div class="clues">
+          <div class="clue-col">
+            <h2>Across</h2>
+            <ol id="across-list" class="clue-list"></ol>
+          </div>
+          <div class="clue-col">
+            <h2>Down</h2>
+            <ol id="down-list" class="clue-list"></ol>
+          </div>
+        </div>
+
+        <div id="penalty" class="penalty hidden">
+          <p class="penalty-label">Out of time &mdash; new puzzle in</p>
+          <p id="penalty-count" class="penalty-count">10</p>
+        </div>
+
+        <p id="feedback" class="feedback"></p>
+      </section>
+
+      <section id="win-view" class="paper hidden">
+        <h2 class="win-title">Solved!</h2>
+        <p id="win-note" class="blurb"></p>
+        <div class="btn-row">
+          <button id="play-again-btn" class="btn" type="button">Another Puzzle</button>
+          <a class="btn btn-ghost" href="../">Back To Games</a>
+        </div>
+      </section>
+    </div>
+
+    <script src="pokedata.js"></script>
+    <script src="entries.js"></script>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
