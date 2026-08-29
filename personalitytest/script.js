@@ -12,6 +12,9 @@ const lockAnswersBtn = document.getElementById("lock-answers");
 const submitGuessesBtn = document.getElementById("submit-guesses");
 const playAgainBtn = document.getElementById("play-again");
 const resultMessageEl = document.getElementById("result-message");
+const progressFill = document.getElementById("progress-fill");
+const stepLabel = document.getElementById("step-label");
+const scoreBig = document.getElementById("score-big");
 
 // phase: "empty" | "setup" | "guess" | "result"
 let phase = "empty";
@@ -78,8 +81,19 @@ function setPhase(nextPhase) {
   guessControls.classList.toggle("hidden", phase !== "guess");
   resultControls.classList.toggle("hidden", phase !== "result");
 
+  const steps = {
+    empty: [0, "Step 1 of 3 \u00b7 Roll the Pok\u00e9mon"],
+    setup: [33, "Step 1 of 3 \u00b7 Assign the names"],
+    guess: [66, "Step 2 of 3 \u00b7 Make your guesses"],
+    result: [100, "Step 3 of 3 \u00b7 Your results"],
+  };
+  const [percent, label] = steps[phase] || steps.empty;
+  progressFill.style.width = `${percent}%`;
+  stepLabel.textContent = label;
+
   if (phase === "setup") {
-    instructionsEl.textContent = "";
+    instructionsEl.textContent =
+      "Player one: quietly type a friend's name under exactly 4 of these 6 Pokémon. Leave the other 2 blank.";
   } else if (phase === "guess") {
     instructionsEl.textContent =
       "Player two: pick which name (or blank) belongs to each Pokémon, then submit your guesses.";
@@ -211,7 +225,11 @@ function submitGuesses() {
 
   setPhase("result");
   renderCards();
-  resultMessageEl.textContent = `Player two guessed ${correctCount} out of ${REQUIRED_NAMES} correctly!`;
+  scoreBig.textContent = `${correctCount}/${REQUIRED_NAMES}`;
+  resultMessageEl.textContent =
+    correctCount === REQUIRED_NAMES
+      ? "Flawless. You truly know these people."
+      : "Not a perfect read — you need all 4 to pass.";
 
   if (correctCount < REQUIRED_NAMES) {
     startPersonalityCooldown();

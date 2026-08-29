@@ -95,7 +95,7 @@ function startPenalty() {
   let left = PENALTY_SECONDS;
   penaltyCountEl.textContent = String(left);
   penaltyEl.classList.remove("hidden");
-  boardEl.classList.add("locked");
+  boardEl.classList.add("locked", "penalty-dim");
   penaltyTimer = setInterval(() => {
     left -= 1;
     penaltyCountEl.textContent = String(Math.max(0, left));
@@ -103,7 +103,7 @@ function startPenalty() {
       clearInterval(penaltyTimer);
       penaltyTimer = null;
       penaltyEl.classList.add("hidden");
-      boardEl.classList.remove("locked");
+      boardEl.classList.remove("locked", "penalty-dim");
       setStatus("Back in - pick a card");
     }
   }, 1000);
@@ -179,7 +179,7 @@ function reset() {
   }
   penaltyEl.classList.add("hidden");
   winEl.classList.add("hidden");
-  boardEl.classList.remove("locked");
+  boardEl.classList.remove("locked", "penalty-dim");
   firstPick = null;
   busy = false;
   matched = 0;

@@ -4,19 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personality Test</title>
-    <link rel="preconnect" href="https://api.fontshare.com" />
-    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,900&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=3" />
   </head>
   <body>
     <main class="app">
-      <section class="panel">
-        <div class="topbar">
-          <div>
-            <h1 class="bold-title">Personality <span class="title-accent">Test</span></h1>
-          </div>
-          <button id="randomize-btn" class="ghost-btn" type="button">Randomize</button>
+      <article class="quiz">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+
+        <header class="quiz-head">
+          <p class="badge">Quiz</p>
+          <h1 class="headline">Which Pok&eacute;mon Is Everyone, Really?</h1>
+          <p class="dek">
+            One person secretly assigns 4 friends to 4 Pok&eacute;mon. Everyone else has to figure
+            out who&rsquo;s who &mdash; and you need all 4 to pass.
+          </p>
+          <p class="byline">
+            <span class="avatar" aria-hidden="true">ZG</span>
+            <span>Zane Games &middot; Personality Test</span>
+          </p>
+        </header>
+
+        <div class="progress">
+          <div id="progress-fill" class="progress-fill"></div>
         </div>
+        <p id="step-label" class="step-label">Step 1 of 3</p>
 
         <p id="instructions" class="instructions"></p>
 
@@ -27,16 +44,24 @@
         </div>
 
         <div id="guess-controls" class="controls hidden">
-          <button id="submit-guesses" class="primary-btn" type="button">Submit guesses</button>
+          <button id="submit-guesses" class="primary-btn" type="button">See your results!</button>
         </div>
 
         <div id="result-controls" class="controls hidden">
-          <p id="result-message" class="result-message"></p>
-          <button id="play-again" class="ghost-btn" type="button">Play again</button>
+          <div class="score-card">
+            <p class="score-eyebrow">You scored</p>
+            <p id="score-big" class="score-big">0/4</p>
+            <p id="result-message" class="result-message"></p>
+          </div>
+          <button id="play-again" class="primary-btn" type="button">Take it again</button>
         </div>
-      </section>
+
+        <footer class="quiz-foot">
+          <button id="randomize-btn" class="ghost-btn" type="button">Randomize Pok&eacute;mon</button>
+        </footer>
+      </article>
     </main>
 
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=4"></script>
   </body>
 </html>
