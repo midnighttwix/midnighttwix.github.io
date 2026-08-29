@@ -1,0 +1,311 @@
+/* Streaming Stampede - retro CRT arcade look. */
+
+:root {
+  --bg: #0b0f14;
+  --panel: #131a22;
+  --line: #2c3a49;
+  --green: #6ee36e;
+  --green-dim: #3d8f45;
+  --amber: #f2c14e;
+  --red: #ff5f5f;
+  --ink: #d7f5d7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "VT323", "Courier New", monospace;
+  font-size: 20px;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.crt {
+  position: relative;
+}
+
+.crt::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.035) 0 1px,
+    transparent 1px 3px
+  );
+  z-index: 5;
+}
+
+.shell {
+  width: min(720px, 100%);
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------- masthead */
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.5rem;
+  color: var(--green-dim);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+}
+
+.back-link:hover {
+  color: var(--green);
+}
+
+.masthead h1 {
+  margin: 0 0 0.7rem;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(0.95rem, 3.4vw, 1.5rem);
+  line-height: 1.7;
+  color: var(--green);
+  text-shadow: 0 0 12px rgba(110, 227, 110, 0.45);
+}
+
+.tagline {
+  margin: 0;
+  color: var(--green-dim);
+  letter-spacing: 0.06em;
+}
+
+/* ------------------------------------------------------------ panel */
+
+.panel {
+  background: var(--panel);
+  border: 3px solid var(--line);
+  border-radius: 4px;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.panel h2 {
+  margin: 0 0 0.8rem;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.95rem;
+  color: var(--amber);
+}
+
+.blurb {
+  margin: 0 0 0.8rem;
+  line-height: 1.4;
+}
+
+.blurb.dim {
+  color: var(--green-dim);
+}
+
+/* -------------------------------------------------------------- hud */
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.55rem;
+  color: var(--amber);
+  letter-spacing: 0.06em;
+}
+
+/* ------------------------------------------------------------ field */
+
+.field {
+  position: relative;
+  height: 280px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(to bottom, rgba(110, 227, 110, 0.05) 0 1px, transparent 1px 56px),
+    linear-gradient(180deg, #0d141b, #101a13);
+  border: 2px solid var(--line);
+  border-radius: 3px;
+}
+
+.runner {
+  position: absolute;
+  left: -90px;
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  animation-name: dash;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes dash {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--dash, 900px));
+  }
+}
+
+.countdown {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: "Press Start 2P", monospace;
+  font-size: 3rem;
+  color: var(--amber);
+  text-shadow: 0 0 18px rgba(242, 193, 78, 0.5);
+}
+
+/* --------------------------------------------------------- question */
+
+.question-box {
+  margin-top: 1rem;
+}
+
+.question-text {
+  margin: 0 0 0.5rem;
+  font-size: 1.35rem;
+}
+
+.question-name {
+  color: var(--amber);
+  text-transform: uppercase;
+}
+
+.question-sprite {
+  width: 82px;
+  height: 82px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.number-pad {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.num-btn {
+  width: 54px;
+  height: 54px;
+  background: #0f1720;
+  border: 2px solid var(--green-dim);
+  color: var(--green);
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.num-btn:hover {
+  background: var(--green-dim);
+  color: #0b0f14;
+}
+
+/* ------------------------------------------------------- buttons */
+
+.btn {
+  display: inline-block;
+  background: var(--green-dim);
+  border: 2px solid var(--green);
+  color: #06120a;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+  padding: 0.85rem 1.3rem;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: var(--green);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--green-dim);
+  border-color: var(--line);
+}
+
+.btn-ghost:hover {
+  background: transparent;
+  color: var(--green);
+  border-color: var(--green-dim);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+/* --------------------------------------------------------- penalty */
+
+.penalty {
+  margin: 1rem auto 0;
+  max-width: 320px;
+  border: 3px solid var(--red);
+  background: #1c1013;
+  border-radius: 4px;
+  padding: 0.7rem;
+}
+
+.penalty-label {
+  margin: 0;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.6rem;
+  color: var(--red);
+  letter-spacing: 0.12em;
+}
+
+.penalty-count {
+  margin: 0.3rem 0 0;
+  font-family: "Press Start 2P", monospace;
+  font-size: 2.2rem;
+  color: var(--red);
+}
+
+.feedback {
+  margin: 0.9rem 0 0;
+  min-height: 1.4rem;
+  font-size: 1.15rem;
+}
+
+.feedback.hit {
+  color: var(--green);
+}
+
+.feedback.miss {
+  color: var(--red);
+}
+
+@media (max-width: 520px) {
+  .field {
+    height: 230px;
+  }
+
+  .runner {
+    width: 52px;
+    height: 52px;
+  }
+}

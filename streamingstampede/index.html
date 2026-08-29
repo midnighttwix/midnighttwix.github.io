@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Streaming Stampede</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="crt">
+      <div class="shell">
+        <header class="masthead">
+          <a class="back-link" href="../">&lt; ZANE GAMES</a>
+          <h1>STREAMING<br />STAMPEDE</h1>
+          <p class="tagline">Count the herd. Trust your eyes.</p>
+        </header>
+
+        <section id="start-view" class="panel">
+          <p class="blurb">
+            A stampede of Pok&eacute;mon runs across the screen. When the dust settles you&rsquo;ll be
+            asked how many of ONE species ran by.
+          </p>
+          <p class="blurb dim">3 correct answers to clear the route. A miss costs 10 seconds.</p>
+          <button id="start-btn" class="btn" type="button">PRESS START</button>
+        </section>
+
+        <section id="game-view" class="panel hidden">
+          <div class="hud">
+            <span id="score-display">CLEARED 0/3</span>
+            <span id="state-display">GET READY</span>
+          </div>
+
+          <div id="field" class="field">
+            <div id="countdown" class="countdown hidden">3</div>
+          </div>
+
+          <div id="question-box" class="question-box hidden">
+            <p class="question-text">
+              How many <span id="question-name" class="question-name"></span> ran by?
+            </p>
+            <img id="question-sprite" class="question-sprite" src="" alt="" />
+            <div id="number-pad" class="number-pad"></div>
+          </div>
+
+          <div id="penalty" class="penalty hidden">
+            <p class="penalty-label">PENALTY</p>
+            <p id="penalty-count" class="penalty-count">10</p>
+          </div>
+
+          <p id="feedback" class="feedback"></p>
+        </section>
+
+        <section id="win-view" class="panel hidden">
+          <h2>ROUTE CLEARED!</h2>
+          <p id="win-note" class="blurb"></p>
+          <div class="btn-row">
+            <button id="play-again-btn" class="btn" type="button">RUN IT BACK</button>
+            <a class="btn btn-ghost" href="../">EXIT</a>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <script src="pokedata.js"></script>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
