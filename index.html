@@ -430,6 +430,19 @@
         background-position: left 34% top 18%, left 34% top 18%, left 58% top 44%, left 26% top 76%, left 50% top 76%, left 16% top 0, 0 0;
         border: 3px solid #c8d2de;
       }
+      /* Hot and Cold: a cold-to-hot temperature bar */
+      .card-hotandcold {
+        background-color: #171b21;
+        background-image:
+          linear-gradient(90deg, #3b82f6, #38bdf8, #2dd4bf, #a3e635, #facc15, #fb923c, #ef4444),
+          linear-gradient(#12161c, #12161c),
+          radial-gradient(circle at 88% 88%, rgba(239, 68, 68, 0.35), transparent 55%),
+          linear-gradient(160deg, #1c2129, #0f1216);
+        background-repeat: no-repeat;
+        background-size: 74% 20px, 74% 20px, 100% 100%, 100% 100%;
+        background-position: left 13% top 42%, left 13% top 42%, 0 0, 0 0;
+        border: 3px solid #272d36;
+      }
     </style>
   </head>
   <body>
@@ -536,6 +549,10 @@
         <a class="card card-hangman" href="hangman/">
           <p class="card-title">Pok&eacute;mon Hangman</p>
           <p class="card-desc">Six misses and you&rsquo;re done</p>
+        </a>
+        <a class="card card-hotandcold" href="hotandcold/">
+          <p class="card-title">Hot and Cold</p>
+          <p class="card-desc">Hotter or colder, one secret mon</p>
         </a>
       </div>
     </main>

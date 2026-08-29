@@ -1,0 +1,379 @@
+/* Hot and Cold - temperature-gradient guessing. */
+
+:root {
+  --bg: #0f1216;
+  --panel: #171b21;
+  --line: #272d36;
+  --ink: #eaf0f6;
+  --muted: #8b97a6;
+  --b0: #3b82f6;
+  --b1: #38bdf8;
+  --b2: #2dd4bf;
+  --b3: #a3e635;
+  --b4: #facc15;
+  --b5: #fb923c;
+  --b6: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 10%, rgba(59, 130, 246, 0.14), transparent 45%),
+    radial-gradient(circle at 88% 90%, rgba(239, 68, 68, 0.12), transparent 45%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Outfit", "Trebuchet MS", sans-serif;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.shell {
+  width: min(640px, 100%);
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------- masthead */
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  color: var(--b4);
+}
+
+.masthead h1 {
+  margin: 0 0 0.35rem;
+  font-weight: 800;
+  font-size: clamp(2rem, 8vw, 3rem);
+  background: linear-gradient(90deg, var(--b0), var(--b2), var(--b4), var(--b6));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.masthead .amp {
+  color: var(--muted);
+  -webkit-text-fill-color: var(--muted);
+  font-weight: 400;
+}
+
+.tagline {
+  margin: 0 auto;
+  max-width: 42ch;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ------------------------------------------------------------ panel */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.3rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.6rem;
+  font-weight: 800;
+  font-size: 1.7rem;
+  text-align: center;
+}
+
+#win-view {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* ------------------------------------------------------- scoreboard */
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+}
+
+.gauge {
+  background: #12161c;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.45rem 0.5rem;
+  text-align: center;
+  min-width: 0;
+}
+
+.gauge-label {
+  margin: 0;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.gauge-value {
+  margin: 0.1rem 0 0;
+  font-weight: 700;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------- thermometer */
+
+.thermo {
+  position: relative;
+  height: 44px;
+  border-radius: 999px;
+  background: #12161c;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  margin-bottom: 1.1rem;
+}
+
+.thermo-fill {
+  height: 100%;
+  width: 4%;
+  transition: width 0.35s ease, background 0.35s ease;
+  background: var(--b0);
+}
+
+.thermo-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+.b0 { background: var(--b0); }
+.b1 { background: var(--b1); }
+.b2 { background: var(--b2); }
+.b3 { background: var(--b3); }
+.b4 { background: var(--b4); }
+.b5 { background: var(--b5); }
+.b6 { background: var(--b6); }
+
+/* ------------------------------------------------------------ guess */
+
+.guess-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.guess-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #12161c;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.guess-input:focus {
+  outline: none;
+  border-color: var(--b4);
+}
+
+.guess-input:disabled {
+  opacity: 0.5;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.suggestion {
+  border: 1px solid var(--line);
+  background: #12161c;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  border-color: var(--b4);
+  color: var(--b4);
+}
+
+/* ---------------------------------------------------------- history */
+
+.history {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.history-row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr 2.2rem;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #12161c;
+}
+
+.history-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-bar {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: #1d232b;
+  overflow: hidden;
+}
+
+.history-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.history-score {
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------- buttons */
+
+.btn {
+  border: none;
+  background: var(--b4);
+  color: #1a1400;
+  padding: 0.75rem 1.4rem;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+/* ---------------------------------------------------------- penalty */
+
+.penalty {
+  margin: 1.1rem auto 0;
+  max-width: 340px;
+  text-align: center;
+  background: #101a26;
+  border: 2px solid var(--b1);
+  border-radius: 12px;
+  padding: 0.6rem;
+}
+
+.penalty-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--b1);
+}
+
+.penalty-count {
+  margin: 0.1rem 0 0;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--b1);
+}
+
+.feedback {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  font-weight: 600;
+  min-height: 1.3rem;
+}
+
+.feedback.miss {
+  color: var(--b5);
+}
+
+.win-img {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+}
+
+.win-note {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+}
+
+@media (max-width: 480px) {
+  .history-row {
+    grid-template-columns: 6.5rem 1fr 2rem;
+  }
+}

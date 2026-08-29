@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hot and Cold</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+        <h1>Hot <span class="amp">and</span> Cold</h1>
+        <p class="tagline">
+          One secret Pok&eacute;mon. Every guess tells you how close you are &mdash; nothing else.
+        </p>
+      </header>
+
+      <section class="panel">
+        <div class="scoreboard">
+          <div class="gauge">
+            <p class="gauge-label">Guesses</p>
+            <p id="guess-count" class="gauge-value">0</p>
+          </div>
+          <div class="gauge">
+            <p class="gauge-label">Closest</p>
+            <p id="closest-display" class="gauge-value">&mdash;</p>
+          </div>
+          <div class="gauge">
+            <p class="gauge-label">Status</p>
+            <p id="status-display" class="gauge-value">Guess away</p>
+          </div>
+        </div>
+
+        <div id="thermo" class="thermo">
+          <div id="thermo-fill" class="thermo-fill"></div>
+          <span id="thermo-label" class="thermo-label">Take a shot</span>
+        </div>
+
+        <div class="guess-row">
+          <input
+            id="guess-input"
+            class="guess-input"
+            type="text"
+            placeholder="Name any Pok&eacute;mon"
+            autocomplete="off"
+          />
+          <button id="submit-btn" class="btn" type="button">Guess</button>
+        </div>
+        <div id="suggestions" class="suggestions"></div>
+
+        <div id="penalty" class="penalty hidden">
+          <p class="penalty-label">Cooling off for</p>
+          <p id="penalty-count" class="penalty-count">10</p>
+        </div>
+
+        <p id="feedback" class="feedback"></p>
+
+        <div id="history" class="history"></div>
+      </section>
+
+      <section id="win-view" class="panel hidden">
+        <h2>You found it!</h2>
+        <img id="win-img" class="win-img" src="" alt="" />
+        <p id="win-note" class="win-note"></p>
+        <div class="btn-row">
+          <button id="play-again-btn" class="btn" type="button">New Secret Pok&eacute;mon</button>
+          <a class="btn btn-ghost" href="../">Back To Games</a>
+        </div>
+      </section>
+    </div>
+
+    <script src="pokedata.js"></script>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
