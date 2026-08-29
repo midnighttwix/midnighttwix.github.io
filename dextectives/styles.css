@@ -1,0 +1,322 @@
+/* Dextectives - spot the tampered word in a Pokedex entry. */
+
+:root {
+  --bg: #1d1e20;
+  --panel: #262729;
+  --line: #3a3c40;
+  --text: #f2efe9;
+  --muted: #a7abb2;
+  --accent: #4a90d9;
+  --good: #3fa45c;
+  --warn: #d7a72b;
+  --bad: #c9463a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Baloo 2", "Trebuchet MS", "Segoe UI", sans-serif;
+  padding: 1.5rem 1rem 2.5rem;
+}
+
+.shell {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ------------------------------------------------------- masthead */
+
+.back-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.back-link:hover {
+  color: var(--text);
+}
+.masthead h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  margin: 0.3rem 0 0.15rem;
+}
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------ dashboard */
+
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0.8rem;
+}
+.gauge {
+  flex: 1 1 110px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  text-align: center;
+}
+.gauge-wide {
+  flex: 2 1 200px;
+}
+.gauge-label {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 800;
+}
+.gauge-value {
+  margin: 0.1rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+/* ------------------------------------------------------ case file */
+
+.case-file {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.9rem;
+}
+
+.subject {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+.sprite {
+  width: 84px;
+  height: 84px;
+  image-rendering: pixelated;
+  flex: none;
+}
+.subject-label {
+  margin: 0;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 800;
+}
+.subject-name {
+  margin: 0.1rem 0 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.entry {
+  margin: 0.8rem 0 0;
+  font-size: 1.25rem;
+  line-height: 1.9;
+}
+
+.word {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0.05em 0.18em;
+  border-radius: 5px;
+  cursor: pointer;
+  border-bottom: 2px dotted rgba(167, 171, 178, 0.5);
+}
+/* Cancels the word button's right padding so punctuation hugs its word. */
+.entry > span:not(.plain) {
+  margin-left: -0.16em;
+}
+/* Grammar glue: shown, but never a valid answer so it isn't clickable. */
+.plain {
+  padding: 0.05em 0.18em;
+  color: var(--muted);
+}
+.word:hover {
+  background: rgba(74, 144, 217, 0.22);
+}
+.word.selected {
+  background: var(--accent);
+  color: #fff;
+  border-bottom-color: transparent;
+}
+.word.bad {
+  background: var(--bad);
+  color: #fff;
+  border-bottom-color: transparent;
+}
+.word.warn {
+  background: var(--warn);
+  color: #23262a;
+  border-bottom-color: transparent;
+}
+.word.good {
+  background: var(--good);
+  color: #fff;
+  border-bottom-color: transparent;
+}
+.entry.locked .word {
+  pointer-events: none;
+  cursor: default;
+}
+
+/* --------------------------------------------------------- penalty */
+
+.penalty {
+  text-align: center;
+  margin: 0.8rem auto 0;
+  max-width: 320px;
+  background: var(--panel);
+  border: 1px solid var(--bad);
+  border-radius: 8px;
+  padding: 0.6rem;
+  box-shadow: 0 0 12px rgba(201, 70, 58, 0.35);
+}
+.penalty-label {
+  margin: 0;
+  font-weight: 800;
+  color: #f0a79f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+}
+.penalty-count {
+  margin: 0.1rem 0 0;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--bad);
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 0.5rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+.btn:hover {
+  filter: brightness(1.08);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: var(--line);
+}
+
+/* --------------------------------------------------------- verdict */
+
+.verdict {
+  margin: 0.8rem 0 0;
+  min-height: 3.1rem;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  font-weight: 800;
+  border: 2px solid transparent;
+  background: transparent;
+}
+.verdict:empty {
+  display: none;
+}
+.verdict.bad {
+  background: rgba(201, 70, 58, 0.16);
+  border-color: var(--bad);
+  color: #f0a79f;
+}
+.verdict.warn {
+  background: rgba(215, 167, 43, 0.16);
+  border-color: var(--warn);
+  color: #f0d692;
+}
+.verdict.good {
+  background: rgba(63, 164, 92, 0.16);
+  border-color: var(--good);
+  color: #9fdcb2;
+}
+.verdict-head {
+  display: block;
+  font-size: 1.25rem;
+  margin-bottom: 0.15rem;
+}
+
+.actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* ---------------------------------------------------------- mobile */
+
+@media (max-width: 560px) {
+  body {
+    padding: 0.8rem 0.5rem 2rem;
+  }
+  .dashboard {
+    gap: 0.35rem;
+    margin: 0.7rem 0 0.6rem;
+  }
+  .gauge,
+  .gauge-wide {
+    flex: 1 1 0;
+    padding: 0.3rem 0.25rem;
+  }
+  .gauge-label {
+    font-size: 0.56rem;
+    letter-spacing: 0.05em;
+  }
+  .gauge-value {
+    font-size: 0.8rem;
+  }
+  .case-file {
+    padding: 0.7rem;
+  }
+  .sprite {
+    width: 64px;
+    height: 64px;
+  }
+  .subject-name {
+    font-size: 1.2rem;
+  }
+  .entry {
+    font-size: 1.15rem;
+    line-height: 2;
+  }
+}

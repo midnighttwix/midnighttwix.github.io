@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dextectives</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=2" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+        <h1>Dextectives</h1>
+        <p class="tagline">One word in this Pok&eacute;dex entry was tampered with. Tap the impostor word.</p>
+      </header>
+
+      <div class="dashboard">
+        <div class="gauge">
+          <p class="gauge-label">Solved</p>
+          <p id="solved-display" class="gauge-value">0</p>
+        </div>
+        <div class="gauge">
+          <p class="gauge-label">Streak</p>
+          <p id="streak-display" class="gauge-value">0</p>
+        </div>
+        <div class="gauge gauge-wide">
+          <p class="gauge-label">Status</p>
+          <p id="status-display" class="gauge-value">Tap the tampered word</p>
+        </div>
+      </div>
+
+      <div class="case-file">
+        <div class="subject">
+          <img id="sprite" class="sprite" src="" alt="" width="96" height="96" />
+          <div class="subject-text">
+            <p class="subject-label">Case file</p>
+            <p id="poke-name" class="subject-name">&mdash;</p>
+          </div>
+        </div>
+        <p id="entry" class="entry"></p>
+      </div>
+
+      <div id="penalty" class="penalty hidden">
+        <p class="penalty-label">Penalty &mdash; next case in</p>
+        <p id="penalty-count" class="penalty-count">10</p>
+      </div>
+
+      <p id="verdict" class="verdict" role="status" aria-live="polite"></p>
+
+      <div class="actions">
+        <button id="new-case" class="btn btn-ghost" type="button">New Case</button>
+      </div>
+    </div>
+
+    <script src="entries.js?v=1"></script>
+    <script src="script.js?v=2"></script>
+  </body>
+</html>
