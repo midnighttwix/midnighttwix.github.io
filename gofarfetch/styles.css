@@ -1,0 +1,354 @@
+/* Go Farfetch - warm "scavenger hunt around the house" look. */
+
+:root {
+  --bg: #f6efe3;
+  --paper: #fffaf1;
+  --ink: #34291f;
+  --muted: #7a6a58;
+  --line: #e0d2be;
+  --leek: #7fb069;
+  --leek-dark: #5d8f4b;
+  --duck: #e8a33d;
+  --miss: #d1584f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(127, 176, 105, 0.14) 0 90px, transparent 91px),
+    radial-gradient(circle at 88% 72%, rgba(232, 163, 61, 0.14) 0 110px, transparent 111px);
+  color: var(--ink);
+  font-family: "Fredoka", "Baloo 2", "Trebuchet MS", sans-serif;
+  font-weight: 500;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.shell {
+  width: min(680px, 100%);
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------------------------------------------------------- masthead */
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.back-link:hover {
+  color: var(--leek-dark);
+}
+
+.masthead h1 {
+  margin: 0 0 0.4rem;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 7vw, 3rem);
+  color: var(--leek-dark);
+  letter-spacing: -0.01em;
+}
+
+.tagline {
+  margin: 0 auto;
+  max-width: 46ch;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* ------------------------------------------------------------- cards */
+
+.card {
+  background: var(--paper);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 1.4rem;
+  box-shadow: 0 10px 0 rgba(52, 41, 31, 0.06);
+}
+
+.card h2 {
+  margin: 0 0 0.8rem;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+.rules {
+  margin: 0 0 1.3rem;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.rules strong {
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------- scoreboard */
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.gauge {
+  background: #f3ead9;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 0.5rem 0.6rem;
+  text-align: center;
+}
+
+.gauge-wide {
+  grid-column: span 2;
+}
+
+.gauge-label {
+  margin: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.gauge-value {
+  margin: 0.15rem 0 0;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+}
+
+/* ------------------------------------------------------------ phases */
+
+.phase-note {
+  margin: 0 0 0.9rem;
+  text-align: center;
+  font-weight: 700;
+  color: var(--leek-dark);
+}
+
+.target {
+  text-align: center;
+}
+
+.target-img {
+  width: min(240px, 70%);
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: #f3ead9;
+  border: 2px solid var(--line);
+  border-radius: 18px;
+}
+
+.target-name {
+  margin: 0.5rem 0 0;
+  font-family: "Baloo 2", sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+}
+
+.phase-hint {
+  margin: 0.9rem 0 1.1rem;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.btn {
+  border: none;
+  background: var(--leek);
+  color: #fff;
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--leek-dark);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--leek-dark);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 var(--leek-dark);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 2px solid var(--line);
+  box-shadow: none;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--duck);
+  transform: none;
+  box-shadow: none;
+}
+
+#start-btn {
+  display: block;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------------ guess */
+
+.guess-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.guess-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 2px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.guess-input:focus {
+  outline: none;
+  border-color: var(--leek);
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.suggestion {
+  border: 2px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  border-color: var(--leek);
+  background: #f2f8ee;
+}
+
+#reveal-btn {
+  display: block;
+  margin: 1rem auto 0;
+}
+
+/* ---------------------------------------------------------- penalty */
+
+.penalty {
+  text-align: center;
+  margin: 0.4rem auto 0;
+  max-width: 420px;
+  background: #fdeeec;
+  border: 2px solid var(--miss);
+  border-radius: 14px;
+  padding: 0.8rem;
+}
+
+.penalty-label {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--miss);
+}
+
+.penalty-count {
+  margin: 0.1rem 0 0;
+  font-family: "Baloo 2", sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--miss);
+}
+
+.result-message {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-weight: 700;
+  min-height: 1.2rem;
+}
+
+.result-message.hit {
+  color: var(--leek-dark);
+}
+
+.result-message.miss {
+  color: var(--miss);
+}
+
+.win-note {
+  margin: 0 0 1.2rem;
+  color: var(--muted);
+}
+
+#win-view {
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .guess-row {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

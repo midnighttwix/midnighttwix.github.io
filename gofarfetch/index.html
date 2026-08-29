@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Go Farfetch</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Fredoka:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+        <h1>Go Farfetch</h1>
+        <p class="tagline">
+          One Giver. One Guesser. Run around the house and fetch real objects that describe your
+          Pok&eacute;mon &mdash; no words, no gestures, just stuff.
+        </p>
+      </header>
+
+      <section id="start-view" class="card">
+        <h2>How it works</h2>
+        <ol class="rules">
+          <li>The <strong>Giver</strong> looks at the screen alone and sees a Pok&eacute;mon.</li>
+          <li>They hide the screen, then go fetch objects from around the house that hint at it.</li>
+          <li>The <strong>Guesser</strong> sees only the objects, then types their guess here.</li>
+          <li>Get <strong>3 right</strong> to win. A miss costs you 10 seconds.</li>
+        </ol>
+        <button id="start-btn" class="btn" type="button">Start Fetching</button>
+      </section>
+
+      <section id="game-view" class="card hidden">
+        <div class="scoreboard">
+          <div class="gauge">
+            <p class="gauge-label">Correct</p>
+            <p id="score-display" class="gauge-value">0 / 3</p>
+          </div>
+          <div class="gauge gauge-wide">
+            <p class="gauge-label">Phase</p>
+            <p id="phase-display" class="gauge-value">Giver&rsquo;s turn</p>
+          </div>
+        </div>
+
+        <div id="giver-phase" class="phase">
+          <p class="phase-note">Guesser: look away! Giver, this is your Pok&eacute;mon.</p>
+          <div class="target">
+            <img id="target-img" class="target-img" src="" alt="" />
+            <p id="target-name" class="target-name"></p>
+          </div>
+          <p class="phase-hint">
+            Go collect objects that describe it. When your pile is ready, hide the screen and hit the
+            button.
+          </p>
+          <div class="btn-row">
+            <button id="reroll-btn" class="btn btn-ghost" type="button">Different Pok&eacute;mon</button>
+            <button id="ready-btn" class="btn" type="button">Objects Ready &mdash; Hide It</button>
+          </div>
+        </div>
+
+        <div id="guess-phase" class="phase hidden">
+          <p class="phase-note">Guesser: study the pile. What Pok&eacute;mon is it?</p>
+          <div class="guess-row">
+            <input
+              id="guess-input"
+              class="guess-input"
+              type="text"
+              placeholder="Type a Pok&eacute;mon name"
+              autocomplete="off"
+            />
+            <button id="submit-btn" class="btn" type="button">Guess</button>
+          </div>
+          <div id="suggestions" class="suggestions hidden"></div>
+          <button id="reveal-btn" class="btn btn-ghost" type="button">Give Up &amp; Reveal</button>
+        </div>
+
+        <div id="penalty" class="penalty hidden">
+          <p class="penalty-label">Penalty &mdash; next Pok&eacute;mon in</p>
+          <p id="penalty-count" class="penalty-count">10</p>
+        </div>
+
+        <p id="result-message" class="result-message"></p>
+      </section>
+
+      <section id="win-view" class="card hidden">
+        <h2>Congrats!</h2>
+        <p id="win-note" class="win-note"></p>
+        <div class="btn-row">
+          <button id="play-again-btn" class="btn" type="button">Play Again</button>
+          <a class="btn btn-ghost" href="../">Back To Games</a>
+        </div>
+      </section>
+    </div>
+
+    <script src="pokedata.js"></script>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
