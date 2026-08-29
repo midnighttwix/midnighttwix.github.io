@@ -1,0 +1,348 @@
+/* Pokemon Hangman - notebook paper and pencil. */
+
+:root {
+  --paper: #fdfbf3;
+  --rule: #cfe0f0;
+  --margin: #f0a9a0;
+  --ink: #2f3a4a;
+  --pencil: #4a5568;
+  --muted: #7c8798;
+  --hit: #2f855a;
+  --miss: #c53030;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #dfe6ee;
+  color: var(--ink);
+  font-family: "Kalam", "Comic Sans MS", cursive;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.shell {
+  width: min(640px, 100%);
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------- masthead */
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.1rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.7rem;
+  color: var(--pencil);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.back-link:hover {
+  color: var(--miss);
+}
+
+.masthead h1 {
+  margin: 0 0 0.3rem;
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  font-size: clamp(2.1rem, 8vw, 3.2rem);
+  color: var(--ink);
+}
+
+.tagline {
+  margin: 0;
+  color: var(--pencil);
+  font-size: 0.95rem;
+}
+
+/* ------------------------------------------------------------ paper */
+
+.paper {
+  position: relative;
+  background: var(--paper);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 31px,
+    var(--rule) 31px 32px
+  );
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(47, 58, 74, 0.18);
+  padding: 1.3rem 1.3rem 1.3rem 2.4rem;
+  overflow: hidden;
+}
+
+.paper::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 1.5rem;
+  width: 2px;
+  background: var(--margin);
+}
+
+.paper h2 {
+  margin: 0 0 0.4rem;
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
+}
+
+/* ------------------------------------------------------- scoreboard */
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.gauge {
+  border: 2px dashed #c8d2de;
+  border-radius: 8px;
+  padding: 0.35rem 0.5rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.gauge-label {
+  margin: 0;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.gauge-value {
+  margin: 0;
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+/* ------------------------------------------------------------ board */
+
+.board {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.gallows {
+  width: 150px;
+  height: 190px;
+  flex: none;
+}
+
+.gallows .beam {
+  stroke: var(--pencil);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.gallows .part {
+  stroke: var(--miss);
+  stroke-width: 5;
+  stroke-linecap: round;
+  fill: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.gallows .part.shown {
+  opacity: 1;
+}
+
+.word-side {
+  flex: 1;
+  min-width: 220px;
+}
+
+.word {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: center;
+}
+
+.slot {
+  display: grid;
+  place-items: end center;
+  width: 26px;
+  height: 36px;
+  border-bottom: 3px solid var(--pencil);
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.slot.missed {
+  color: var(--miss);
+}
+
+.wrong-letters {
+  margin: 0.8rem 0 0;
+  text-align: center;
+  color: var(--miss);
+  font-size: 0.9rem;
+  letter-spacing: 0.06em;
+  min-height: 1.2rem;
+}
+
+/* --------------------------------------------------------- keyboard */
+
+.keyboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1.2rem;
+}
+
+.key {
+  width: 38px;
+  height: 40px;
+  border: 2px solid var(--pencil);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--ink);
+  font-family: "Kalam", cursive;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.key:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #eef5ff;
+}
+
+.key:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+.key.hit {
+  background: #d7f2e2;
+  border-color: var(--hit);
+  color: var(--hit);
+}
+
+.key.miss {
+  background: #fbe2e2;
+  border-color: var(--miss);
+  color: var(--miss);
+  text-decoration: line-through;
+}
+
+/* ---------------------------------------------------------- buttons */
+
+.btn {
+  border: 2px solid var(--pencil);
+  background: #ffffff;
+  color: var(--ink);
+  padding: 0.6rem 1.3rem;
+  border-radius: 8px;
+  font-family: "Kalam", cursive;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover {
+  background: #eef5ff;
+}
+
+.btn-ghost {
+  border-style: dashed;
+  color: var(--pencil);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+/* ---------------------------------------------------------- penalty */
+
+.penalty {
+  margin: 1.1rem auto 0;
+  max-width: 340px;
+  text-align: center;
+  border: 3px solid var(--miss);
+  border-radius: 10px;
+  background: #fff5f5;
+  padding: 0.6rem;
+}
+
+.penalty-label {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--miss);
+  font-weight: 700;
+}
+
+.penalty-count {
+  margin: 0;
+  font-family: "Caveat", cursive;
+  font-weight: 700;
+  font-size: 2.8rem;
+  line-height: 1;
+  color: var(--miss);
+}
+
+.feedback {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  font-weight: 700;
+  min-height: 1.3rem;
+}
+
+.feedback.hit {
+  color: var(--hit);
+}
+
+.feedback.miss {
+  color: var(--miss);
+}
+
+.win-note {
+  margin: 0 0 1.1rem;
+  text-align: center;
+  color: var(--pencil);
+}
+
+@media (max-width: 420px) {
+  .key {
+    width: 32px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+
+  .slot {
+    width: 22px;
+    font-size: 1.6rem;
+  }
+}

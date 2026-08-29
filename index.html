@@ -414,6 +414,22 @@
         background-position: left 12% top 46%, left 12% top 46%, left 58% top 40%, 0 0, 0 0;
         border: 3px solid #3d2c6e;
       }
+      /* Hangman: ruled notebook paper with a gallows and blanks */
+      .card-hangman {
+        background-color: #fdfbf3;
+        background-image:
+          linear-gradient(#4a5568, #4a5568),
+          linear-gradient(#4a5568, #4a5568),
+          linear-gradient(#4a5568, #4a5568),
+          linear-gradient(#4a5568, #4a5568),
+          linear-gradient(#4a5568, #4a5568),
+          linear-gradient(#f0a9a0, #f0a9a0),
+          repeating-linear-gradient(to bottom, transparent 0 15px, #cfe0f0 15px 16px);
+        background-repeat: no-repeat;
+        background-size: 4px 52px, 34px 4px, 4px 12px, 14px 4px, 14px 4px, 2px 100%, 100% 100%;
+        background-position: left 34% top 18%, left 34% top 18%, left 58% top 44%, left 26% top 76%, left 50% top 76%, left 16% top 0, 0 0;
+        border: 3px solid #c8d2de;
+      }
     </style>
   </head>
   <body>
@@ -516,6 +532,10 @@
         <a class="card card-guesspionage" href="guesspionage/">
           <p class="card-title">Guesspionage</p>
           <p class="card-desc">Nail the percentage within 5</p>
+        </a>
+        <a class="card card-hangman" href="hangman/">
+          <p class="card-title">Pok&eacute;mon Hangman</p>
+          <p class="card-desc">Six misses and you&rsquo;re done</p>
         </a>
       </div>
     </main>
