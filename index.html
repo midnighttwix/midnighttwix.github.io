@@ -400,6 +400,20 @@
         background-position: left 22% top 20%, left 22% top 62%, left 74% top 30%, left 72% top 12%, 0 0, 0 0, 0 0;
         border: 3px solid #1f3550;
       }
+      /* Guesspionage: a percentage meter with a marker on the bar */
+      .card-guesspionage {
+        background-color: #271a4a;
+        background-image:
+          linear-gradient(90deg, #ffd23f, #ff4d9d),
+          linear-gradient(#170f2e, #170f2e),
+          linear-gradient(#52e5a3, #52e5a3),
+          radial-gradient(circle at 12% 12%, rgba(255, 77, 157, 0.4), transparent 55%),
+          linear-gradient(160deg, #2e1f57, #17102c);
+        background-repeat: no-repeat;
+        background-size: 46% 16px, 76% 16px, 6px 30px, 100% 100%, 100% 100%;
+        background-position: left 12% top 46%, left 12% top 46%, left 58% top 40%, 0 0, 0 0;
+        border: 3px solid #3d2c6e;
+      }
     </style>
   </head>
   <body>
@@ -498,6 +512,10 @@
         <a class="card card-mazerunner" href="mazerunner/">
           <p class="card-title">Maze Runner</p>
           <p class="card-desc">Memorize the path, run it blind</p>
+        </a>
+        <a class="card card-guesspionage" href="guesspionage/">
+          <p class="card-title">Guesspionage</p>
+          <p class="card-desc">Nail the percentage within 5</p>
         </a>
       </div>
     </main>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guesspionage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+        <h1>GUESSPIONAGE</h1>
+        <p class="tagline">The people have spoken. How well do you know them?</p>
+      </header>
+
+      <section id="start-view" class="panel">
+        <p class="blurb">
+          Every prompt has a percentage answer. Slide to your guess and lock it in &mdash; you need to
+          land within <strong>5%</strong>.
+        </p>
+        <p class="blurb dim">Three good reads and you win. A miss costs 10 seconds.</p>
+        <button id="start-btn" class="btn" type="button">Start Guessing</button>
+      </section>
+
+      <section id="game-view" class="panel hidden">
+        <div class="scoreboard">
+          <div class="gauge">
+            <p class="gauge-label">Reads</p>
+            <p id="score-display" class="gauge-value">0 / 3</p>
+          </div>
+          <div class="gauge gauge-wide">
+            <p class="gauge-label">Status</p>
+            <p id="status-display" class="gauge-value">Lock in a guess</p>
+          </div>
+        </div>
+
+        <p id="prompt-text" class="prompt-text"></p>
+
+        <div class="meter">
+          <div class="meter-track">
+            <div id="meter-fill" class="meter-fill"></div>
+            <div id="meter-answer" class="meter-answer hidden"></div>
+            <div id="meter-band" class="meter-band hidden"></div>
+          </div>
+          <div class="meter-scale">
+            <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+          </div>
+        </div>
+
+        <p id="guess-value" class="guess-value">50%</p>
+
+        <input id="slider" class="slider" type="range" min="0" max="100" value="50" step="1" />
+
+        <div class="btn-row">
+          <button id="lock-btn" class="btn" type="button">Lock It In</button>
+        </div>
+
+        <div id="penalty" class="penalty hidden">
+          <p class="penalty-label">Bad read &mdash; next prompt in</p>
+          <p id="penalty-count" class="penalty-count">10</p>
+        </div>
+
+        <p id="feedback" class="feedback"></p>
+      </section>
+
+      <section id="win-view" class="panel hidden">
+        <h2>YOU KNOW PEOPLE!</h2>
+        <p id="win-note" class="blurb"></p>
+        <div class="btn-row">
+          <button id="play-again-btn" class="btn" type="button">Play Again</button>
+          <a class="btn btn-ghost" href="../">Back To Games</a>
+        </div>
+      </section>
+    </div>
+
+    <script src="prompts.js"></script>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
