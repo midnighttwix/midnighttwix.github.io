@@ -1,0 +1,309 @@
+/* Maze Runner - neon circuit-board maze. */
+
+:root {
+  --bg: #060b12;
+  --panel: #0e1622;
+  --line: #1f3550;
+  --ink: #dff3ff;
+  --muted: #7f9bb8;
+  --neon: #24e0ad;
+  --neon-dim: #0f7a63;
+  --exit: #ffbf47;
+  --miss: #ff5d6c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 80% 8%, rgba(36, 224, 173, 0.1), transparent 45%),
+    var(--bg);
+  color: var(--ink);
+  font-family: "Rajdhani", "Trebuchet MS", sans-serif;
+  font-weight: 600;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.shell {
+  width: min(560px, 100%);
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------- masthead */
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.back-link:hover {
+  color: var(--neon);
+}
+
+.masthead h1 {
+  margin: 0 0 0.35rem;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.6rem, 6.5vw, 2.6rem);
+  letter-spacing: 0.06em;
+  color: var(--neon);
+  text-shadow: 0 0 18px rgba(36, 224, 173, 0.4);
+}
+
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+
+/* ------------------------------------------------------------ panel */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.6rem;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  font-size: 1.7rem;
+  text-align: center;
+  color: var(--exit);
+}
+
+.blurb {
+  margin: 0 0 0.9rem;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.blurb.dim {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+#start-btn {
+  display: block;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------- scoreboard */
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.gauge {
+  background: #0a121c;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.4rem 0.5rem;
+  text-align: center;
+}
+
+.gauge-wide {
+  grid-column: span 2;
+}
+
+.gauge-label {
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.gauge-value {
+  margin: 0.1rem 0 0;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ------------------------------------------------------------- maze */
+
+.maze {
+  display: grid;
+  grid-template-columns: repeat(var(--size, 7), 1fr);
+  gap: 4px;
+  background: #0a121c;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 6px;
+}
+
+.cell {
+  aspect-ratio: 1 / 1;
+  border: 1px solid #16253a;
+  border-radius: 4px;
+  background: #101c2b;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cell.path {
+  background: var(--neon-dim);
+  box-shadow: inset 0 0 10px rgba(36, 224, 173, 0.55);
+}
+
+.cell.walked {
+  background: #17394a;
+}
+
+.cell.entrance {
+  border-color: var(--neon);
+}
+
+.cell.exit {
+  border-color: var(--exit);
+  box-shadow: inset 0 0 12px rgba(255, 191, 71, 0.4);
+}
+
+.cell.runner {
+  background: var(--neon);
+  box-shadow: 0 0 14px rgba(36, 224, 173, 0.7);
+}
+
+.cell.wrong {
+  background: var(--miss);
+  box-shadow: 0 0 14px rgba(255, 93, 108, 0.6);
+}
+
+/* --------------------------------------------------------- controls */
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.dpad {
+  margin-top: 1rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+}
+
+.dpad-mid {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.dpad-btn {
+  width: 54px;
+  height: 44px;
+  border: 1px solid var(--line);
+  background: #0a121c;
+  color: var(--neon);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.dpad-btn:hover {
+  border-color: var(--neon);
+  background: #10202e;
+}
+
+/* ---------------------------------------------------------- buttons */
+
+.btn {
+  border: 1px solid var(--neon);
+  background: rgba(36, 224, 173, 0.14);
+  color: var(--neon);
+  padding: 0.7rem 1.3rem;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover {
+  background: rgba(36, 224, 173, 0.26);
+}
+
+.btn-ghost {
+  border-color: var(--line);
+  background: transparent;
+  color: var(--muted);
+}
+
+.btn-ghost:hover {
+  color: var(--ink);
+  background: transparent;
+  border-color: var(--muted);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+/* ---------------------------------------------------------- penalty */
+
+.penalty {
+  margin: 1rem auto 0;
+  max-width: 360px;
+  text-align: center;
+  background: #23101a;
+  border: 1px solid var(--miss);
+  border-radius: 10px;
+  padding: 0.6rem;
+}
+
+.penalty-label {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--miss);
+}
+
+.penalty-count {
+  margin: 0.1rem 0 0;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--miss);
+}
+
+.feedback {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  min-height: 1.3rem;
+}
+
+.feedback.miss {
+  color: var(--miss);
+}

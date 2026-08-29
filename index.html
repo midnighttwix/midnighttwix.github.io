@@ -384,6 +384,22 @@
           linear-gradient(170deg, #22335c, #101a33);
         border: 3px solid #2f4272;
       }
+      /* Maze Runner: a neon route snaking across a dark grid */
+      .card-mazerunner {
+        background-color: #0a121c;
+        background-image:
+          linear-gradient(#24e0ad, #24e0ad),
+          linear-gradient(#24e0ad, #24e0ad),
+          linear-gradient(#24e0ad, #24e0ad),
+          linear-gradient(#ffbf47, #ffbf47),
+          repeating-linear-gradient(to right, rgba(31, 53, 80, 0.9) 0 1px, transparent 1px 22px),
+          repeating-linear-gradient(to bottom, rgba(31, 53, 80, 0.9) 0 1px, transparent 1px 22px),
+          linear-gradient(160deg, #101c2b, #060b12);
+        background-repeat: no-repeat;
+        background-size: 8px 62px, 56px 8px, 8px 44px, 14px 14px, 100% 100%, 100% 100%, 100% 100%;
+        background-position: left 22% top 20%, left 22% top 62%, left 74% top 30%, left 72% top 12%, 0 0, 0 0, 0 0;
+        border: 3px solid #1f3550;
+      }
     </style>
   </head>
   <body>
@@ -478,6 +494,10 @@
         <a class="card card-treadsortaillows" href="treadsortaillows/">
           <p class="card-title">Treads or Taillows</p>
           <p class="card-desc">Call the coin 10 times</p>
+        </a>
+        <a class="card card-mazerunner" href="mazerunner/">
+          <p class="card-title">Maze Runner</p>
+          <p class="card-desc">Memorize the path, run it blind</p>
         </a>
       </div>
     </main>
