@@ -1,0 +1,334 @@
+/* Treads or Taillows - big bold coin-toss booth. */
+
+:root {
+  --bg: #14213d;
+  --panel: #1c2c50;
+  --line: #2f4272;
+  --ink: #f5f7ff;
+  --muted: #9fb0d9;
+  --steel: #9ba7b8;
+  --sky: #4cc9f0;
+  --gold: #ffd60a;
+  --hit: #4ade80;
+  --miss: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(76, 201, 240, 0.16), transparent 55%),
+    var(--bg);
+  color: var(--ink);
+  font-family: "Nunito", "Trebuchet MS", sans-serif;
+  font-weight: 600;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.shell {
+  width: min(620px, 100%);
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------- masthead */
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.back-link:hover {
+  color: var(--sky);
+}
+
+.masthead h1 {
+  margin: 0 0 0.4rem;
+  font-family: "Bungee", sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.4rem, 5.5vw, 2.4rem);
+  color: var(--steel);
+  letter-spacing: 0.01em;
+}
+
+.masthead .or {
+  color: var(--sky);
+}
+
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ------------------------------------------------------------ panel */
+
+.panel {
+  background: var(--panel);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 1.3rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.6rem;
+  font-family: "Bungee", sans-serif;
+  font-weight: 400;
+  font-size: 1.8rem;
+  text-align: center;
+  color: var(--gold);
+}
+
+#win-view {
+  margin-top: 1rem;
+}
+
+/* ------------------------------------------------------- scoreboard */
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.gauge {
+  background: #16234a;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.45rem 0.5rem;
+  text-align: center;
+}
+
+.gauge-label {
+  margin: 0;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.gauge-value {
+  margin: 0.1rem 0 0;
+  font-family: "Bungee", sans-serif;
+  font-size: 1.15rem;
+}
+
+/* ------------------------------------------------------------- coin */
+
+.coin-stage {
+  perspective: 900px;
+  display: grid;
+  place-items: center;
+  height: 240px;
+}
+
+.coin {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  transition: transform 1.5s cubic-bezier(0.32, 0.9, 0.28, 1);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  backface-visibility: hidden;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.1rem;
+  border: 6px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+}
+
+.face img {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+}
+
+.face span {
+  font-family: "Bungee", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+.face-heads {
+  background: radial-gradient(circle at 35% 28%, #cfd7e3, #7d8797);
+  color: #202a3d;
+}
+
+.face-tails {
+  background: radial-gradient(circle at 35% 28%, #7fd8f7, #3a7fbf);
+  color: #0d2237;
+  transform: rotateY(180deg);
+}
+
+/* ------------------------------------------------------------ calls */
+
+.call-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+.btn {
+  border: none;
+  background: var(--steel);
+  color: #182238;
+  padding: 0.85rem 1.8rem;
+  border-radius: 999px;
+  font-family: "Bungee", sans-serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+
+.btn-alt {
+  background: var(--sky);
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 2px solid var(--line);
+  color: var(--muted);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+/* ---------------------------------------------------------- penalty */
+
+.penalty {
+  margin: 1rem auto 0;
+  max-width: 380px;
+  text-align: center;
+  background: #3a1620;
+  border: 2px solid var(--miss);
+  border-radius: 14px;
+  padding: 0.7rem;
+}
+
+.penalty-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--miss);
+}
+
+.penalty-count {
+  margin: 0.1rem 0 0;
+  font-family: "Bungee", sans-serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: var(--miss);
+}
+
+.feedback {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  min-height: 1.4rem;
+}
+
+.feedback.hit {
+  color: var(--hit);
+}
+
+.feedback.miss {
+  color: var(--miss);
+}
+
+/* ---------------------------------------------------------- history */
+
+.history {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 1rem;
+}
+
+.chip {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-family: "Bungee", sans-serif;
+  font-size: 0.7rem;
+  border: 2px solid;
+}
+
+.chip.hit {
+  border-color: var(--hit);
+  color: var(--hit);
+}
+
+.chip.miss {
+  border-color: var(--miss);
+  color: var(--miss);
+}
+
+.win-note {
+  margin: 0 0 1.1rem;
+  text-align: center;
+  color: var(--muted);
+}
+
+@media (max-width: 440px) {
+  .coin {
+    width: 150px;
+    height: 150px;
+  }
+
+  .face img {
+    width: 84px;
+    height: 84px;
+  }
+
+  .coin-stage {
+    height: 195px;
+  }
+}
