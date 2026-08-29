@@ -50,6 +50,7 @@ let alienCooldownTimer = null;
 
 function startAlienCooldown() {
   const until = Date.now() + 10000;
+  const baseText = resultMessage.textContent;
   rerollBtn.disabled = true;
   readyBtn.disabled = true;
   submitGuessBtn.disabled = true;
@@ -57,16 +58,16 @@ function startAlienCooldown() {
 
   const tick = () => {
     const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
-    resultMessage.textContent = `Wrong! Wait ${remainingSeconds}s before rolling a new Pokémon.`;
-    resultMessage.className = "result-message incorrect";
     if (remainingSeconds <= 0) {
       rerollBtn.disabled = false;
       readyBtn.disabled = false;
       newGameBtn.disabled = false;
-      resultMessage.textContent = "";
-      resultMessage.className = "result-message";
+      resultMessage.textContent = baseText;
+      resultMessage.className = "result-message incorrect";
       return;
     }
+    resultMessage.textContent = `${baseText} Wait ${remainingSeconds}s before rolling a new Pokémon.`;
+    resultMessage.className = "result-message incorrect";
 
     alienCooldownTimer = window.setTimeout(tick, 1000);
   };

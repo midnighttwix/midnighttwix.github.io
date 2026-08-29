@@ -24,20 +24,21 @@ let scrambleCooldownTimer = null;
 
 function startScrambleCooldown() {
   const until = Date.now() + 10000;
+  const baseText = endMessage.textContent;
   restartBtn.disabled = true;
   startBtn.disabled = true;
 
   const tick = () => {
     const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
-    endMessage.textContent = `Time's up! Wait ${remainingSeconds}s before playing again.`;
-    endMessage.className = "end-message failure";
     if (remainingSeconds <= 0) {
       restartBtn.disabled = false;
       startBtn.disabled = false;
-      endMessage.textContent = "Ready for another round?";
+      endMessage.textContent = `${baseText} Ready for another round?`;
       endMessage.className = "end-message failure";
       return;
     }
+    endMessage.textContent = `${baseText} Wait ${remainingSeconds}s before playing again.`;
+    endMessage.className = "end-message failure";
 
     scrambleCooldownTimer = window.setTimeout(tick, 1000);
   };

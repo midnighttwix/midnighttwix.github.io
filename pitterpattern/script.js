@@ -204,6 +204,7 @@ function submitGuess() {
 
 function startPitterCooldown() {
   const until = Date.now() + 10000;
+  const baseText = endMessage.textContent;
   const actionButtons = [startBtn, startGuessingBtn, restartBtn, document.getElementById("start-over-btn-memorize"), document.getElementById("start-over-btn-guess")];
 
   actionButtons.forEach((button) => {
@@ -212,14 +213,14 @@ function startPitterCooldown() {
 
   const tick = () => {
     const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
-    endMessage.textContent = `Not quite! Wait ${remainingSeconds}s before a fresh batch.`;
     if (remainingSeconds <= 0) {
       actionButtons.forEach((button) => {
         if (button) button.disabled = false;
       });
-      endMessage.textContent = "Try again with a fresh batch!";
+      endMessage.textContent = `${baseText} Ready for a fresh batch?`;
       return;
     }
+    endMessage.textContent = `${baseText} Wait ${remainingSeconds}s before a fresh batch.`;
 
     pitterCooldownTimer = window.setTimeout(tick, 1000);
   };

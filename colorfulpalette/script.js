@@ -45,23 +45,24 @@ let paletteCooldownTimer = null;
 
 function startPaletteCooldown() {
   const until = Date.now() + 10000;
+  const baseText = resultMessage.textContent;
   guessInput.disabled = true;
   submitGuessBtn.disabled = true;
   newPaletteBtn.disabled = true;
 
   const tick = () => {
     const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
-    resultMessage.textContent = `Wrong answer. Wait ${remainingSeconds}s before your next guess.`;
-    resultMessage.className = "result-message incorrect";
     if (remainingSeconds <= 0) {
       guessInput.disabled = false;
       submitGuessBtn.disabled = false;
       newPaletteBtn.disabled = false;
-      resultMessage.textContent = "";
-      resultMessage.className = "result-message";
+      resultMessage.textContent = baseText;
+      resultMessage.className = "result-message incorrect";
       guessInput.focus();
       return;
     }
+    resultMessage.textContent = `${baseText} Wait ${remainingSeconds}s before your next guess.`;
+    resultMessage.className = "result-message incorrect";
 
     paletteCooldownTimer = window.setTimeout(tick, 1000);
   };

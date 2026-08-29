@@ -27,17 +27,17 @@ let trendCooldownTimer = null;
 
 function startTrendCooldown() {
   const until = Date.now() + 10000;
+  const baseText = resultMessage.textContent;
   newRoundBtn.disabled = true;
 
   const tick = () => {
     const remainingSeconds = Math.max(0, Math.ceil((until - Date.now()) / 1000));
-    resultMessage.textContent = `Wrong answer. Wait ${remainingSeconds}s before the next one.`;
     if (remainingSeconds <= 0) {
       newRoundBtn.disabled = false;
-      resultMessage.textContent = "";
-      resultMessage.classList.remove("incorrect");
+      resultMessage.textContent = baseText;
       return;
     }
+    resultMessage.textContent = `${baseText} Wait ${remainingSeconds}s before the next one.`;
 
     trendCooldownTimer = window.setTimeout(tick, 1000);
   };
