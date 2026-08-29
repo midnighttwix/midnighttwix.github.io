@@ -44,7 +44,7 @@ let suggestionRequestToken = 0;
 let paletteCooldownTimer = null;
 
 function startPaletteCooldown() {
-  const until = Date.now() + 20000;
+  const until = Date.now() + 10000;
   guessInput.disabled = true;
   submitGuessBtn.disabled = true;
   newPaletteBtn.disabled = true;

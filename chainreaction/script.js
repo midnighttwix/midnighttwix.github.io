@@ -1,6 +1,6 @@
 const CHAIN_LENGTH = 10;
 const MAX_ATTEMPTS = 4000;
-const LOCKOUT_SECONDS = 20;
+const LOCKOUT_SECONDS = 10;
 
 const startView = document.getElementById("start-view");
 const gameView = document.getElementById("game-view");

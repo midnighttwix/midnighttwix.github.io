@@ -198,6 +198,13 @@ body {
   gap: 0.9rem;
 }
 
+.penalty-message {
+  margin: 0.9rem 0 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--danger);
+}
+
 .end-view {
   text-align: center;
 }

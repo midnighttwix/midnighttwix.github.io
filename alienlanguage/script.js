@@ -49,7 +49,7 @@ let suggestionRequestToken = 0;
 let alienCooldownTimer = null;
 
 function startAlienCooldown() {
-  const until = Date.now() + 20000;
+  const until = Date.now() + 10000;
   rerollBtn.disabled = true;
   readyBtn.disabled = true;
   submitGuessBtn.disabled = true;

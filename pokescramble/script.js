@@ -23,7 +23,7 @@ let activeIndex = 0;
 let scrambleCooldownTimer = null;
 
 function startScrambleCooldown() {
-  const until = Date.now() + 20000;
+  const until = Date.now() + 10000;
   restartBtn.disabled = true;
   startBtn.disabled = true;
 

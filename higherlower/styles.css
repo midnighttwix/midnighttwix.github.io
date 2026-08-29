@@ -175,6 +175,13 @@ h1 {
   letter-spacing: 0.03em;
 }
 
+.prompt-hint {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
 .prompt-name {
   color: var(--ink);
   font-weight: 700;

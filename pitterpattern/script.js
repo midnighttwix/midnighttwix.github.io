@@ -203,7 +203,7 @@ function submitGuess() {
 }
 
 function startPitterCooldown() {
-  const until = Date.now() + 20000;
+  const until = Date.now() + 10000;
   const actionButtons = [startBtn, startGuessingBtn, restartBtn, document.getElementById("start-over-btn-memorize"), document.getElementById("start-over-btn-guess")];
 
   actionButtons.forEach((button) => {

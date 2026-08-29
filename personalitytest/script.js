@@ -180,7 +180,7 @@ function startPersonalityCooldown() {
   const randomizeBtn = document.getElementById("randomize-btn");
   if (!playAgainBtn) return;
 
-  const until = Date.now() + 20000;
+  const until = Date.now() + 10000;
   playAgainBtn.disabled = true;
   if (randomizeBtn) randomizeBtn.disabled = true;
 

@@ -26,7 +26,7 @@ let revealed = false;
 let trendCooldownTimer = null;
 
 function startTrendCooldown() {
-  const until = Date.now() + 20000;
+  const until = Date.now() + 10000;
   newRoundBtn.disabled = true;
 
   const tick = () => {

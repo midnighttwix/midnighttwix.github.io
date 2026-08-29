@@ -1,7 +1,7 @@
 /* Lock & Klefki - flip two cards, match each Klefki to the lock of its colour. */
 
-const PENALTY_SECONDS = 20;
-const MISSES_BEFORE_PENALTY = 2; // consecutive
+const PENALTY_SECONDS = 10;
+const MISSES_BEFORE_PENALTY = 1;
 const FLIP_BACK_MS = 900;
 
 const KLEFKI_SPRITE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/707.png";
@@ -157,7 +157,7 @@ function onPick(card) {
   missStreak += 1;
   a.classList.add("wrong");
   b.classList.add("wrong");
-  setStatus(missStreak >= MISSES_BEFORE_PENALTY ? "Two in a row..." : "No match", true);
+  setStatus("No match", true);
 
   setTimeout(() => {
     [a, b].forEach((c) => {

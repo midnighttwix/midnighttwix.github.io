@@ -1,7 +1,7 @@
 /* Road Trip - guess the distance between two US cities. */
 
 const TOLERANCE_MI = 100; // how close a guess has to be to count
-const PENALTY_SECONDS = 20; // detour timer after a miss
+const PENALTY_SECONDS = 10; // detour timer after a miss
 const CHECKPOINTS_TO_WIN = 3;
 
 /* Pairs are kept in this band so a round is challenging but still winnable -

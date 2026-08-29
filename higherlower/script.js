@@ -10,6 +10,8 @@ const STAT_LABELS = {
   total: "Base Stat Total",
 };
 const STAT_KEYS = Object.keys(STAT_LABELS);
+const TOLERANCE = 5; // a guess within 5 of the real stat counts as correct
+const PENALTY_MS = 10000;
 
 const giveUpBtn = document.getElementById("give-up-btn");
 const statusMessage = document.getElementById("status-message");
@@ -31,6 +33,32 @@ let targetValue = null;
 let targetPokemon = null;
 let statKey = null;
 let roundOver = false;
+let penaltyTimer = null;
+let feedbackBase = "";
+
+function startPenalty() {
+  const until = Date.now() + PENALTY_MS;
+  guessInput.disabled = true;
+  submitGuessBtn.disabled = true;
+
+  const tick = () => {
+    const secondsLeft = Math.max(0, Math.ceil((until - Date.now()) / 1000));
+    if (secondsLeft <= 0) {
+      penaltyTimer = null;
+      if (roundOver) return;
+      guessInput.disabled = false;
+      submitGuessBtn.disabled = false;
+      guessInput.focus();
+      return;
+    }
+    feedbackMessage.textContent = `${feedbackBase} Wait ${secondsLeft}s...`;
+    penaltyTimer = window.setTimeout(tick, 1000);
+  };
+
+  if (penaltyTimer) window.clearTimeout(penaltyTimer);
+  tick();
+}
+
 
 function capitalize(text) {
   return text
@@ -63,6 +91,10 @@ async function fetchRandomPokemon() {
 }
 
 function resetGuessUI() {
+  if (penaltyTimer) {
+    window.clearTimeout(penaltyTimer);
+    penaltyTimer = null;
+  }
   guessInput.value = "";
   guessInput.disabled = false;
   submitGuessBtn.disabled = false;
@@ -118,6 +150,10 @@ function addHistoryRow(guess, direction) {
 
 function endRound(success) {
   roundOver = true;
+  if (penaltyTimer) {
+    window.clearTimeout(penaltyTimer);
+    penaltyTimer = null;
+  }
   guessInput.disabled = true;
   submitGuessBtn.disabled = true;
   giveUpBtn.classList.add("hidden");
@@ -141,8 +177,9 @@ function submitGuess() {
   const guess = Number(raw);
   if (!Number.isFinite(guess)) return;
 
-  if (guess === targetValue) {
-    feedbackMessage.textContent = "\ud83c\udfaf Exact match!";
+  if (Math.abs(guess - targetValue) <= TOLERANCE) {
+    feedbackMessage.textContent =
+      guess === targetValue ? "\ud83c\udfaf Exact match!" : `\ud83c\udfaf Close enough! Within ${TOLERANCE}.`;
     feedbackMessage.className = "feedback-message correct";
     endRound(true);
     return;
@@ -151,11 +188,12 @@ function submitGuess() {
   const direction = targetValue > guess ? "higher" : "lower";
   addHistoryRow(guess, direction);
 
-  feedbackMessage.textContent = direction === "higher" ? "\u25b2 Go higher!" : "\u25bc Go lower!";
+  feedbackBase = direction === "higher" ? "\u25b2 Go higher!" : "\u25bc Go lower!";
+  feedbackMessage.textContent = feedbackBase;
   feedbackMessage.className = `feedback-message ${direction}`;
 
   guessInput.value = "";
-  guessInput.focus();
+  startPenalty();
 }
 
 submitGuessBtn.addEventListener("click", submitGuess);
