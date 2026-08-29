@@ -1,0 +1,356 @@
+/* iSpidops - clean gallery-magnifier look. */
+
+:root {
+  --bg: #101418;
+  --panel: #191f26;
+  --line: #2b343f;
+  --ink: #eef3f8;
+  --muted: #93a1b2;
+  --lens: #ffd166;
+  --hit: #4ade80;
+  --miss: #f87171;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255, 209, 102, 0.08), transparent 45%),
+    var(--bg);
+  color: var(--ink);
+  font-family: "Space Grotesk", "Trebuchet MS", sans-serif;
+  font-weight: 500;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.shell {
+  width: min(640px, 100%);
+  margin: 0 auto;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------- masthead */
+
+.masthead {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 0.9rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.back-link:hover {
+  color: var(--lens);
+}
+
+.masthead h1 {
+  margin: 0 0 0.4rem;
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: clamp(2rem, 8vw, 3.2rem);
+  letter-spacing: -0.03em;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+/* ------------------------------------------------------------ panel */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.3rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.6rem;
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 1.7rem;
+  text-align: center;
+}
+
+.blurb {
+  margin: 0 0 0.9rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.blurb.dim {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+#start-btn {
+  display: block;
+  margin: 0 auto;
+}
+
+/* ------------------------------------------------------- scoreboard */
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.gauge {
+  background: #131920;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  text-align: center;
+}
+
+.gauge-wide {
+  grid-column: span 2;
+}
+
+.gauge-label {
+  margin: 0;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.gauge-value {
+  margin: 0.1rem 0 0;
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+/* ----------------------------------------------------------- viewer */
+
+.viewer {
+  text-align: center;
+}
+
+.crop {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 340px;
+  border: 3px solid var(--lens);
+  border-radius: 50%;
+  background-color: #f4f6f8;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 0 6px rgba(255, 209, 102, 0.12), inset 0 0 40px rgba(0, 0, 0, 0.18);
+  image-rendering: auto;
+  margin: 0 auto;
+  transition: background-size 0.25s ease;
+}
+
+.chip {
+  margin-top: 0.9rem;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--lens);
+  color: var(--lens);
+}
+
+.chip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------ guess */
+
+.guess-area {
+  margin-top: 1.2rem;
+}
+
+.guess-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.guess-input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #131920;
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.guess-input:focus {
+  outline: none;
+  border-color: var(--lens);
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.suggestion {
+  border: 1px solid var(--line);
+  background: #131920;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.suggestion:hover {
+  border-color: var(--lens);
+  color: var(--lens);
+}
+
+/* ----------------------------------------------------------- reveal */
+
+.reveal {
+  margin-top: 1.2rem;
+  text-align: center;
+}
+
+.reveal-img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  background: #f4f6f8;
+  border-radius: 14px;
+}
+
+.reveal-name {
+  margin: 0.5rem 0 0;
+  font-family: "Syne", sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+}
+
+/* ---------------------------------------------------------- buttons */
+
+.btn {
+  border: none;
+  background: var(--lens);
+  color: #191f26;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.btn-ghost:hover {
+  color: var(--lens);
+  border-color: var(--lens);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+/* ---------------------------------------------------------- penalty */
+
+.penalty {
+  margin: 1.2rem auto 0;
+  max-width: 400px;
+  text-align: center;
+  background: #241417;
+  border: 2px solid var(--miss);
+  border-radius: 12px;
+  padding: 0.7rem;
+}
+
+.penalty-label {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--miss);
+}
+
+.penalty-count {
+  margin: 0.15rem 0 0;
+  font-family: "Syne", sans-serif;
+  font-size: 2.6rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--miss);
+}
+
+.feedback {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-weight: 700;
+  min-height: 1.3rem;
+}
+
+.feedback.hit {
+  color: var(--hit);
+}
+
+.feedback.miss {
+  color: var(--miss);
+}
+
+@media (max-width: 480px) {
+  .guess-row {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

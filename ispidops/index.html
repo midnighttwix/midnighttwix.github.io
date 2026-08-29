@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iSpidops</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css?v=1" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="masthead">
+        <a class="back-link" href="../">&larr; Zane Games</a>
+        <h1>iSpidops</h1>
+        <p class="tagline">I spy, with my very zoomed-in eye&hellip;</p>
+      </header>
+
+      <section id="start-view" class="panel">
+        <p class="blurb">
+          You get one tiny, blown-up crop of a Pok&eacute;mon. A pixel of fur. Half an eyeball. Good
+          luck.
+        </p>
+        <p class="blurb dim">Name 10 of them to win. Every miss is a 10 second penalty.</p>
+        <button id="start-btn" class="btn" type="button">Start Spying</button>
+      </section>
+
+      <section id="game-view" class="panel hidden">
+        <div class="scoreboard">
+          <div class="gauge">
+            <p class="gauge-label">Found</p>
+            <p id="score-display" class="gauge-value">0 / 10</p>
+          </div>
+          <div class="gauge gauge-wide">
+            <p class="gauge-label">Status</p>
+            <p id="status-display" class="gauge-value">Take a look</p>
+          </div>
+        </div>
+
+        <div class="viewer">
+          <div id="crop" class="crop"></div>
+          <button id="zoom-btn" class="chip" type="button">Zoom Out A Little</button>
+        </div>
+
+        <div id="guess-area" class="guess-area">
+          <div class="guess-row">
+            <input
+              id="guess-input"
+              class="guess-input"
+              type="text"
+              placeholder="Which Pok&eacute;mon is it?"
+              autocomplete="off"
+            />
+            <button id="submit-btn" class="btn" type="button">Guess</button>
+          </div>
+          <div id="suggestions" class="suggestions"></div>
+        </div>
+
+        <div id="reveal" class="reveal hidden">
+          <img id="reveal-img" class="reveal-img" src="" alt="" />
+          <p id="reveal-name" class="reveal-name"></p>
+        </div>
+
+        <div id="penalty" class="penalty hidden">
+          <p class="penalty-label">Penalty &mdash; next one in</p>
+          <p id="penalty-count" class="penalty-count">10</p>
+        </div>
+
+        <p id="feedback" class="feedback"></p>
+      </section>
+
+      <section id="win-view" class="panel hidden">
+        <h2>Eagle eye!</h2>
+        <p id="win-note" class="blurb"></p>
+        <div class="btn-row">
+          <button id="play-again-btn" class="btn" type="button">Play Again</button>
+          <a class="btn btn-ghost" href="../">Back To Games</a>
+        </div>
+      </section>
+    </div>
+
+    <script src="pokedata.js"></script>
+    <script src="script.js?v=1"></script>
+  </body>
+</html>
